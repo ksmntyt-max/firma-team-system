@@ -515,6 +515,107 @@ const INITIAL_ARCH_DOCS = [
         ]
       }
     ]
+  },
+  {
+    id: 'what-is-fab',
+    title: 'WHAT IS A FAB?',
+    section: 'Regulatory',
+    badge: 'Reference',
+    subtitle: 'Freeport Area of Bataan — Complete Zone Registry & History',
+    description: 'Philippines Special Economic Zone · RA 9728 (2009) · RA 11453 (2019)',
+    thesis: 'The FAB is the Philippines\' oldest export processing zone — now a province-wide freeport network of 17 expansion areas offering full fiscal incentives, duty-free importation, and a one-stop regulatory system under AFAB.',
+    blocks: [
+      {
+        type: 'context',
+        content: 'The Freeport Area of Bataan (FAB) was originally established as the Mariveles Free Trade Zone in 1969 — the country\'s first export processing zone. It was later renamed the Bataan Export Processing Zone (BEPZ), then the Bataan Economic Zone (BEZ), before being converted into the FAB via Republic Act No. 9728 in October 2009. In 2019, RA 11453 amended AFAB\'s charter, allowing the FAB to expand anywhere within Bataan (excluding SBMA-governed portions) through designated Freeport Expansion Areas (FEAs). There are currently 17 approved expansion areas province-wide, with 10 already in operation.'
+      },
+      {
+        type: 'key-insight',
+        title: 'GOVERNING AUTHORITY: AFAB',
+        content: 'The FAB is managed by the Authority of the Freeport Area of Bataan (AFAB) — a government corporation attached to the Office of the President. It operates as a decentralized, self-sustaining industrial, commercial-trading, agro-industrial, tourism, and investment center. Key benefits for locators in any FEA include: tax exemptions, streamlined customs, duty-free importation, and a one-stop-shop regulatory system.'
+      },
+      {
+        type: 'section',
+        title: 'LEGAL FOUNDATION',
+        bullets: [
+          'RA 9728 (Oct 2009) — Converted BEZ into the Freeport Area of Bataan; established AFAB as governing authority',
+          'RA 11453 (2019) — Expanded AFAB\'s mandate province-wide via Freeport Expansion Areas (FEAs), excluding SBMA-governed zones',
+          '17 FEAs approved across Bataan municipalities; 10 currently in operation',
+          'AFAB is the only investment promotion agency in the Philippines legally empowered to license blockchain and emerging tech under RA 11453',
+        ]
+      },
+      {
+        type: 'table',
+        title: 'ALL FAB ZONES — VALIDATED COORDINATES',
+        headers: ['#', 'Location', 'Zone Name', 'Coordinates', 'Status'],
+        rows: [
+          ['1', 'Mariveles', 'FAB Main Zone (Brgy. Maligaya, Malaya, Sisiman, Baseco, Alasasin)', '14.4408°N, 120.5149°E', '✅ Operational'],
+          ['2', 'Mariveles', '+6 Freeport Expansion Areas within Mariveles', '~14.43°N, ~120.48°E', '✅ Various'],
+          ['3', 'Dinalupihan', 'DWEZ — Dinalupihan Woodlands Economic Zone (42.77 ha Ph1 + 110 ha Ph2, 389 ha total)', '14.8527°N, 120.3964°E', '✅ Operational'],
+          ['4', 'Dinalupihan', 'San Benito Warehousing Zone — 60 ha', '14.8477°N, 120.4253°E', '✅ Operational'],
+          ['5', 'Hermosa', 'HEIP — Hermosa Ecozone Industrial Park (162 ha industrial / 478 ha total)', '14.8425°N, 120.4702°E', '✅ Operational'],
+          ['6', 'Orani', 'Orani FEA — coastal, aquaculture / agri-industrial (Manila Bay)', '14.8018°N, 120.5366°E', '✅ Operational'],
+          ['7', 'Samal', 'Samal Ecozone — 27.53 ha (Brgy. Lalawigan & Tabing-Ilog)', '14.7799°N, 120.5417°E', '🔄 Groundbroken Mar 2023'],
+          ['8', 'Abucay', 'Abucay FEA — agri-industrial, Manila Bay coast', '14.7222°N, 120.5354°E', '✅ Operational'],
+          ['9', 'Balanga City', 'Balanga City FEA — BPO, IT, leisure, real estate', '14.6774°N, 120.5279°E', '✅ Operational'],
+          ['10', 'Pilar', 'Pilar FEA — tourism, heritage (near Mt. Samat / Dambana ng Kagitingan)', '14.6040°N, 120.5096°E', '✅ Operational'],
+          ['11', 'Orion', 'Port Capinpin FEA — port services, industrial', '14.5865°N, 120.5920°E', '✅ Operational'],
+          ['12', 'Limay', 'Petron Bataan Refinery Complex — 238 ha (country\'s largest oil refinery)', '14.5290°N, 120.6001°E', '✅ Operational'],
+          ['13', 'Bagac', 'Bagac FEA — tourism, heritage (Las Casas Filipinas de Acuzar)', '14.6027°N, 120.3853°E', '✅ Operational'],
+        ]
+      },
+      {
+        type: 'section',
+        title: 'ZONE HIGHLIGHTS',
+        bullets: [
+          'MARIVELES (Main Zone) — OSM Relation #12907825; centroid 14.4408°N, 120.5149°E; 6 additional FEAs within the municipality',
+          'DINALUPIHAN (DWEZ) — 223 Olongapo-Bataan Road, Brgy. Pinulot / Happy Valley; OSM-confirmed industrial area; 389 ha total buildout',
+          'HERMOSA (HEIP) — 162 ha industrial / 478 ha total; connected via spur road to Dinalupihan Interchange of SCTEX',
+          'SAMAL — Developer: High Tech Global Cement Corporation; AFAB agreement Apr 2025; groundbreaking Mar 10, 2023',
+          'BALANGA CITY — Provincial capital; anchored by SM City Balanga and Vista Mall; positioned for BPO, IT, and lifestyle industries',
+          'PILAR — Home of Dambana ng Kagitingan (Shrine of Valor) atop Mt. Samat; leverages highland heritage and tourism assets',
+          'ORION (Port Capinpin) — RoRo ferry link to Manila (Esplanade Seaside Terminal); key multimodal logistics node',
+          'LIMAY (Petron) — Country\'s largest oil refinery; SMC committed ₱10.6B for food processing and power generation expansion',
+          'BAGAC — Las Casas Filipinas de Acuzar: Asia-Pacific\'s Best Historic Hotel (2021); West Philippine Sea coastal access',
+        ]
+      },
+      {
+        type: 'section',
+        title: 'FISCAL INCENTIVES FOR ALL FAB LOCATORS',
+        bullets: [
+          '5% gross income tax (GIT) in lieu of all national and local taxes',
+          'Duty-free importation of capital equipment, raw materials, and consumer goods',
+          'VAT zero-rating on local purchases',
+          'No local business taxes, real property taxes, or other local impositions',
+          'One-stop-shop regulatory system (AFAB handles all permits)',
+          'Streamlined customs processing via AFAB\'s customs authority',
+        ]
+      },
+      {
+        type: 'section',
+        title: 'KEY SOURCES (74 TOTAL)',
+        bullets: [
+          'Official / Government: foi.gov.ph/agencies/afab, invest.bataan.gov.ph, bataan.gov.ph, elibrary.judiciary.gov.ph',
+          'Wikipedia / Wikimedia: FAB, AFAB, Mariveles, Dinalupihan, Orani, Abucay, Samal, Orion, Bataan Refinery, Las Casas, Mt. Samat',
+          'OpenStreetMap: OSM Relation #12907825 (FAB Main), DWEZ, HEIP, Petron Refinery, Port Capinpin',
+          'Maps & Coordinates: Mapcarta, Waze, Maplogs, PhilAtlas, Geloky, Tageo, FindLatitudeLongitude',
+          'News & Media: InsiderPH, Port Calls, Tribune, Punto.com.ph',
+          'Industrial / Technical: GEM Wiki (Petron), ShipNext (Port Capinpin), Science Park PH',
+          'Tourism / Heritage: Las Casas Filipinas, Lakad Pilipinas, Dambana ng Kagitingan',
+        ]
+      },
+      {
+        type: 'outcome',
+        title: 'FIRMA\'S RELEVANCE TO FAB',
+        bullets: [
+          'AFAB is the only PH investment body legally licensed to host blockchain/fintech enterprises under RA 11453 — direct Firma entry pathway',
+          'Province-wide FEA expansion means Firma\'s presence can scale across 17 zones as operations grow',
+          'Samal, Hermosa, and DWEZ are active expansion areas where Firma\'s infrastructure stack can be piloted',
+          'Port Capinpin (Orion) provides maritime logistics access for physical hardware and EDGE device deployment',
+          'Balanga City FEA aligns with Firma\'s BPO and digital governance tools for the provincial capital',
+        ]
+      }
+    ]
   }
 ]
 
