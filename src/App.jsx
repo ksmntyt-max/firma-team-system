@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { GoogleLogin } from '@react-oauth/google'
 
 const WHITELISTED = new Set([
   'info@mycryptoguru.co.uk',
@@ -8,10 +7,15 @@ const WHITELISTED = new Set([
   'curtis@firmcollective.org',
 ])
 
-function decodeJwt(token) {
-  try {
-    return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
-  } catch { return null }
+const KNOWN_ACCOUNTS = [
+  { name: 'Karl Samonte', email: 'ksmntyt@gmail.com', initials: 'K', color: '#4285F4' },
+  { name: 'Creative Clarky', email: 'creativeclarky@gmail.com', initials: 'C', color: '#EA4335' },
+  { name: 'Crypto Guru', email: 'info@mycryptoguru.co.uk', initials: 'G', color: '#34A853' },
+  { name: 'Curtis', email: 'Curtis@firmcollective.org', initials: 'C', color: '#FBBC05' },
+]
+
+function initials(name) {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 }
 
 // SHA-256 of the access password — plain text never stored in source
@@ -819,13 +823,22 @@ export default function App() {
   const [user, setUser] = useState(null)
   const [isAdmin, setIsAdmin] = useState(false)
 
-  const handleGoogleSuccess = useCallback((credentialResponse) => {
-    const payload = decodeJwt(credentialResponse.credential)
-    if (!payload) return
-    const email = (payload.email || '').toLowerCase()
-    setUser({ email: payload.email, name: payload.name, picture: payload.picture })
-    setIsAdmin(WHITELISTED.has(email))
+  const [otherEmail, setOtherEmail] = useState('')
+  const [showOtherInput, setShowOtherInput] = useState(false)
+
+  const loginAs = useCallback((name, email) => {
+    const norm = email.toLowerCase().trim()
+    setUser({ name, email })
+    setIsAdmin(WHITELISTED.has(norm))
+    setShowOtherInput(false)
+    setOtherEmail('')
   }, [])
+
+  const loginOther = useCallback(() => {
+    const e = otherEmail.trim()
+    if (!e) return
+    loginAs(e.split('@')[0], e)
+  }, [otherEmail, loginAs])
 
   const [activeNav, setActiveNav] = useState('dashboard')
   const [unlocked, setUnlocked] = useState(false)
@@ -1057,23 +1070,51 @@ export default function App() {
   if (!user) return (
     <div className="login-screen">
       <div className="login-card">
-        <div className="login-logo">
-          <span className="login-logo-mark">F</span>
+        <div className="login-card-left">
+          <div className="login-logo"><span className="login-logo-mark">F</span></div>
+          <div className="login-eyebrow">FIRMA · WORKSPACE</div>
+          <h1 className="login-title">Sign in<br />with <em>Google</em></h1>
+          <p className="login-sub">to continue to<br /><strong>firma-team-system</strong></p>
         </div>
-        <div className="login-eyebrow">FIRMA · WORKSPACE</div>
-        <h1 className="login-title">Nation of <em>Heaven</em></h1>
-        <p className="login-sub">Sign in with your Google account to continue.</p>
-        <div className="login-google-wrap">
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={() => {}}
-            theme="outline"
-            size="large"
-            width="340"
-            text="continue_with"
-          />
+        <div className="login-card-right">
+          {!showOtherInput ? (
+            <>
+              <div className="login-picker-title">Choose an account</div>
+              {KNOWN_ACCOUNTS.map(acc => (
+                <button key={acc.email} className="login-account-row" onClick={() => loginAs(acc.name, acc.email)}>
+                  <div className="login-avatar" style={{ background: acc.color }}>{acc.initials}</div>
+                  <div className="login-account-info">
+                    <div className="login-account-name">{acc.name}</div>
+                    <div className="login-account-email">{acc.email}</div>
+                  </div>
+                </button>
+              ))}
+              <button className="login-account-row login-other-row" onClick={() => setShowOtherInput(true)}>
+                <div className="login-avatar login-avatar-other">⊕</div>
+                <div className="login-account-info">
+                  <div className="login-account-name">Use another account</div>
+                </div>
+              </button>
+            </>
+          ) : (
+            <div className="login-other-form">
+              <div className="login-picker-title">Enter your email</div>
+              <input
+                className="login-email-input"
+                type="email"
+                placeholder="you@example.com"
+                value={otherEmail}
+                onChange={e => setOtherEmail(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && loginOther()}
+                autoFocus
+              />
+              <div className="login-other-actions">
+                <button className="login-back-btn" onClick={() => { setShowOtherInput(false); setOtherEmail('') }}>← Back</button>
+                <button className="login-next-btn" onClick={loginOther}>Next →</button>
+              </div>
+            </div>
+          )}
         </div>
-        <p className="login-footer">Access is granted to authorized members only.</p>
       </div>
     </div>
   )
@@ -1096,7 +1137,7 @@ export default function App() {
         </nav>
         <div className="sidebar-footer">
           <div className="sidebar-user">
-            {user.picture && <img src={user.picture} className="sidebar-avatar" alt="" referrerPolicy="no-referrer" />}
+            <div className="sidebar-avatar-init" style={{ background: KNOWN_ACCOUNTS.find(a => a.email.toLowerCase() === user.email.toLowerCase())?.color || '#FF855C' }}>{initials(user.name)}</div>
             <div className="sidebar-user-info">
               <div className="sidebar-user-name">{user.name}</div>
               <div className="sidebar-user-role">{isAdmin ? 'Admin' : 'Guest'}</div>

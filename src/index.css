@@ -8,21 +8,40 @@ body{background:linear-gradient(135deg,#fef9f5 0%,#fef5fa 35%,#f5f6fe 100%);font
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,133,92,0.35)}
 
 /* ─── LOGIN SCREEN ─── */
-.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f0a08 0%,#1a0f0f 40%,#0d0d1a 100%);overflow:hidden;position:relative}
-.login-screen::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(255,133,92,0.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 60%,rgba(132,167,247,0.06) 0%,transparent 60%);pointer-events:none}
-.login-card{position:relative;z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px;padding:56px 48px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,133,92,0.15);border-radius:24px;backdrop-filter:blur(20px);width:440px;box-shadow:0 40px 80px rgba(0,0,0,0.4)}
-.login-logo{width:56px;height:56px;background:linear-gradient(135deg,#FF855C,#F6718D);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
-.login-logo-mark{font-family:'Fraunces',Georgia,serif;font-size:28px;font-weight:600;color:#fff;line-height:1}
-.login-eyebrow{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,133,92,0.7)}
-.login-title{font-family:'Fraunces',Georgia,serif;font-size:34px;font-weight:400;color:#fff;letter-spacing:-0.02em;line-height:1.2}
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#1a1a1a;overflow:hidden}
+.login-card{display:flex;background:#2d2d2d;border-radius:20px;overflow:hidden;width:680px;min-height:420px;box-shadow:0 40px 80px rgba(0,0,0,0.5)}
+.login-card-left{width:240px;flex-shrink:0;background:#232323;padding:40px 32px;display:flex;flex-direction:column;gap:16px;border-right:1px solid rgba(255,255,255,0.07)}
+.login-logo{width:44px;height:44px;background:linear-gradient(135deg,#FF855C,#F6718D);border-radius:12px;display:flex;align-items:center;justify-content:center}
+.login-logo-mark{font-family:'Fraunces',Georgia,serif;font-size:22px;font-weight:600;color:#fff;line-height:1}
+.login-eyebrow{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,133,92,0.7);margin-top:4px}
+.login-title{font-family:'Fraunces',Georgia,serif;font-size:26px;font-weight:400;color:#fff;letter-spacing:-0.02em;line-height:1.25;margin-top:4px}
 .login-title em{font-style:italic;background:linear-gradient(90deg,#FF855C,#F6718D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.login-sub{font-family:'Inter',sans-serif;font-size:13px;color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:8px}
-.login-google-wrap{width:100%;display:flex;justify-content:center}
-.login-footer{font-family:'Inter',sans-serif;font-size:11px;color:rgba(255,255,255,0.2);margin-top:8px}
+.login-sub{font-family:'Inter',sans-serif;font-size:12px;color:rgba(255,255,255,0.35);line-height:1.7}
+.login-sub strong{color:rgba(255,255,255,0.55);font-weight:500}
+.login-card-right{flex:1;padding:36px 32px;display:flex;flex-direction:column;gap:0}
+.login-picker-title{font-family:'Inter',sans-serif;font-size:18px;font-weight:500;color:#fff;margin-bottom:20px}
+.login-account-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:10px;cursor:pointer;transition:background 0.15s;border:none;background:none;width:100%;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06)}
+.login-account-row:last-child{border-bottom:none}
+.login-account-row:hover{background:rgba(255,255,255,0.07)}
+.login-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.login-avatar-other{background:rgba(255,255,255,0.12);font-size:18px;font-weight:400}
+.login-account-info{display:flex;flex-direction:column;gap:2px}
+.login-account-name{font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:#fff}
+.login-account-email{font-family:'Inter',sans-serif;font-size:12px;color:rgba(255,255,255,0.45)}
+.login-other-row .login-account-name{color:rgba(255,255,255,0.6);font-weight:400}
+.login-other-form{display:flex;flex-direction:column;gap:16px}
+.login-email-input{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;padding:12px 16px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border 0.15s;width:100%}
+.login-email-input:focus{border-color:rgba(255,133,92,0.5)}
+.login-email-input::placeholder{color:rgba(255,255,255,0.25)}
+.login-other-actions{display:flex;justify-content:space-between;align-items:center}
+.login-back-btn{background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;padding:8px 0;transition:color 0.15s}
+.login-back-btn:hover{color:#fff}
+.login-next-btn{background:linear-gradient(135deg,#FF855C,#F6718D);border:none;color:#fff;padding:10px 22px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;transition:opacity 0.15s}
+.login-next-btn:hover{opacity:0.88}
 
 /* ─── SIDEBAR USER ─── */
 .sidebar-user{display:flex;align-items:center;gap:8px;padding:10px 16px 14px}
-.sidebar-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid rgba(255,133,92,0.3)}
+.sidebar-avatar-init{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
 .sidebar-user-info{flex:1;min-width:0}
 .sidebar-user-name{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sidebar-user-role{font-family:'Inter',sans-serif;font-size:9px;color:#FF855C;font-weight:700;text-transform:uppercase;letter-spacing:0.8px}
