@@ -12,7 +12,7 @@ body{background:linear-gradient(135deg,#fef9f5 0%,#fef5fa 35%,#f5f6fe 100%);font
 .login-card{display:flex;background:#2d2d2d;border-radius:20px;overflow:hidden;width:680px;min-height:420px;box-shadow:0 40px 80px rgba(0,0,0,0.5)}
 .login-card-left{width:240px;flex-shrink:0;background:#232323;padding:40px 32px;display:flex;flex-direction:column;gap:16px;border-right:1px solid rgba(255,255,255,0.07)}
 .login-logo{width:44px;height:44px;background:linear-gradient(135deg,#FF855C,#F6718D);border-radius:12px;display:flex;align-items:center;justify-content:center}
-.login-logo-mark{font-family:'Fraunces',Georgia,serif;font-size:22px;font-weight:600;color:#fff;line-height:1}
+.login-logo-leaf{width:28px;height:28px;object-fit:contain;filter:brightness(0) invert(1)}
 .login-eyebrow{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,133,92,0.7);margin-top:4px}
 .login-title{font-family:'Fraunces',Georgia,serif;font-size:26px;font-weight:400;color:#fff;letter-spacing:-0.02em;line-height:1.25;margin-top:4px}
 .login-title em{font-style:italic;background:linear-gradient(90deg,#FF855C,#F6718D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
@@ -38,6 +38,11 @@ body{background:linear-gradient(135deg,#fef9f5 0%,#fef5fa 35%,#f5f6fe 100%);font
 .login-back-btn:hover{color:#fff}
 .login-next-btn{background:linear-gradient(135deg,#FF855C,#F6718D);border:none;color:#fff;padding:10px 22px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;transition:opacity 0.15s}
 .login-next-btn:hover{opacity:0.88}
+.login-landing{display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}
+.login-google-btn{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);color:#fff;padding:12px 28px;border-radius:10px;cursor:pointer;font-size:14px;font-family:'Inter',sans-serif;font-weight:500;transition:all 0.15s;margin-top:8px}
+.login-google-btn:hover{background:rgba(255,255,255,0.11);border-color:rgba(255,255,255,0.22)}
+.login-landing .login-footer{font-family:'Inter',sans-serif;font-size:11px;color:rgba(255,255,255,0.2);margin-top:4px}
+.login-landing .login-sub{font-family:'Inter',sans-serif;font-size:13px;color:rgba(255,255,255,0.4)}
 
 /* ─── SIDEBAR USER ─── */
 .sidebar-user{display:flex;align-items:center;gap:8px;padding:10px 16px 14px}
