@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { GoogleLogin } from '@react-oauth/google'
 
 function useLocalStorage(key, initial) {
   const [value, setValue] = useState(() => {
@@ -25,12 +24,6 @@ const WHITELISTED = new Set([
   'creativeclarky@gmail.com',
   'curtis@firmcollective.org',
 ])
-
-function decodeJwt(token) {
-  try {
-    return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
-  } catch { return null }
-}
 
 function initials(name) {
   return (name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
@@ -841,13 +834,18 @@ export default function App() {
   const [user, setUser] = useLocalStorage('firma_user', null)
   const [isAdmin, setIsAdmin] = useLocalStorage('firma_is_admin', false)
 
-  const handleGoogleSuccess = useCallback((credentialResponse) => {
-    const payload = decodeJwt(credentialResponse.credential)
-    if (!payload) return
-    const email = (payload.email || '').toLowerCase()
-    setUser({ email: payload.email, name: payload.name, picture: payload.picture })
+  const [emailInput, setEmailInput] = useState('')
+  const [emailError, setEmailError] = useState(false)
+
+  const handleEmailLogin = useCallback(() => {
+    const email = emailInput.trim().toLowerCase()
+    if (!email || !email.includes('@')) { setEmailError(true); return }
+    const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    setUser({ email, name, picture: null })
     setIsAdmin(WHITELISTED.has(email))
-  }, [])
+    setEmailInput('')
+    setEmailError(false)
+  }, [emailInput])
 
   const [activeNav, setActiveNav] = useState('dashboard')
   const [unlocked, setUnlocked] = useState(false)
@@ -1082,17 +1080,19 @@ export default function App() {
         <div className="login-logo"><span className="login-logo-mark">F</span></div>
         <div className="login-eyebrow">FIRMA · WORKSPACE</div>
         <h1 className="login-title">Nation of <em>Heaven</em></h1>
-        <p className="login-sub">Sign in with your Google account to continue.</p>
-        <div className="login-google-wrap">
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={() => {}}
-            theme="outline"
-            size="large"
-            text="continue_with"
-            shape="rectangular"
-            width="300"
+        <p className="login-sub">Enter your email address to continue.</p>
+        <div className="login-email-wrap">
+          <input
+            className={`login-email-input${emailError ? ' login-email-error' : ''}`}
+            type="email"
+            placeholder="your@email.com"
+            value={emailInput}
+            onChange={e => { setEmailInput(e.target.value); setEmailError(false) }}
+            onKeyDown={e => e.key === 'Enter' && handleEmailLogin()}
+            autoFocus
           />
+          <button className="login-email-btn" onClick={handleEmailLogin}>Continue →</button>
+          {emailError && <p className="login-email-err-msg">Please enter a valid email address.</p>}
         </div>
         <p className="login-footer">Access is granted to authorized members only.</p>
       </div>

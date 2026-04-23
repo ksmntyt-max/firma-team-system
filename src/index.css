@@ -42,6 +42,14 @@ body{background:linear-gradient(135deg,#fef9f5 0%,#fef5fa 35%,#f5f6fe 100%);font
 .login-google-wrap{margin-top:8px}
 .login-landing .login-footer{font-family:'Inter',sans-serif;font-size:11px;color:rgba(255,255,255,0.2);margin-top:4px}
 .login-landing .login-sub{font-family:'Inter',sans-serif;font-size:13px;color:rgba(255,255,255,0.4)}
+.login-email-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:300px;margin-top:8px}
+.login-email-input{width:100%;box-sizing:border-box;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:11px 14px;font-size:13px;font-family:'Inter',sans-serif;color:#fff;outline:none;transition:border 0.15s}
+.login-email-input::placeholder{color:rgba(255,255,255,0.3)}
+.login-email-input:focus{border-color:rgba(255,133,92,0.6)}
+.login-email-input.login-email-error{border-color:#F6718D}
+.login-email-btn{width:100%;background:linear-gradient(135deg,#FF855C,#F6718D);border:none;color:#fff;padding:11px 22px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;transition:opacity 0.15s}
+.login-email-btn:hover{opacity:0.88}
+.login-email-err-msg{font-family:'Inter',sans-serif;font-size:11px;color:#F6718D;margin:0}
 
 /* ─── SIDEBAR USER ─── */
 .sidebar-user{display:flex;align-items:center;gap:8px;padding:10px 16px 14px}
