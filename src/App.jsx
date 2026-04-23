@@ -1,56 +1,52 @@
 import { useState } from 'react'
 
-const DOCS = [
+const ARCHITECTURE_DOCS = [
   {
     id: 1,
     title: 'BATAAN-FRAMEWORK',
+    section: 'Foundation',
+    badge: 'Framework',
     subtitle: 'FIT PH/SEA — MASTER CLARIFICATION & PRIORITY CHECKLIST',
-    content: `BATAAN FRAMEWORK v2
-
-FIT PH/SEA — MASTER CLARIFICATION & PRIORITY CHECKLIST
-
-This document outlines the priority action items and clarifications needed for the Bataan Framework implementation. Key focus areas include organizational structure, compliance requirements, and operational deployment for the FIT PH/SEA initiative.`
+    content: `BATAAN FRAMEWORK v2\n\nFIT PH/SEA — MASTER CLARIFICATION & PRIORITY CHECKLIST\n\nThis document outlines the priority action items and clarifications needed for the Bataan Framework implementation. Key focus areas include organizational structure, compliance requirements, and operational deployment for the FIT PH/SEA initiative.`
   },
   {
     id: 2,
     title: 'SOVEREIGN ENGAGEMENT LAYER',
+    section: 'Vision',
+    badge: 'Strategy',
     subtitle: "FIRMA: MIDDLE GROUND — Russia's Federal Constitutional Law",
-    content: `SOVEREIGN ENGAGEMENT LAYER
-
-FIRMA: MIDDLE GROUND
-
-This document covers the strategic framework for sovereign engagement, drawing parallels from Russia's Federal Constitutional Law to establish a middle-ground approach for FIRMA's international operations and engagement protocols.`
+    content: `SOVEREIGN ENGAGEMENT LAYER\n\nFIRMA: MIDDLE GROUND\n\nThis document covers the strategic framework for sovereign engagement, drawing parallels from Russia's Federal Constitutional Law to establish a middle-ground approach for FIRMA's international operations and engagement protocols.`
   }
 ]
 
-const INITIAL_PLANNER = [
-  { id: 1, title: 'Ocular Visit — Bataan', date: '', status: 'upcoming', notes: '' }
+const EMAIL_ACCOUNTS = [
+  { id: 'gmail', label: 'Gmail', provider: 'gmail' },
+  { id: 'outlook', label: 'Outlook', provider: 'outlook' }
 ]
 
 export default function App() {
   const [activeNav, setActiveNav] = useState('dashboard')
-  const [plannerItems, setPlannerItems] = useState(INITIAL_PLANNER)
+  const [plannerItems, setPlannerItems] = useState([{ id: 1, title: 'Ocular visit in Bataan', date: '', notes: '' }])
   const [newTask, setNewTask] = useState({ title: '', date: '', notes: '' })
   const [selectedDoc, setSelectedDoc] = useState(null)
-  const [emailForm, setEmailForm] = useState({ to: '', subject: '', body: '', provider: 'gmail' })
+  const [emailForm, setEmailForm] = useState({ account: 'gmail', to: '', subject: '', body: '' })
   const [emailSent, setEmailSent] = useState(false)
-  const [docNotes, setDocNotes] = useState({})
 
   const sendEmail = () => {
     if (!emailForm.to || !emailForm.subject) return
-    const { provider, to, subject, body } = emailForm
-    if (provider === 'gmail') {
+    const { account, to, subject, body } = emailForm
+    if (account === 'gmail') {
       window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank')
     } else {
       window.open(`https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank')
     }
     setEmailSent(true)
-    setTimeout(() => setEmailSent(false), 3000)
+    setTimeout(() => setEmailSent(false), 2500)
   }
 
   const addTask = () => {
     if (!newTask.title) return
-    setPlannerItems([...plannerItems, { ...newTask, id: Date.now(), status: 'upcoming' }])
+    setPlannerItems([...plannerItems, { ...newTask, id: Date.now() }])
     setNewTask({ title: '', date: '', notes: '' })
   }
 
@@ -58,52 +54,52 @@ export default function App() {
 
   return (
     <div className="app">
-      {/* Sidebar */}
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-icon">F</div>
+          <div className="brand-icon">S</div>
           <div>
-            <div className="brand-title">FIRMA WORKSPACE</div>
-            <div className="brand-sub">SOLDIERS OF HEAVEN</div>
+            <div className="brand-title">SOLDIERS OF HEAVEN</div>
+            <div className="brand-sub">Firma Workspace</div>
           </div>
         </div>
         <nav className="nav">
-          {[['dashboard','Dashboard'],['planner','Planner'],['documents','Documents'],['email','Email']].map(([key,label]) => (
+          {[['dashboard','Dashboard'],['planner','Planner'],['documents','Documents'],['email','Email'],['atlas','Architecture Atlas']].map(([key,label]) => (
             <button key={key} className={`nav-btn${activeNav===key?' active':''}`} onClick={() => setActiveNav(key)}>
               {label}
             </button>
           ))}
         </nav>
-        <div className="sidebar-footer">FIRMA TEAM SYSTEM v1.0</div>
+        <div className="sidebar-footer">Firma Sovereign Foundation · March 2026</div>
       </aside>
 
-      {/* Main */}
       <main className="main">
-        {/* Dashboard */}
         {activeNav === 'dashboard' && (
           <div className="section">
-            <h1 className="page-title">FIRMA WORKSPACE</h1>
-            <p className="page-sub">SOLDIERS OF HEAVEN — Operational Hub</p>
+            <div className="page-header">
+              <div className="page-pre">Overview · 04.23.2026</div>
+              <h1 className="page-title">Today's <em>signal</em></h1>
+              <p className="page-desc">Live snapshot of active work, documents in motion, and upcoming commitments across the Foundation.</p>
+            </div>
             <div className="card-grid">
               <div className="card" onClick={() => setActiveNav('planner')}>
                 <div className="card-icon">📋</div>
                 <div className="card-label">Planner</div>
-                <div className="card-count">{plannerItems.length} item(s)</div>
+                <div className="card-count">{plannerItems.length} task(s)</div>
               </div>
               <div className="card" onClick={() => setActiveNav('documents')}>
-                <div className="card-icon">📁</div>
+                <div className="card-icon">📄</div>
                 <div className="card-label">Documents</div>
-                <div className="card-count">{DOCS.length} docs</div>
+                <div className="card-count">0 docs</div>
               </div>
               <div className="card" onClick={() => setActiveNav('email')}>
                 <div className="card-icon">✉️</div>
                 <div className="card-label">Email</div>
-                <div className="card-count">Gmail / Outlook</div>
+                <div className="card-count">0 sent</div>
               </div>
             </div>
             <div className="upcoming-section">
               <h2 className="section-title">Upcoming</h2>
-              {plannerItems.length === 0 ? <p className="empty">No upcoming items</p> : (
+              {plannerItems.length === 0 ? <p className="empty">No upcoming tasks</p> : (
                 plannerItems.map(t => (
                   <div key={t.id} className="task-row">
                     <span className="task-dot" />
@@ -116,10 +112,12 @@ export default function App() {
           </div>
         )}
 
-        {/* Planner */}
         {activeNav === 'planner' && (
           <div className="section">
-            <h1 className="page-title">Planner</h1>
+            <div className="page-header">
+              <div className="page-pre">Planner · Kanban</div>
+              <h1 className="page-title">Work in <em>motion</em></h1>
+            </div>
             <div className="add-form">
               <input className="input" placeholder="Task title" value={newTask.title} onChange={e=>setNewTask({...newTask,title:e.target.value})} />
               <input className="input" type="date" value={newTask.date} onChange={e=>setNewTask({...newTask,date:e.target.value})} />
@@ -141,48 +139,31 @@ export default function App() {
           </div>
         )}
 
-        {/* Documents */}
-        {activeNav === 'documents' && !selectedDoc && (
+        {activeNav === 'documents' && (
           <div className="section">
-            <h1 className="page-title">Documents</h1>
-            <div className="doc-grid">
-              {DOCS.map(doc => (
-                <div key={doc.id} className="doc-card" onClick={() => setSelectedDoc(doc)}>
-                  <div className="doc-icon">📄</div>
-                  <div className="doc-title">{doc.title}</div>
-                  <div className="doc-sub">{doc.subtitle}</div>
-                </div>
-              ))}
+            <div className="page-header">
+              <div className="page-pre">Documents</div>
+              <h1 className="page-title">Your <em>library</em></h1>
+              <p className="page-desc">All documents are currently empty. Create new documents as needed.</p>
             </div>
+            <p className="empty">No documents yet</p>
           </div>
         )}
 
-        {activeNav === 'documents' && selectedDoc && (
-          <div className="section">
-            <button className="btn-back" onClick={() => setSelectedDoc(null)}>← Back</button>
-            <h1 className="page-title">{selectedDoc.title}</h1>
-            <p className="page-sub">{selectedDoc.subtitle}</p>
-            <div className="doc-content">{selectedDoc.content}</div>
-            <h3 className="notes-label">Notes</h3>
-            <textarea
-              className="textarea"
-              placeholder="Add your notes here..."
-              value={docNotes[selectedDoc.id] || ''}
-              onChange={e => setDocNotes({...docNotes, [selectedDoc.id]: e.target.value})}
-            />
-          </div>
-        )}
-
-        {/* Email */}
         {activeNav === 'email' && (
           <div className="section">
-            <h1 className="page-title">Email</h1>
+            <div className="page-header">
+              <div className="page-pre">Email Composer</div>
+              <h1 className="page-title">Draft a <em>message</em></h1>
+              <p className="page-desc">Compose here and hand off to your mail client. No send server attached—this is a staging surface.</p>
+            </div>
             <div className="email-form">
               <div className="provider-row">
                 <label className="label">Send via</label>
-                <select className="select" value={emailForm.provider} onChange={e=>setEmailForm({...emailForm,provider:e.target.value})}>
-                  <option value="gmail">Gmail</option>
-                  <option value="outlook">Outlook</option>
+                <select className="select" value={emailForm.account} onChange={e=>setEmailForm({...emailForm,account:e.target.value})}>
+                  {EMAIL_ACCOUNTS.map(acc => (
+                    <option key={acc.id} value={acc.id}>{acc.label}</option>
+                  ))}
                 </select>
               </div>
               <input className="input" placeholder="To (email address)" value={emailForm.to} onChange={e=>setEmailForm({...emailForm,to:e.target.value})} />
@@ -191,6 +172,37 @@ export default function App() {
               <button className="btn-primary" onClick={sendEmail}>Send Email</button>
               {emailSent && <div className="success-msg">Email client opened!</div>}
             </div>
+          </div>
+        )}
+
+        {activeNav === 'atlas' && (
+          <div className="section">
+            <div className="page-header">
+              <div className="page-pre">Firma Canonical Index</div>
+              <h1 className="page-title">Architecture <em>atlas</em></h1>
+              <p className="page-desc">Every layer serves the decree. All documents referenced from the canonical foundation—search to locate, click to open.</p>
+            </div>
+            {!selectedDoc ? (
+              <div className="doc-grid">
+                {ARCHITECTURE_DOCS.map(doc => (
+                  <div key={doc.id} className="doc-card" onClick={() => setSelectedDoc(doc)}>
+                    <div className="doc-badge">{doc.badge}</div>
+                    <div className="doc-title">{doc.title}</div>
+                    <div className="doc-sub">{doc.subtitle}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div>
+                <button className="btn-back" onClick={() => setSelectedDoc(null)}>← Back to Atlas</button>
+                <div className="doc-view">
+                  <div className="doc-badge">{selectedDoc.badge}</div>
+                  <h1 className="doc-view-title">{selectedDoc.title}</h1>
+                  <p className="doc-view-sub">{selectedDoc.subtitle}</p>
+                  <div className="doc-content">{selectedDoc.content}</div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </main>
