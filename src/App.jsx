@@ -704,6 +704,8 @@ export default function App() {
   const [activeNav, setActiveNav] = useState('dashboard')
   const [unlocked, setUnlocked] = useState(false)
   const [lockInput, setLockInput] = useState('')
+  const [lockAttempts, setLockAttempts] = useState(0)
+  const [lockError, setLockError] = useState(false)
   const [pendingNav, setPendingNav] = useState(null)
 
   // Reset lock whenever page becomes visible again (tab switch back, browser back/forward)
@@ -711,6 +713,8 @@ export default function App() {
     const resetLock = () => {
       setUnlocked(false)
       setLockInput('')
+      setLockAttempts(0)
+      setLockError(false)
       setPendingNav(null)
       setActiveNav('dashboard')
     }
@@ -734,12 +738,20 @@ export default function App() {
     if (h === ACCESS_HASH) {
       setUnlocked(true)
       setLockInput('')
+      setLockAttempts(0)
+      setLockError(false)
       if (pendingNav) { setActiveNav(pendingNav); setPendingNav(null) }
     } else {
+      const next = lockAttempts + 1
       setLockInput('')
-      window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1'
+      if (next >= 2) {
+        window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1'
+      } else {
+        setLockAttempts(next)
+        setLockError(true)
+      }
     }
-  }, [lockInput, pendingNav])
+  }, [lockInput, lockAttempts, pendingNav])
 
   const [tasks, setTasks] = useState(INITIAL_TASKS)
   const [newTask, setNewTask] = useState({ title: '', category: '', priority: 'medium', assignee: '', date: '', status: 'backlog' })
@@ -1262,9 +1274,12 @@ export default function App() {
               onKeyDown={e => e.key === 'Enter' && submitLock()}
               autoFocus
             />
+            {lockError && (
+              <div className="lock-error">Incorrect code. {2 - lockAttempts === 1 ? '1 attempt remaining.' : ''}</div>
+            )}
             <div className="lock-actions">
               <button className="btn-primary" onClick={submitLock}>Unlock</button>
-              <button className="btn-remove" onClick={() => { setPendingNav(null); setLockInput('') }}>Cancel</button>
+              <button className="btn-remove" onClick={() => { setPendingNav(null); setLockInput(''); setLockAttempts(0); setLockError(false) }}>Cancel</button>
             </div>
           </div>
         </div>
