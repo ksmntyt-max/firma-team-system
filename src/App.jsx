@@ -1,6 +1,23 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { GoogleLogin } from '@react-oauth/google'
 
+function useLocalStorage(key, initial) {
+  const [value, setValue] = useState(() => {
+    try {
+      const stored = localStorage.getItem(key)
+      return stored !== null ? JSON.parse(stored) : (typeof initial === 'function' ? initial() : initial)
+    } catch { return typeof initial === 'function' ? initial() : initial }
+  })
+  const set = useCallback((v) => {
+    setValue(prev => {
+      const next = typeof v === 'function' ? v(prev) : v
+      try { localStorage.setItem(key, JSON.stringify(next)) } catch {}
+      return next
+    })
+  }, [key])
+  return [value, set]
+}
+
 // Whitelisted emails — full access, no secondary password gate
 const WHITELISTED = new Set([
   'info@mycryptoguru.co.uk',
@@ -821,8 +838,8 @@ function AtlasDocRenderer({ doc }) {
 
 // ── MAIN APP ──────────────────────────────────────────────────────────────────
 export default function App() {
-  const [user, setUser] = useState(null)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const [user, setUser] = useLocalStorage('firma_user', null)
+  const [isAdmin, setIsAdmin] = useLocalStorage('firma_is_admin', false)
 
   const handleGoogleSuccess = useCallback((credentialResponse) => {
     const payload = decodeJwt(credentialResponse.credential)
@@ -879,10 +896,10 @@ export default function App() {
     }
   }, [lockInput, lockAttempts, pendingNav])
 
-  const [tasks, setTasks] = useState(INITIAL_TASKS)
+  const [tasks, setTasks] = useLocalStorage('firma_tasks', INITIAL_TASKS)
   const [newTask, setNewTask] = useState({ title: '', category: '', priority: 'medium', assignee: '', date: '', status: 'backlog' })
 
-  const [documents, setDocuments] = useState(INITIAL_DOCUMENTS)
+  const [documents, setDocuments] = useLocalStorage('firma_documents', INITIAL_DOCUMENTS)
   const [selectedDocument, setSelectedDocument] = useState(null)
   const [docTitle, setDocTitle] = useState('')
   const [docSearch, setDocSearch] = useState('')
@@ -890,15 +907,15 @@ export default function App() {
 
   const [emailForm, setEmailForm] = useState({ senderId: 'gmail-1', to: '', subject: '', body: '' })
   const [emailSent, setEmailSent] = useState(false)
-  const [emailLog, setEmailLog] = useState([])
-  const [senderProfiles, setSenderProfiles] = useState([
+  const [emailLog, setEmailLog] = useLocalStorage('firma_email_log', [])
+  const [senderProfiles, setSenderProfiles] = useLocalStorage('firma_sender_profiles', [
     { id: 'gmail-1', name: 'Gmail', email: '', provider: 'gmail' },
     { id: 'outlook-1', name: 'Outlook', email: '', provider: 'outlook' },
   ])
   const [showAddSender, setShowAddSender] = useState(false)
   const [newSender, setNewSender] = useState({ name: '', email: '', provider: 'gmail' })
 
-  const [archDocs, setArchDocs] = useState(INITIAL_ARCH_DOCS)
+  const [archDocs, setArchDocs] = useLocalStorage('firma_arch_docs', INITIAL_ARCH_DOCS)
   const [selectedAtlasDoc, setSelectedAtlasDoc] = useState(null)
   const [atlasSearch, setAtlasSearch] = useState('')
   const [showAddAtlas, setShowAddAtlas] = useState(false)
