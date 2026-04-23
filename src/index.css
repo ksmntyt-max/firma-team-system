@@ -70,3 +70,47 @@ body{background:linear-gradient(135deg, #fef9f5 0%, #fef5fa 35%, #f5f6fe 100%);f
 .select:focus{border-color:#FF855C}
 .success-msg{background:rgba(132,167,247,0.12);border:1px solid rgba(132,167,247,0.3);color:#84A7F7;padding:10px 16px;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif}
 .empty{color:#aaa;font-size:13px;font-style:italic;padding:20px 0;font-family:'Inter',sans-serif}
+
+/* Analytics Dashboard Metrics */
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:32px}
+.metric-card{background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);border:1px solid rgba(255,133,92,0.15);border-radius:12px;padding:20px;transition:all 0.3s}
+.metric-card:hover{transform:translateY(-2px);border-color:rgba(255,133,92,0.3);box-shadow:0 8px 24px rgba(255,133,92,0.15)}
+.metric-value{font-size:32px;font-weight:700;color:#2a2a2a;margin-bottom:4px}
+.metric-label{font-family:'Inter',sans-serif;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.5px}
+.metric-change{font-size:11px;margin-top:8px;padding:4px 8px;border-radius:4px;display:inline-block}
+.metric-change.up{background:rgba(132,167,247,0.12);color:#84A7F7}
+.metric-change.down{background:rgba(246,113,141,0.12);color:#F6718D}
+
+/* Kanban Board */
+.kanban-board{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:24px}
+.kanban-column{background:rgba(255,255,255,0.4);backdrop-filter:blur(8px);border:1px solid rgba(255,133,92,0.1);border-radius:12px;padding:16px;min-height:400px}
+.kanban-header{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.kanban-count{background:rgba(255,133,92,0.12);color:#FF855C;padding:2px 8px;border-radius:12px;font-size:11px}
+.kanban-tasks{display:flex;flex-direction:column;gap:12px}
+.kanban-task{background:rgba(255,255,255,0.8);border:1px solid rgba(255,133,92,0.15);border-radius:8px;padding:12px;cursor:move;transition:all 0.2s}
+.kanban-task:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,133,92,0.1);border-color:rgba(255,133,92,0.3)}
+.kanban-task-title{font-family:'Fraunces',Georgia,serif;font-size:14px;font-weight:500;color:#2a2a2a;margin-bottom:8px}
+.kanban-task-meta{display:flex;gap:8px;font-size:11px;color:#888}
+.kanban-task-tag{background:rgba(255,133,92,0.1);padding:4px 8px;border-radius:4px;font-size:10px;color:#FF855C}
+.kanban-empty{color:#aaa;text-align:center;padding:32px;font-size:13px;font-style:italic}
+.task-status-badge{display:inline-block;padding:4px 10px;border-radius:12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+.task-status-badge.todo{background:rgba(246,113,141,0.12);color:#F6718D}
+.task-status-badge.inprogress{background:rgba(255,133,92,0.12);color:#FF855C}
+.task-status-badge.done{background:rgba(132,167,247,0.12);color:#84A7F7}
+
+/* Document Management */
+.doc-upload-area{background:rgba(255,255,255,0.4);border:2px dashed rgba(255,133,92,0.3);border-radius:12px;padding:40px;text-align:center;margin-bottom:24px;cursor:pointer;transition:all 0.3s}
+.doc-upload-area:hover{border-color:rgba(255,133,92,0.6);background:rgba(255,255,255,0.6)}
+.doc-upload-icon{font-size:48px;margin-bottom:12px;color:#FF855C}
+.doc-upload-text{font-family:'Fraunces',Georgia,serif;font-size:16px;color:#2a2a2a;margin-bottom:8px}
+.doc-upload-hint{font-size:12px;color:#888}
+.doc-list{display:grid;gap:12px}
+.doc-item{background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);border:1px solid rgba(255,133,92,0.15);border-radius:12px;padding:16px;display:flex;align-items:center;gap:16px;transition:all 0.3s}
+.doc-item:hover{transform:translateX(4px);border-color:rgba(255,133,92,0.3);box-shadow:0 4px 16px rgba(255,133,92,0.12)}
+.doc-icon-wrapper{width:48px;height:48px;background:linear-gradient(135deg,#FF855C,#F6718D);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px}
+.doc-info{flex:1}
+.doc-name{font-family:'Fraunces',Georgia,serif;font-size:15px;font-weight:600;color:#2a2a2a;margin-bottom:4px}
+.doc-details{font-size:12px;color:#888;display:flex;gap:16px}
+.doc-actions{display:flex;gap:8px}
+.doc-action-btn{background:none;border:1px solid rgba(255,133,92,0.3);color:#FF855C;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;transition:all 0.2s}
+.doc-action-btn:hover{background:rgba(255,133,92,0.1);border-color:#FF855C}
