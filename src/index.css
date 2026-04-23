@@ -263,6 +263,11 @@ body{background:linear-gradient(135deg,#fef9f5 0%,#fef5fa 35%,#f5f6fe 100%);font
 
 .atlas-doc-content{font-family:'Inter',sans-serif;font-size:14px;line-height:1.85;color:#444;white-space:pre-wrap;background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);border:1px solid rgba(255,133,92,0.13);border-radius:12px;padding:32px}
 
+/* ─── ATLAS DETAIL TOOLBAR ─── */
+.atlas-detail-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.btn-edit-atlas{background:rgba(255,133,92,0.08);border:1px solid rgba(255,133,92,0.25);color:#FF855C;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:0.3px;transition:all 0.15s}
+.btn-edit-atlas:hover{background:rgba(255,133,92,0.15)}
+
 /* ─── ATLAS DOC RENDERER ─── */
 .atlas-doc-renderer{font-family:'Inter',sans-serif;width:100%}
 

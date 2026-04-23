@@ -873,6 +873,9 @@ export default function App() {
   const [atlasSearch, setAtlasSearch] = useState('')
   const [showAddAtlas, setShowAddAtlas] = useState(false)
   const [newAtlasDoc, setNewAtlasDoc] = useState({ title: '', section: '', badge: '', subtitle: '', description: '', thesis: '', context: '', insightTitle: '', insightContent: '', notes: '' })
+  const [editingAtlasDoc, setEditingAtlasDoc] = useState(null)
+  const [editAtlasForm, setEditAtlasForm] = useState({ title: '', section: '', badge: '', subtitle: '', description: '', thesis: '', blocksJson: '' })
+  const [editBlocksError, setEditBlocksError] = useState(false)
 
   const backlogTasks = tasks.filter(t => t.status === 'backlog')
   const inprogressTasks = tasks.filter(t => t.status === 'inprogress')
@@ -978,6 +981,44 @@ export default function App() {
     }])
     setNewAtlasDoc({ title: '', section: '', badge: '', subtitle: '', description: '', thesis: '', context: '', insightTitle: '', insightContent: '', notes: '' })
     setShowAddAtlas(false)
+  }
+
+  const openEditAtlas = (doc) => {
+    setEditingAtlasDoc(doc)
+    setEditAtlasForm({
+      title: doc.title || '',
+      section: doc.section || '',
+      badge: doc.badge || '',
+      subtitle: doc.subtitle || '',
+      description: doc.description || '',
+      thesis: doc.thesis || '',
+      blocksJson: JSON.stringify(doc.blocks || [], null, 2),
+    })
+    setEditBlocksError(false)
+  }
+
+  const saveEditAtlas = () => {
+    let blocks
+    try {
+      blocks = JSON.parse(editAtlasForm.blocksJson)
+      setEditBlocksError(false)
+    } catch {
+      setEditBlocksError(true)
+      return
+    }
+    const updated = {
+      ...editingAtlasDoc,
+      title: editAtlasForm.title.trim() || editingAtlasDoc.title,
+      section: editAtlasForm.section.trim() || editingAtlasDoc.section,
+      badge: editAtlasForm.badge.trim(),
+      subtitle: editAtlasForm.subtitle.trim(),
+      description: editAtlasForm.description.trim(),
+      thesis: editAtlasForm.thesis.trim(),
+      blocks,
+    }
+    setArchDocs(d => d.map(doc => doc.id === editingAtlasDoc.id ? updated : doc))
+    setSelectedAtlasDoc(updated)
+    setEditingAtlasDoc(null)
   }
 
   const KANBAN_COLS = [
@@ -1347,8 +1388,42 @@ export default function App() {
 
         {activeNav === 'atlas' && selectedAtlasDoc && (
           <div className="view-scroll">
-            <button className="btn-back" onClick={() => setSelectedAtlasDoc(null)}>← Back to Atlas</button>
+            <div className="atlas-detail-toolbar">
+              <button className="btn-back" onClick={() => setSelectedAtlasDoc(null)}>← Back to Atlas</button>
+              <button className="btn-edit-atlas" onClick={() => openEditAtlas(selectedAtlasDoc)}>✎ Edit</button>
+            </div>
             <AtlasDocRenderer doc={selectedAtlasDoc} />
+            {editingAtlasDoc && (
+              <div className="modal-overlay" onClick={() => setEditingAtlasDoc(null)}>
+                <div className="modal modal-lg" onClick={e => e.stopPropagation()} style={{ gap: 0 }}>
+                  <div className="modal-title">Edit Document</div>
+                  <div className="add-atlas-section-label">HEADER</div>
+                  <div className="add-atlas-row">
+                    <input className="input" placeholder="Title" value={editAtlasForm.title} onChange={e => setEditAtlasForm({ ...editAtlasForm, title: e.target.value })} style={{ flex: 2 }} />
+                    <input className="input" placeholder="Badge" value={editAtlasForm.badge} onChange={e => setEditAtlasForm({ ...editAtlasForm, badge: e.target.value })} style={{ flex: 1 }} />
+                    <input className="input" placeholder="Section" value={editAtlasForm.section} onChange={e => setEditAtlasForm({ ...editAtlasForm, section: e.target.value })} style={{ flex: 1 }} />
+                  </div>
+                  <div className="add-atlas-row">
+                    <input className="input" placeholder="Subtitle" value={editAtlasForm.subtitle} onChange={e => setEditAtlasForm({ ...editAtlasForm, subtitle: e.target.value })} style={{ flex: 2 }} />
+                    <input className="input" placeholder="Description" value={editAtlasForm.description} onChange={e => setEditAtlasForm({ ...editAtlasForm, description: e.target.value })} style={{ flex: 1 }} />
+                  </div>
+                  <textarea className="textarea" style={{ minHeight: 56 }} placeholder="Thesis" value={editAtlasForm.thesis} onChange={e => setEditAtlasForm({ ...editAtlasForm, thesis: e.target.value })} />
+                  <div className="add-atlas-section-label">BLOCKS <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>— edit JSON directly</span></div>
+                  <textarea
+                    className="textarea atlas-blocks-editor"
+                    style={{ minHeight: 300, fontFamily: 'monospace', fontSize: 12, lineHeight: 1.5 }}
+                    value={editAtlasForm.blocksJson}
+                    onChange={e => { setEditAtlasForm({ ...editAtlasForm, blocksJson: e.target.value }); setEditBlocksError(false) }}
+                    spellCheck={false}
+                  />
+                  {editBlocksError && <div className="lock-error">Invalid JSON — check the blocks array and try again.</div>}
+                  <div className="modal-actions" style={{ marginTop: 8 }}>
+                    <button className="btn-primary" onClick={saveEditAtlas}>Save Changes</button>
+                    <button className="btn-remove" onClick={() => setEditingAtlasDoc(null)}>Cancel</button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
