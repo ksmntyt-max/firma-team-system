@@ -4,10 +4,88 @@ const ARCHITECTURE_DOCS = [
   { id: 1, title: 'BATAAN-FRAMEWORK', section: 'Foundation', badge: 'Framework', subtitle: 'FIT PH/SEA — MASTER CLARIFICATION & PRIORITY CHECKLIST', content: `BATAAN FRAMEWORK v2\n\nFIT PH/SEA — MASTER CLARIFICATION & PRIORITY CHECKLIST\n\nThis document outlines the priority action items and clarifications needed for the Bataan Framework implementation. Key focus areas include organizational structure, compliance requirements, and operational deployment for the FIT PH/SEA initiative.` },
   { id: 2, title: 'SOVEREIGN ENGAGEMENT LAYER', section: 'Vision', badge: 'Strategy', subtitle: "FIRMA: MIDDLE GROUND — Russia's Federal Constitutional Law", content: `SOVEREIGN ENGAGEMENT LAYER\n\nFIRMA: MIDDLE GROUND\n\nThis document covers the strategic framework for sovereign engagement, drawing parallels from Russia's Federal Constitutional Law to establish a middle-ground approach for FIRMA's international operations and engagement protocols.` }
 ]
-
-const EMAIL_ACCOUNTS = [
-  { id: 'gmail', label: 'Gmail', provider: 'gmail' },
-  { id: 'outlook', label: 'Outlook', provider: 'outlook' }
+const ARCHITECTURE_DOCS = [
+  {
+    id: 'bataan-framework',
+    title: 'BATAAN FRAMEWORK',
+    section: 'Foundation',
+    badge: 'Framework',
+    subtitle: 'Firma Sovereign Foundation · Asia-Pacific Deployment Strategy',
+    description: 'West Luzon Corridor · 2026–2028 · V1.0',
+    subcategories: [
+      {
+        id: 'core-mission',
+        title: 'Core Mission & Goals',
+        content: `Establish Bataan as Firma\'s primary Asia-Pacific operational headquarters — a sovereign-grade zone corridor that functions as a Settlemint anchor, logistics gateway, and compliance-ready base for all Southeast Asian operations. The corridor operates across three sites: Dinalupihan (HQ), Mariveles/AFAB (zone operations), and SBFZ (logistics and international gateway).`
+      },
+      {
+        id: 'phase-1',
+        title: 'Phase 1 — Foundation (Month 0–3)',
+        theme: 'Legal entity formation — SEC first, SBFZ second',
+        timeline: '2.5–3 months',
+        content: `**Key Structural Decision**: 60/40 ownership — Foreign corporations cannot purchase land in the Philippines. Land ownership is restricted to Filipino citizens and corporations with at least 60% Filipino equity. The corporation must be structured 60% Filipino / 40% foreign from day one.\n\n**Registration Sequence**: SEC → SBFZ → Office Setup → FAB → Land Acquisition\n\n**Steps**:\n1. SEC Registration — File Articles of Incorporation under RA 11232 with 60/40 ownership structure. Authorized capital: ₱20,000,000. Appoint Corporate Secretary (must be Filipino resident). **Est. Time**: 2–4 weeks\n\n2. Open Corporate Bank Account — Required for capitalization proof before SBMA application. **Est. Time**: 1–2 weeks\n\n3. Prepare SBMA Application Package — LOI to SBMA Chairman, business plan + financial projections, company profile, risk & safety assessment, SEC cert + Articles, bank capitalization proof. **Est. Time**: 2–3 weeks (prep)\n\n4. Submit SBMA Application — File via One-Stop Shop or online portal. Fee: ₱5,000. SBMA review period. **Est. Time**: 1–3 months\n\n5. Obtain CRTE — Certificate of Registration and Tax Exemption. Unlocks 5% GIT, duty-free imports, VAT zero-rating. **Issued upon SBMA approval**\n\n6. BIR Registration — TIN, COR, authority to print invoices via BIR Form 1903. Fee: ₱500. **Est. Time**: 2–4 weeks\n\n7. SSS / PhilHealth / Pag-IBIG — Register for all employees. Under 10 employees = simplified remittance. **Est. Time**: 1–2 weeks\n\n8. Secure SBFZ Physical Lease (HQ Office) — SBMA requires actual presence. Target a larger commercial unit suited for a proper HQ — meeting rooms, team workspace, operations hub. Rate: ~₱50–200/sqm/month depending on district. **Est. Time**: 1–2 weeks\n\n**Exit Criteria**: CRTE received, BIR COR issued, all agency registrations complete.`
+      },
+      {
+        id: 'phase-2',
+        title: 'Phase 2 — Expansion (Month 3–12)',
+        theme: 'HQ office live, operations structured, FAB registered',
+        timeline: '4–6 months',
+        content: `**Steps**:\n1. Office Setup (Design → Build) — Hire licensed architect, design HQ layout, fit-out the leased space, set up IT infrastructure, utilities, and signage. Corporate kit finalized. **Est. Time**: 1–2 months\n\n2. Bookkeeping & Accounting Setup — Hire or contract CPA/bookkeeper. Set up accounting system (QuickBooks, Xero, or local alternative). **Est. Time**: 3–4 weeks\n\n3. Payroll System — Set up payroll aligned with SSS, PhilHealth, Pag-IBIG contribution schedules. **Est. Time**: 2–3 weeks\n\n4. Begin Quarterly BIR Filings — File and pay 5% GIT quarterly. Lock in compliance calendar (due dates: Apr 30, Jul 31, Oct 31, Jan 31). **Ongoing**\n\n5. FAB Registration (Freeport Area of Bataan) — Once SBFZ office is active, register with AFAB as a locator for Bataan-side operations. **Est. Time**: 1–3 months\n\n6. SBMA Annual Report Prep — Start collecting employment data and financial statements. **Ongoing**\n\n**Exit Criteria**: SBFZ HQ operational, bookkeeping system live, FAB registration filed or approved.`
+      },
+      {
+        id: 'phase-3',
+        title: 'Phase 3 — Land Acquisition',
+        theme: 'Secure land — the hardest and longest part',
+        timeline: '12–24 months',
+        content: `This phase begins only after FAB registration is complete. Land acquisition in the Philippines is a complex, multi-agency process. The 60/40 corporate structure makes this legally possible.\n\n**Steps**:\n1. Identify Target Land — Prospect lots near SBFZ/Bataan corridor. Engage licensed broker (PRC-registered). Factor in zoning, SBMA perimeter rules, flood maps, access roads. **Est. Time**: 2–4 months\n\n2. Due Diligence — Verify clean OCT/TCT at Registry of Deeds; no encumbrances, liens, or adverse claims. Check classifications and real property tax status. **Est. Time**: 2–3 months\n\n3. DAR Clearance (if agricultural) — If land is classified agricultural, secure Department of Agrarian Reform clearance. This is the longest possible blocker. **Est. Time**: 3–6 months (if required)\n\n4. Negotiate and Execute Deed of Absolute Sale — Notarized; buyer listed as Firma corporation. **Est. Time**: 2–4 weeks\n\n5. Pay Transfer Taxes — Capital Gains Tax: 6%; Documentary Stamp Tax: 1.5%; Transfer Tax at LGU: 0.5–0.75%. **Est. Time**: 1–2 months\n\n6. Obtain CAR from BIR — Certificate Authorizing Registration. **Est. Time**: 3–6 weeks\n\n7. Title Transfer at Registry of Deeds — New TCT issued in Firma corporation\'s name. Final step. **Est. Time**: 2–4 weeks\n\n**Exit Criteria**: Clean TCT issued in Firma corporation\'s name.`
+      },
+      {
+        id: 'phase-4',
+        title: 'Phase 4 — FAB Extension / Own Economic Zone',
+        theme: 'Firma becomes the zone — sovereign economic territory',
+        timeline: '2–4 years',
+        content: `This phase begins only after land is acquired and operations are proven at both SBFZ and FAB. Firma pursues one or both paths to become a recognized economic zone.\n\n**Two Strategic Paths**:\n\n**Option A — FAB Extension**: Petition AFAB to formally include Firma\'s land within the FAB perimeter. Lower setup complexity, no revenue upside, AFAB remains authority. **Timeline**: 1–2 years after land secured.\n\n**Option B — Own PEZA Zone**: Apply with PEZA to establish a private economic zone on Firma-owned land. Full control, Firma is the zone operator, revenue upside from locator fees. **Timeline**: 2–4 years after land secured.\n\n**Recommended First Move**: Pursue FAB Extension while simultaneously scoping the PEZA zone application. FAB Extension accelerates the credibility needed for a PEZA application.`
+      }
+    ]
+  },
+  {
+    id: 'priority-hq',
+    title: 'PRIORITY: FIT HQ Setup',
+    section: 'Priority Actions',
+    badge: 'Priority',
+    subtitle: 'Physical HQ & Compliance Foundation',
+    description: 'Immediate actions for securing MSpace Balanga and establishing operational presence',
+    content: `We\'re set to look at MSpace in Balanga and other options inside the Freeport Area. We need a small fund as support so when we visit in person, it\'s proper and on time. We want photos and to feel the space — not just a price sheet. Whatever we lock down must feel like a base of operations, not just desks with a logo.\n\n**Physical HQ Requirements**:\n• Business lease agreement review (commercial use + events)\n• Barangay clearance for business operations in Balanga City\n• Mayor\'s Business Permit (City of Balanga)\n• BIR registration (if FIRMA/FIT will bill from this address)\n• DOLE compliance (if onboarding local staff)\n• Fire safety inspection certificate and occupancy clearance\n• Freeport Authority of Bataan (FAB) coordination\n\n**IP Protection in the Philippines**:\n• Trademark registration with IPOPHL — covering FIRMA, FIT, SEEDBASE, and Nation of Heaven marks across key classes (Class 9: tech/software, Class 35: business services, Class 36: financial/token, Class 41: events and education)\n• Trade name registration with SEC\n• Copyright filing for original creative assets\n• Domain and brand protection sweep\n• Early SEC coordination on token/digital asset classification\n• NDA and IP assignment agreements for all local contractors\n\n**Strategy**: Do this clean from the start in Bataan so when we replicate in other countries, we have a working compliance template. No scrambling, no retrofitting.`
+  },
+  {
+    id: 'priority-contacts',
+    title: 'PRIORITY: Key Contacts',
+    section: 'Priority Actions',
+    badge: 'Contacts',
+    subtitle: 'Event Logistics, Film Crew, Agencies',
+    subcategories: [
+      {
+        id: 'recurra',
+        title: 'Recurra',
+        type: 'Primary Contact',
+        note: 'Clarky personally knows the Owner',
+        links: [
+          { label: 'Facebook', url: 'https://www.facebook.com/recurraph' },
+          { label: 'Website', url: 'https://www.recurraph.com/' }
+        ],
+        content: `Primary contact for event logistics, film crew coordination, and agency services in Bataan region.`
+      }
+    ]
+  },
+  {
+    id: 'sovereign-engagement',
+    title: 'SOVEREIGN ENGAGEMENT LAYER',
+    section: 'Vision',
+    badge: 'Strategy',
+    subtitle: "FIRMA: MIDDLE GROUND — Russia\'s Federal Constitutional Law",
+    content: `This document covers the strategic framework for sovereign engagement, drawing parallels from Russia\'s Federal Constitutional Law to establish a middle-ground approach for FIRMA\'s international operations and engagement protocols.`
+  }
+]activeNav === 'atlas'  { id: 'outlook', label: 'Outlook', provider: 'outlook' }
 ]
 
 const FONT_FAMILIES = ['Arial', 'Georgia', 'Times New Roman', 'Courier New', 'Verdana', 'Inter', 'Fraunces']
@@ -405,29 +483,32 @@ export default function App() {
               <h1 className="page-title">Architecture <em>atlas</em></h1>
               <p className="page-desc">Every layer serves the decree. All documents referenced from the canonical foundation—search to locate, click to open.</p>
             </div>
-            {!selectedDoc?(
-              <div className="doc-grid">
-                {ARCHITECTURE_DOCS.map(doc=>(
-                  <div key={doc.id} className="doc-card" onClick={()=>setSelectedDoc(doc)}>
-                    <div className="doc-badge">{doc.badge}</div>
-                    <div className="doc-title">{doc.title}</div>
-                    <div className="doc-sub">{doc.subtitle}</div>
-                  </div>
-                ))}
-              </div>
-            ):(
-              <div>
-                <button className="btn-back" onClick={()=>setSelectedDoc(null)}>← Back to Atlas</button>
-                <div className="doc-view">
-                  <div className="doc-badge">{selectedDoc.badge}</div>
-                  <h1 className="doc-view-title">{selectedDoc.title}</h1>
-                  <p className="doc-view-sub">{selectedDoc.subtitle}</p>
-                  <div className="doc-content">{selectedDoc.content}</div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+            {(() => {
+              const sections = {};
+              ARCHITECTURE_DOCS.forEach(doc => {
+                if (!sections[doc.section]) sections[doc.section] = [];
+                sections[doc.section].push(doc);
+              });
+              return (
+                <>
+                  {Object.entries(sections).map(([sectionName, docs]) => (
+                    <div key={sectionName} style={{marginBottom:'48px'}}>
+                      <div className="section-title" style={{marginBottom:'20px'}}>{sectionName.toUpperCase()}</div>
+                      <div className="doc-grid">
+                        {docs.map(doc=>(
+                          <div key={doc.id} className="doc-card" onClick={()=>setSelectedDoc(doc)} style={{cursor:'pointer'}}>
+                            <div className="doc-badge">{doc.badge}</div>
+                            <div className="doc-title">{doc.title}</div>
+                            <div className="doc-sub">{doc.subtitle || doc.description}</div>
+                            {doc.subcategories && <div style={{fontSize:'11px',color:'#999',marginTop:'8px'}}>{doc.subcategories.length} sections</div>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </>
+              );
+            })()}
       </main>
     </div>
   )
