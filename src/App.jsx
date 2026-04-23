@@ -1,4 +1,13 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
+
+// SHA-256 of the access password — plain text never stored in source
+const ACCESS_HASH = '92f7df677126c8eb72339b6fe83c2407fca44c58c34d218eb475327de43dc51c'
+const PROTECTED = new Set(['planner', 'notes', 'atlas'])
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str))
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
 
 const INITIAL_TASKS = [
   { id: 1, title: 'Bataan HQ Visit', category: 'DEPLOYMENT', priority: 'high', assignee: '@Karl', date: '2026-04-30', status: 'inprogress' },
@@ -696,6 +705,28 @@ function AtlasDocRenderer({ doc }) {
 // ── MAIN APP ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [activeNav, setActiveNav] = useState('dashboard')
+  const [unlocked, setUnlocked] = useState(false)
+  const [lockInput, setLockInput] = useState('')
+  const [lockError, setLockError] = useState(false)
+  const [pendingNav, setPendingNav] = useState(null)
+
+  const gateNav = useCallback(async (key) => {
+    if (!PROTECTED.has(key) || unlocked) { setActiveNav(key); return }
+    setPendingNav(key)
+  }, [unlocked])
+
+  const submitLock = useCallback(async () => {
+    const h = await sha256(lockInput)
+    if (h === ACCESS_HASH) {
+      setUnlocked(true)
+      setLockError(false)
+      setLockInput('')
+      if (pendingNav) { setActiveNav(pendingNav); setPendingNav(null) }
+    } else {
+      setLockError(true)
+      setLockInput('')
+    }
+  }, [lockInput, pendingNav])
 
   const [tasks, setTasks] = useState(INITIAL_TASKS)
   const [newTask, setNewTask] = useState({ title: '', category: '', priority: 'medium', assignee: '', date: '', status: 'backlog' })
@@ -846,7 +877,7 @@ export default function App() {
         </div>
         <nav className="nav">
           {NAV_ITEMS.map(({ key, label }) => (
-            <button key={key} className={`nav-btn ${activeNav === key ? 'active' : ''}`} onClick={() => setActiveNav(key)}>
+            <button key={key} className={`nav-btn ${activeNav === key ? 'active' : ''}`} onClick={() => gateNav(key)}>
               <span className="nav-label">{label}</span>
               {activeNav === key && <span className="nav-chevron">›</span>}
             </button>
@@ -902,10 +933,10 @@ export default function App() {
               <div className="dash-recent-card">
                 <div className="dash-card-header">
                   <span className="dash-card-title">Recent docs</span>
-                  <button className="dash-link" onClick={() => setActiveNav('notes')}>OPEN →</button>
+                  <button className="dash-link" onClick={() => gateNav('notes')}>OPEN →</button>
                 </div>
                 {documents.slice(0, 3).map(doc => (
-                  <div key={doc.id} className="recent-doc-row" onClick={() => { setActiveNav('notes'); setTimeout(() => selectDocument(doc), 50) }}>
+                  <div key={doc.id} className="recent-doc-row" onClick={() => gateNav('notes')}>
                     <span className="recent-doc-icon">⊡</span>
                     <div>
                       <div className="recent-doc-title">{doc.title}</div>
@@ -918,7 +949,7 @@ export default function App() {
             <div className="dash-upcoming">
               <div className="dash-upcoming-hdr">
                 <span className="dash-upcoming-title">Upcoming — <em>this week</em></span>
-                <button className="dash-link" onClick={() => setActiveNav('planner')}>PLANNER →</button>
+                <button className="dash-link" onClick={() => gateNav('planner')}>PLANNER →</button>
               </div>
               {upcomingTasks.length === 0 ? <div className="empty">No upcoming tasks</div> : upcomingTasks.map(t => (
                 <div key={t.id} className="upcoming-row">
@@ -1201,6 +1232,31 @@ export default function App() {
         )}
 
       </main>
+
+      {/* ── LOCK GATE ── */}
+      {pendingNav && !unlocked && (
+        <div className="lock-overlay">
+          <div className="lock-modal">
+            <div className="lock-icon">🔒</div>
+            <div className="lock-title">Protected Area</div>
+            <div className="lock-sub">This section requires authorization to access.</div>
+            <input
+              className="input lock-input"
+              type="password"
+              placeholder="Enter access code"
+              value={lockInput}
+              onChange={e => { setLockInput(e.target.value); setLockError(false) }}
+              onKeyDown={e => e.key === 'Enter' && submitLock()}
+              autoFocus
+            />
+            {lockError && <div className="lock-error">Incorrect code. Try again.</div>}
+            <div className="lock-actions">
+              <button className="btn-primary" onClick={submitLock}>Unlock</button>
+              <button className="btn-remove" onClick={() => { setPendingNav(null); setLockInput(''); setLockError(false) }}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
