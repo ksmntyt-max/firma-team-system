@@ -1,10 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 
 const ARCHITECTURE_DOCS = [
-  { id: 1, title: 'BATAAN-FRAMEWORK', section: 'Foundation', badge: 'Framework', subtitle: 'FIT PH/SEA — MASTER CLARIFICATION & PRIORITY CHECKLIST', content: `BATAAN FRAMEWORK v2\n\nFIT PH/SEA — MASTER CLARIFICATION & PRIORITY CHECKLIST\n\nThis document outlines the priority action items and clarifications needed for the Bataan Framework implementation. Key focus areas include organizational structure, compliance requirements, and operational deployment for the FIT PH/SEA initiative.` },
-  { id: 2, title: 'SOVEREIGN ENGAGEMENT LAYER', section: 'Vision', badge: 'Strategy', subtitle: "FIRMA: MIDDLE GROUND — Russia's Federal Constitutional Law", content: `SOVEREIGN ENGAGEMENT LAYER\n\nFIRMA: MIDDLE GROUND\n\nThis document covers the strategic framework for sovereign engagement, drawing parallels from Russia's Federal Constitutional Law to establish a middle-ground approach for FIRMA's international operations and engagement protocols.` }
-]
-const ARCHITECTURE_DOCS = [
   {
     id: 'bataan-framework',
     title: 'BATAAN FRAMEWORK',
