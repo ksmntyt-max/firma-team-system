@@ -1,4 +1,18 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { GoogleLogin } from '@react-oauth/google'
+
+const WHITELISTED = new Set([
+  'info@mycryptoguru.co.uk',
+  'ksmntyt@gmail.com',
+  'creativeclarky@gmail.com',
+  'curtis@firmcollective.org',
+])
+
+function decodeJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+  } catch { return null }
+}
 
 // SHA-256 of the access password — plain text never stored in source
 const ACCESS_HASH = '92f7df677126c8eb72339b6fe83c2407fca44c58c34d218eb475327de43dc51c'
@@ -802,6 +816,17 @@ function AtlasDocRenderer({ doc }) {
 
 // ── MAIN APP ──────────────────────────────────────────────────────────────────
 export default function App() {
+  const [user, setUser] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  const handleGoogleSuccess = useCallback((credentialResponse) => {
+    const payload = decodeJwt(credentialResponse.credential)
+    if (!payload) return
+    const email = (payload.email || '').toLowerCase()
+    setUser({ email: payload.email, name: payload.name, picture: payload.picture })
+    setIsAdmin(WHITELISTED.has(email))
+  }, [])
+
   const [activeNav, setActiveNav] = useState('dashboard')
   const [unlocked, setUnlocked] = useState(false)
   const [lockInput, setLockInput] = useState('')
@@ -825,9 +850,9 @@ export default function App() {
   }, [])
 
   const gateNav = useCallback(async (key) => {
-    if (!PROTECTED.has(key) || unlocked) { setActiveNav(key); return }
+    if (!PROTECTED.has(key) || unlocked || isAdmin) { setActiveNav(key); return }
     setPendingNav(key)
-  }, [unlocked])
+  }, [unlocked, isAdmin])
 
   const submitLock = useCallback(async () => {
     const h = await sha256(lockInput)
@@ -1029,6 +1054,30 @@ export default function App() {
   ]
   const prevStatus = { inprogress: 'backlog', review: 'inprogress', done: 'review' }
 
+  if (!user) return (
+    <div className="login-screen">
+      <div className="login-card">
+        <div className="login-logo">
+          <span className="login-logo-mark">F</span>
+        </div>
+        <div className="login-eyebrow">FIRMA · WORKSPACE</div>
+        <h1 className="login-title">Nation of <em>Heaven</em></h1>
+        <p className="login-sub">Sign in with your Google account to continue.</p>
+        <div className="login-google-wrap">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => {}}
+            theme="outline"
+            size="large"
+            width="340"
+            text="continue_with"
+          />
+        </div>
+        <p className="login-footer">Access is granted to authorized members only.</p>
+      </div>
+    </div>
+  )
+
   return (
     <div className="app">
       <div className="sidebar">
@@ -1045,7 +1094,16 @@ export default function App() {
             </button>
           ))}
         </nav>
-        <div className="sidebar-footer">FIRMA SOVEREIGN FOUNDATION</div>
+        <div className="sidebar-footer">
+          <div className="sidebar-user">
+            {user.picture && <img src={user.picture} className="sidebar-avatar" alt="" referrerPolicy="no-referrer" />}
+            <div className="sidebar-user-info">
+              <div className="sidebar-user-name">{user.name}</div>
+              <div className="sidebar-user-role">{isAdmin ? 'Admin' : 'Guest'}</div>
+            </div>
+            <button className="sidebar-signout" onClick={() => { setUser(null); setIsAdmin(false); setUnlocked(false); setActiveNav('dashboard') }} title="Sign out">↩</button>
+          </div>
+        </div>
       </div>
 
       <main className={`main ${activeNav === 'notes' ? 'main-docs' : ''}`}>

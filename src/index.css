@@ -7,6 +7,28 @@ body{background:linear-gradient(135deg,#fef9f5 0%,#fef5fa 35%,#f5f6fe 100%);font
 ::-webkit-scrollbar-thumb{background:rgba(255,133,92,0.2);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,133,92,0.35)}
 
+/* ─── LOGIN SCREEN ─── */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f0a08 0%,#1a0f0f 40%,#0d0d1a 100%);overflow:hidden;position:relative}
+.login-screen::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(255,133,92,0.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 60%,rgba(132,167,247,0.06) 0%,transparent 60%);pointer-events:none}
+.login-card{position:relative;z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px;padding:56px 48px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,133,92,0.15);border-radius:24px;backdrop-filter:blur(20px);width:440px;box-shadow:0 40px 80px rgba(0,0,0,0.4)}
+.login-logo{width:56px;height:56px;background:linear-gradient(135deg,#FF855C,#F6718D);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.login-logo-mark{font-family:'Fraunces',Georgia,serif;font-size:28px;font-weight:600;color:#fff;line-height:1}
+.login-eyebrow{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,133,92,0.7)}
+.login-title{font-family:'Fraunces',Georgia,serif;font-size:34px;font-weight:400;color:#fff;letter-spacing:-0.02em;line-height:1.2}
+.login-title em{font-style:italic;background:linear-gradient(90deg,#FF855C,#F6718D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.login-sub{font-family:'Inter',sans-serif;font-size:13px;color:rgba(255,255,255,0.45);line-height:1.6;margin-bottom:8px}
+.login-google-wrap{width:100%;display:flex;justify-content:center}
+.login-footer{font-family:'Inter',sans-serif;font-size:11px;color:rgba(255,255,255,0.2);margin-top:8px}
+
+/* ─── SIDEBAR USER ─── */
+.sidebar-user{display:flex;align-items:center;gap:8px;padding:10px 16px 14px}
+.sidebar-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1.5px solid rgba(255,133,92,0.3)}
+.sidebar-user-info{flex:1;min-width:0}
+.sidebar-user-name{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user-role{font-family:'Inter',sans-serif;font-size:9px;color:#FF855C;font-weight:700;text-transform:uppercase;letter-spacing:0.8px}
+.sidebar-signout{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:2px 4px;transition:color 0.15s;flex-shrink:0}
+.sidebar-signout:hover{color:#FF855C}
+
 /* ─── APP SHELL ─── */
 .app{display:flex;height:100vh;overflow:hidden}
 
