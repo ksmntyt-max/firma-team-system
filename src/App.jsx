@@ -17,26 +17,11 @@ function useLocalStorage(key, initial) {
   return [value, set]
 }
 
-// Whitelisted emails — full access, no secondary password gate
-const WHITELISTED = new Set([
-  'info@mycryptoguru.co.uk',
-  'ksmntyt@gmail.com',
-  'creativeclarky@gmail.com',
-  'curtis@firmcollective.org',
-])
-
 function initials(name) {
   return (name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 }
 
-// SHA-256 of the access password — plain text never stored in source
-const ACCESS_HASH = '92f7df677126c8eb72339b6fe83c2407fca44c58c34d218eb475327de43dc51c'
 const PROTECTED = new Set(['planner', 'notes', 'atlas'])
-
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str))
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
-}
 
 const INITIAL_TASKS = [
   { id: 1, title: 'Bataan HQ Visit', category: 'DEPLOYMENT', priority: 'high', assignee: '@Karl', date: '2026-04-30', status: 'inprogress' },
@@ -838,14 +823,23 @@ export default function App() {
   const [emailInput, setEmailInput] = useState('')
   const [emailError, setEmailError] = useState(false)
 
-  const handleEmailLogin = useCallback(() => {
+  const handleEmailLogin = useCallback(async () => {
     const email = emailInput.trim().toLowerCase()
     if (!email || !email.includes('@')) { setEmailError(true); return }
-    const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-    setUser({ email, name, picture: null })
-    setIsAdmin(WHITELISTED.has(email))
-    setEmailInput('')
-    setEmailError(false)
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'login', email }),
+      })
+      const data = await res.json()
+      setUser({ email, name: data.name || email.split('@')[0], picture: null, token: data.token })
+      setIsAdmin(!!data.isAdmin)
+      setEmailInput('')
+      setEmailError(false)
+    } catch {
+      setEmailError(true)
+    }
   }, [emailInput])
 
   const [activeNav, setActiveNav] = useState('dashboard')
@@ -876,22 +870,31 @@ export default function App() {
   }, [unlocked, isAdmin])
 
   const submitLock = useCallback(async () => {
-    const h = await sha256(lockInput)
-    if (h === ACCESS_HASH) {
-      setUnlocked(true)
-      setLockInput('')
-      setLockAttempts(0)
-      setLockError(false)
-      if (pendingNav) { setActiveNav(pendingNav); setPendingNav(null) }
-    } else {
-      const next = lockAttempts + 1
-      setLockInput('')
-      if (next >= 2) {
-        window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1'
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'unlock', password: lockInput }),
+      })
+      const data = await res.json()
+      if (data.ok) {
+        setUnlocked(true)
+        setLockInput('')
+        setLockAttempts(0)
+        setLockError(false)
+        if (pendingNav) { setActiveNav(pendingNav); setPendingNav(null) }
       } else {
-        setLockAttempts(next)
-        setLockError(true)
+        const next = lockAttempts + 1
+        setLockInput('')
+        if (next >= 2) {
+          window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1'
+        } else {
+          setLockAttempts(next)
+          setLockError(true)
+        }
       }
+    } catch {
+      setLockError(true)
     }
   }, [lockInput, lockAttempts, pendingNav])
 
