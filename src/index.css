@@ -39,13 +39,13 @@ body{background:linear-gradient(135deg,#fef9f5 0%,#fef5fa 35%,#f5f6fe 100%);font
 .login-next-btn{background:linear-gradient(135deg,#FF855C,#F6718D);border:none;color:#fff;padding:10px 22px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;transition:opacity 0.15s}
 .login-next-btn:hover{opacity:0.88}
 .login-landing{display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}
-.login-google-btn{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);color:#fff;padding:12px 28px;border-radius:10px;cursor:pointer;font-size:14px;font-family:'Inter',sans-serif;font-weight:500;transition:all 0.15s;margin-top:8px}
-.login-google-btn:hover{background:rgba(255,255,255,0.11);border-color:rgba(255,255,255,0.22)}
+.login-google-wrap{margin-top:8px}
 .login-landing .login-footer{font-family:'Inter',sans-serif;font-size:11px;color:rgba(255,255,255,0.2);margin-top:4px}
 .login-landing .login-sub{font-family:'Inter',sans-serif;font-size:13px;color:rgba(255,255,255,0.4)}
 
 /* ─── SIDEBAR USER ─── */
 .sidebar-user{display:flex;align-items:center;gap:8px;padding:10px 16px 14px}
+.sidebar-avatar-img{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0}
 .sidebar-avatar-init{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
 .sidebar-user-info{flex:1;min-width:0}
 .sidebar-user-name{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
