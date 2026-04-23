@@ -14,9 +14,6 @@ const INITIAL_TASKS = [
 ]
 
 const INITIAL_DOCUMENTS = [
-  { id: 1, title: 'Q2 Strategic Priorities', category: 'Strategy', badge: 'BRIEF', date: '2026-04-22', htmlContent: '<h2>Q2 Strategic Priorities</h2><p>This quarter we focus on three tracks: <strong>deployment</strong>, <strong>partnerships</strong>, and <strong>canonical documentation</strong>.</p><h3>Deployment</h3><p>Bataan Freeport activation, Africa corridor progress.</p><h3>Partnerships</h3><p>SRI integration, NSS co-development, Base membrane.</p>' },
-  { id: 2, title: 'Partnership Outreach Playbook', category: 'BizDev', badge: 'PLAYBOOK', date: '2026-04-20', htmlContent: '<h2>Partnership Outreach Playbook</h2><p>Framework for establishing and maintaining key partnerships across the Firma network.</p>' },
-  { id: 3, title: 'Weekly Team Notes — Apr 20', category: 'Ops', badge: 'NOTES', date: '2026-04-21', htmlContent: '<h2>Weekly Team Notes — Apr 20</h2><p>Team sync notes covering active deployments, blockers, and next steps.</p>' },
 ]
 
 // ── STRUCTURED ARCHITECTURE DOCS ──────────────────────────────────────────────
@@ -528,7 +525,7 @@ const TEXT_STYLES = ['Normal', 'Heading 1', 'Heading 2', 'Heading 3']
 const NAV_ITEMS = [
   { key: 'dashboard', label: 'Dashboard' },
   { key: 'planner', label: 'Planner' },
-  { key: 'notes', label: 'Documents' },
+  { key: 'notes', label: 'Notes' },
   { key: 'email', label: 'Email' },
   { key: 'atlas', label: 'Architecture Index' },
 ]
