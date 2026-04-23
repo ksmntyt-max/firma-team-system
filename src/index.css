@@ -1,0 +1,5 @@
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#07050a;font-family:'Fraunces',Georgia,serif}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#2d2440;border-radius:3px}
