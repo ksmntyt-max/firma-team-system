@@ -843,6 +843,7 @@ export default function App() {
   }, [emailInput])
 
   const [activeNav, setActiveNav] = useState('dashboard')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [unlocked, setUnlocked] = useState(false)
   const [lockInput, setLockInput] = useState('')
   const [lockAttempts, setLockAttempts] = useState(0)
@@ -865,6 +866,7 @@ export default function App() {
   }, [])
 
   const gateNav = useCallback(async (key) => {
+    setMobileMenuOpen(false)
     if (!PROTECTED.has(key) || unlocked || isAdmin) { setActiveNav(key); return }
     setPendingNav(key)
   }, [unlocked, isAdmin])
@@ -1150,7 +1152,19 @@ export default function App() {
 
   return (
     <div className="app">
-      <div className="sidebar">
+      {/* Mobile header */}
+      <div className="mobile-header">
+        <button className="mobile-hamburger" onClick={() => setMobileMenuOpen(o => !o)} aria-label="Menu">
+          <span /><span /><span />
+        </button>
+        <div className="mobile-header-title">FIRMA · <em>Workspace</em></div>
+        <div className="sidebar-avatar-init mobile-header-avatar" style={{ background: '#FF855C' }}>{initials(user.name)}</div>
+      </div>
+
+      {/* Sidebar overlay (mobile) */}
+      {mobileMenuOpen && <div className="sidebar-overlay" onClick={() => setMobileMenuOpen(false)} />}
+
+      <div className={`sidebar${mobileMenuOpen ? ' sidebar--open' : ''}`}>
         <div className="sidebar-brand">
           <div className="brand-eyebrow">FIRMA · WORKSPACE</div>
           <h2 className="brand-name">Nation of <em>Heaven</em></h2>
@@ -1174,7 +1188,7 @@ export default function App() {
               <div className="sidebar-user-name">{user.name}</div>
               <div className="sidebar-user-role">{isAdmin ? 'Admin' : 'Guest'}</div>
             </div>
-            <button className="sidebar-signout" onClick={() => { setUser(null); setIsAdmin(false); setUnlocked(false); setActiveNav('dashboard') }} title="Sign out">↩</button>
+            <button className="sidebar-signout" onClick={() => { setUser(null); setIsAdmin(false); setUnlocked(false); setActiveNav('dashboard'); setMobileMenuOpen(false) }} title="Sign out">↩</button>
           </div>
         </div>
       </div>

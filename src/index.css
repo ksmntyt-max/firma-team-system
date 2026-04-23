@@ -480,3 +480,117 @@ body{background:linear-gradient(135deg,#fef9f5 0%,#fef5fa 35%,#f5f6fe 100%);font
 /* Back button */
 .atlas-back-btn{background:none;border:1px solid rgba(255,133,92,0.25);color:#FF855C;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:0.3px;transition:all 0.15s;margin-bottom:24px;display:inline-flex;align-items:center;gap:6px}
 .atlas-back-btn:hover{background:rgba(255,133,92,0.07)}
+
+/* ─── MOBILE HEADER ─── */
+.mobile-header{display:none}
+
+/* ─── SIDEBAR OVERLAY ─── */
+.sidebar-overlay{display:none}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — TABLET  (max 1024px)
+══════════════════════════════════════════ */
+@media (max-width:1024px){
+  .sidebar{width:200px;min-width:200px}
+  .main{padding:28px 28px}
+  .dash-metrics{grid-template-columns:repeat(3,1fr)}
+  .dash-mid{grid-template-columns:1fr}
+  .planner-add-form{grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .kanban-board-4{grid-template-columns:repeat(2,1fr)}
+  .email-layout{grid-template-columns:1fr}
+  .email-sidebar-panel{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .modal-lg{width:90vw}
+  .meeting-stats-row{grid-template-columns:repeat(2,1fr)}
+  .meeting-insights-grid{grid-template-columns:1fr}
+  .adr-two-col{grid-template-columns:1fr}
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — MOBILE  (max 768px)
+══════════════════════════════════════════ */
+@media (max-width:768px){
+  body{overflow:auto;height:auto}
+
+  /* Mobile top bar */
+  .mobile-header{display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:900;height:52px;background:rgba(255,255,255,0.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,133,92,0.13);padding:0 16px;gap:12px}
+  .mobile-hamburger{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+  .mobile-hamburger span{display:block;width:22px;height:2px;background:#2a2a2a;border-radius:2px;transition:all 0.2s}
+  .mobile-header-title{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;color:#2a2a2a;flex:1;text-align:center}
+  .mobile-header-title em{font-style:italic;background:linear-gradient(90deg,#FF855C,#F6718D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .mobile-header-avatar{font-size:10px;width:28px;height:28px;flex-shrink:0}
+
+  /* Sidebar drawer */
+  .sidebar-overlay{display:block;position:fixed;inset:0;z-index:950;background:rgba(0,0,0,0.35);backdrop-filter:blur(2px)}
+  .sidebar{position:fixed;top:0;left:-260px;height:100%;z-index:1000;width:240px;min-width:240px;transition:left 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:none}
+  .sidebar--open{left:0;box-shadow:8px 0 40px rgba(0,0,0,0.18)}
+
+  /* Main area shifts down for mobile header */
+  .app{flex-direction:column;height:auto;min-height:100vh}
+  .main{padding:72px 16px 32px;width:100%;overflow-y:visible}
+  .main-docs{padding:52px 0 0;display:flex;height:calc(100vh - 52px)}
+
+  /* Page titles */
+  .page-title{font-size:32px;margin-bottom:10px}
+  .page-desc{font-size:13px;margin-bottom:24px}
+
+  /* Dashboard */
+  .dash-metrics{grid-template-columns:repeat(2,1fr)}
+  .dash-mid{grid-template-columns:1fr}
+  .dash-upcoming{margin-top:0}
+
+  /* Planner form - stack to 2 cols then full */
+  .planner-add-form{grid-template-columns:1fr 1fr;gap:8px}
+
+  /* Kanban - horizontal scroll */
+  .kanban-board-4{grid-template-columns:repeat(4,280px);overflow-x:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch}
+
+  /* Docs 3-panel - stack */
+  .docs-layout{flex-direction:column;height:auto;min-height:calc(100vh - 52px)}
+  .docs-list-panel{width:100%;min-width:unset;height:auto;max-height:45vh;border-right:none;border-bottom:1px solid rgba(255,133,92,0.13)}
+  .docs-editor-panel{min-height:55vh}
+
+  /* Email */
+  .email-layout{grid-template-columns:1fr}
+  .email-sidebar-panel{display:flex;flex-direction:column}
+
+  /* Modals */
+  .modal{width:calc(100vw - 32px);max-width:460px}
+  .modal-lg{width:calc(100vw - 24px);max-height:90vh}
+  .lock-modal{width:calc(100vw - 48px);padding:32px 24px}
+
+  /* Login */
+  .login-landing{padding:24px 16px}
+  .login-email-wrap{max-width:100%}
+
+  /* Atlas */
+  .atlas-doc-grid{grid-template-columns:1fr}
+  .adr-title{font-size:28px}
+  .adr-two-col{grid-template-columns:1fr}
+  .adr-table{font-size:11px}
+  .adr-table th,.adr-table td{padding:8px 10px}
+
+  /* Meetings */
+  .meeting-stats-row{grid-template-columns:repeat(2,1fr)}
+  .meeting-insights-grid{grid-template-columns:1fr}
+  .meeting-card{flex-wrap:wrap;gap:8px}
+  .meeting-card-right{flex-wrap:wrap}
+  .meeting-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;gap:0}
+  .meeting-tab-btn{white-space:nowrap;flex-shrink:0}
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — SMALL MOBILE  (max 480px)
+══════════════════════════════════════════ */
+@media (max-width:480px){
+  .main{padding:64px 12px 28px}
+  .page-title{font-size:26px}
+  .dash-metrics{grid-template-columns:1fr 1fr}
+  .dash-metric-value{font-size:28px}
+  .planner-add-form{grid-template-columns:1fr}
+  .kanban-board-4{grid-template-columns:repeat(4,240px)}
+  .meeting-stats-row{grid-template-columns:1fr 1fr}
+  .modal{width:calc(100vw - 24px);padding:20px}
+  .lock-modal{width:calc(100vw - 32px);padding:28px 20px}
+  .email-layout{gap:12px}
+  .atlas-section-hdr{flex-direction:column;align-items:flex-start;gap:4px}
+}
