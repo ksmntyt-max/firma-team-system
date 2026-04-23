@@ -657,6 +657,7 @@ const NAV_ITEMS = [
   { key: 'planner', label: 'Planner' },
   { key: 'notes', label: 'Notes' },
   { key: 'email', label: 'Email' },
+  { key: 'meetings', label: 'Meetings' },
   { key: 'atlas', label: 'Architecture Index' },
 ]
 
@@ -913,6 +914,14 @@ export default function App() {
   const [showAddSender, setShowAddSender] = useState(false)
   const [newSender, setNewSender] = useState({ name: '', email: '', provider: 'gmail' })
 
+  const [meetings, setMeetings] = useLocalStorage('firma_meetings', [])
+  const [selectedMeeting, setSelectedMeeting] = useState(null)
+  const [meetingTab, setMeetingTab] = useState('overview')
+  const [meetingUploadTitle, setMeetingUploadTitle] = useState('')
+  const [meetingAnalyzing, setMeetingAnalyzing] = useState(false)
+  const [meetingUploadError, setMeetingUploadError] = useState('')
+  const meetingFileRef = useRef(null)
+
   const [archDocs, setArchDocs] = useLocalStorage('firma_arch_docs', INITIAL_ARCH_DOCS)
   const [selectedAtlasDoc, setSelectedAtlasDoc] = useState(null)
   const [atlasSearch, setAtlasSearch] = useState('')
@@ -1001,6 +1010,43 @@ export default function App() {
     setNewSender({ name: '', email: '', provider: 'gmail' })
     setShowAddSender(false)
   }
+
+  const analyzeMeeting = useCallback(async (file) => {
+    if (!file) return
+    const ext = file.name.split('.').pop().toLowerCase()
+    if (!['txt', 'md'].includes(ext)) {
+      setMeetingUploadError('Please upload a .txt or .md file')
+      return
+    }
+    setMeetingUploadError('')
+    const title = meetingUploadTitle.trim() || file.name.replace(/\.[^/.]+$/, '')
+    const content = await new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = e => resolve(e.target.result)
+      reader.onerror = reject
+      reader.readAsText(file)
+    })
+    const id = `meeting-${Date.now()}`
+    const entry = { id, title, fileName: file.name, status: 'processing', uploadedAt: new Date().toISOString(), analysis: null, error: null }
+    setMeetings(m => [entry, ...m])
+    setMeetingUploadTitle('')
+    setMeetingAnalyzing(true)
+    if (meetingFileRef.current) meetingFileRef.current.value = ''
+    try {
+      const res = await fetch('/api/analyze-meeting', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, title }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Analysis failed')
+      setMeetings(m => m.map(mt => mt.id === id ? { ...mt, status: 'done', analysis: data.analysis } : mt))
+    } catch (err) {
+      setMeetings(m => m.map(mt => mt.id === id ? { ...mt, status: 'failed', error: err.message } : mt))
+    } finally {
+      setMeetingAnalyzing(false)
+    }
+  }, [meetingUploadTitle])
   const addAtlasDoc = () => {
     if (!newAtlasDoc.title.trim()) return
     const blocks = []
@@ -1393,6 +1439,218 @@ export default function App() {
                     <button className="btn-remove" onClick={() => setShowAddSender(false)}>Cancel</button>
                   </div>
                 </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── MEETINGS ── */}
+        {activeNav === 'meetings' && !selectedMeeting && (
+          <div className="view-scroll">
+            <div className="breadcrumb">MEETINGS · AI ANALYSIS</div>
+            <h1 className="page-title">Meeting <em>Intelligence</em></h1>
+            <p className="page-desc">Upload a meeting transcript and Claude will extract action items, recurring topics, and blockers.</p>
+
+            {/* Upload card */}
+            <div className="meeting-upload-card">
+              <div className="meeting-upload-title-row">
+                <input
+                  className="input"
+                  placeholder="Meeting title (optional)"
+                  value={meetingUploadTitle}
+                  onChange={e => setMeetingUploadTitle(e.target.value)}
+                />
+              </div>
+              <div
+                className="meeting-dropzone"
+                onClick={() => meetingFileRef.current?.click()}
+                onDragOver={e => e.preventDefault()}
+                onDrop={e => { e.preventDefault(); analyzeMeeting(e.dataTransfer.files[0]) }}
+              >
+                <input
+                  ref={meetingFileRef}
+                  type="file"
+                  accept=".txt,.md"
+                  style={{ display: 'none' }}
+                  onChange={e => analyzeMeeting(e.target.files[0])}
+                />
+                <div className="meeting-dropzone-icon">⊡</div>
+                <div className="meeting-dropzone-label">Click or drag & drop a transcript</div>
+                <div className="meeting-dropzone-sub">.txt or .md files · up to 10MB</div>
+              </div>
+              {meetingUploadError && <p className="meeting-upload-err">{meetingUploadError}</p>}
+              {meetingAnalyzing && <div className="meeting-analyzing-bar"><span className="meeting-analyzing-dot" />Analyzing with Claude…</div>}
+            </div>
+
+            {/* Meetings list */}
+            {meetings.length > 0 && (
+              <div className="meeting-list">
+                <div className="meeting-list-hdr">Past Meetings</div>
+                {meetings.map(m => (
+                  <div
+                    key={m.id}
+                    className={`meeting-card ${m.status}`}
+                    onClick={() => { if (m.status === 'done') { setSelectedMeeting(m); setMeetingTab('overview') } }}
+                  >
+                    <div className="meeting-card-left">
+                      <div className={`meeting-status-dot ${m.status}`} />
+                      <div>
+                        <div className="meeting-card-title">{m.title}</div>
+                        <div className="meeting-card-meta">{m.fileName} · {new Date(m.uploadedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                        {m.status === 'failed' && <div className="meeting-card-err">{m.error}</div>}
+                      </div>
+                    </div>
+                    <div className="meeting-card-right">
+                      {m.status === 'done' && (
+                        <>
+                          <span className="meeting-badge blue">{m.analysis?.actionItems?.length || 0} actions</span>
+                          <span className="meeting-badge orange">{m.analysis?.recurringTopics?.length || 0} patterns</span>
+                          {(m.analysis?.stalledItems?.length || 0) > 0 && (
+                            <span className="meeting-badge red">{m.analysis.stalledItems.length} stalled</span>
+                          )}
+                          <span className="meeting-open-arrow">›</span>
+                        </>
+                      )}
+                      {m.status === 'processing' && <span className="meeting-badge gray">Analyzing…</span>}
+                      {m.status === 'failed' && <span className="meeting-badge red">Failed</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {meetings.length === 0 && !meetingAnalyzing && (
+              <div className="empty" style={{ marginTop: 32 }}>No meetings yet. Upload your first transcript above.</div>
+            )}
+          </div>
+        )}
+
+        {/* ── MEETING DETAIL ── */}
+        {activeNav === 'meetings' && selectedMeeting && (
+          <div className="view-scroll">
+            <button className="meeting-back-btn" onClick={() => setSelectedMeeting(null)}>← Back to Meetings</button>
+            <div className="breadcrumb">MEETINGS · ANALYSIS</div>
+            <h1 className="page-title" style={{ marginBottom: 4 }}>{selectedMeeting.title}</h1>
+            <div className="meeting-detail-meta">{selectedMeeting.fileName} · {new Date(selectedMeeting.uploadedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+
+            {/* Tabs */}
+            <div className="meeting-tabs">
+              {[
+                { id: 'overview', label: 'Overview' },
+                { id: 'actions', label: `Actions (${selectedMeeting.analysis?.actionItems?.length || 0})` },
+                { id: 'patterns', label: `Patterns (${selectedMeeting.analysis?.recurringTopics?.length || 0})` },
+                { id: 'stalled', label: `Stalled (${selectedMeeting.analysis?.stalledItems?.length || 0})` },
+              ].map(tab => (
+                <button key={tab.id} className={`meeting-tab-btn ${meetingTab === tab.id ? 'active' : ''}`} onClick={() => setMeetingTab(tab.id)}>{tab.label}</button>
+              ))}
+            </div>
+
+            {meetingTab === 'overview' && (() => {
+              const a = selectedMeeting.analysis || {}
+              return (
+                <div className="meeting-detail-body">
+                  {a.summary && (
+                    <div className="meeting-summary-card">
+                      <div className="meeting-section-label">AI SUMMARY</div>
+                      <p className="meeting-summary-text">{a.summary}</p>
+                    </div>
+                  )}
+                  <div className="meeting-stats-row">
+                    {[
+                      { label: 'Action Items', value: a.actionItems?.length || 0, color: 'blue' },
+                      { label: 'Patterns', value: a.recurringTopics?.length || 0, color: 'orange' },
+                      { label: 'Stalled', value: a.stalledItems?.length || 0, color: 'red' },
+                      { label: 'Highlights', value: a.highlights?.length || 0, color: 'green' },
+                    ].map(s => (
+                      <div key={s.label} className={`meeting-stat-card ${s.color}`}>
+                        <div className="meeting-stat-num">{s.value}</div>
+                        <div className="meeting-stat-label">{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="meeting-insights-grid">
+                    {a.keyTakeaways?.length > 0 && (
+                      <div className="meeting-insight-block">
+                        <div className="meeting-section-label">KEY TAKEAWAYS</div>
+                        {a.keyTakeaways.map((t, i) => <div key={i} className="meeting-insight-row">· {t}</div>)}
+                      </div>
+                    )}
+                    {a.urgentActions?.length > 0 && (
+                      <div className="meeting-insight-block urgent">
+                        <div className="meeting-section-label">URGENT ACTIONS</div>
+                        {a.urgentActions.map((t, i) => <div key={i} className="meeting-insight-row">→ {t}</div>)}
+                      </div>
+                    )}
+                    {a.blockers?.length > 0 && (
+                      <div className="meeting-insight-block warn">
+                        <div className="meeting-section-label">BLOCKERS</div>
+                        {a.blockers.map((t, i) => <div key={i} className="meeting-insight-row">! {t}</div>)}
+                      </div>
+                    )}
+                    {a.highlights?.length > 0 && (
+                      <div className="meeting-insight-block good">
+                        <div className="meeting-section-label">HIGHLIGHTS</div>
+                        {a.highlights.map((t, i) => <div key={i} className="meeting-insight-row">✓ {t}</div>)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })()}
+
+            {meetingTab === 'actions' && (
+              <div className="meeting-detail-body">
+                {(selectedMeeting.analysis?.actionItems?.length || 0) === 0
+                  ? <div className="empty">No action items identified.</div>
+                  : selectedMeeting.analysis.actionItems.map((item, i) => (
+                    <div key={i} className="meeting-action-row">
+                      <div className={`meeting-priority-dot ${item.priority}`} />
+                      <div className="meeting-action-body">
+                        <div className="meeting-action-desc">{item.description}</div>
+                        <div className="meeting-action-meta">
+                          <span className={`meeting-priority-badge ${item.priority}`}>{item.priority}</span>
+                          {item.assignee && <span className="meeting-assignee">@ {item.assignee}</span>}
+                          {item.mentionCount > 1 && <span className="meeting-mention-count">mentioned {item.mentionCount}×</span>}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+            )}
+
+            {meetingTab === 'patterns' && (
+              <div className="meeting-detail-body">
+                {(selectedMeeting.analysis?.recurringTopics?.length || 0) === 0
+                  ? <div className="empty">No recurring patterns detected.</div>
+                  : selectedMeeting.analysis.recurringTopics.map((t, i) => (
+                    <div key={i} className="meeting-pattern-row">
+                      <div className="meeting-pattern-freq">{t.frequency}×</div>
+                      <div>
+                        <div className="meeting-pattern-topic">{t.topic}</div>
+                        {t.category && <div className="meeting-pattern-cat">{t.category}</div>}
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+            )}
+
+            {meetingTab === 'stalled' && (
+              <div className="meeting-detail-body">
+                {(selectedMeeting.analysis?.stalledItems?.length || 0) === 0
+                  ? <div className="empty" style={{ color: '#4ade80' }}>No stalled items — everything is moving!</div>
+                  : selectedMeeting.analysis.stalledItems.map((s, i) => (
+                    <div key={i} className={`meeting-stalled-row ${s.severity}`}>
+                      <div className="meeting-stalled-desc">{s.description}</div>
+                      {s.reason && <div className="meeting-stalled-reason">Reason: {s.reason}</div>}
+                      <div className="meeting-stalled-meta">
+                        <span className={`meeting-priority-badge ${s.severity}`}>{s.severity} severity</span>
+                        <span className="meeting-mention-count">mentioned {s.timesMentioned}×</span>
+                      </div>
+                    </div>
+                  ))
+                }
               </div>
             )}
           </div>

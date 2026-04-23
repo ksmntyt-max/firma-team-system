@@ -51,6 +51,88 @@ body{background:linear-gradient(135deg,#fef9f5 0%,#fef5fa 35%,#f5f6fe 100%);font
 .login-email-btn:hover{opacity:0.88}
 .login-email-err-msg{font-family:'Inter',sans-serif;font-size:11px;color:#F6718D;margin:0}
 
+/* ─── MEETINGS ─── */
+.meeting-upload-card{background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:14px;padding:24px;margin-bottom:28px;display:flex;flex-direction:column;gap:14px}
+.meeting-upload-title-row{display:flex;gap:10px}
+.meeting-dropzone{border:2px dashed rgba(0,0,0,0.13);border-radius:10px;padding:32px 20px;text-align:center;cursor:pointer;transition:border-color 0.15s,background 0.15s}
+.meeting-dropzone:hover{border-color:rgba(255,133,92,0.5);background:rgba(255,133,92,0.03)}
+.meeting-dropzone-icon{font-size:28px;color:rgba(0,0,0,0.25);margin-bottom:6px}
+.meeting-dropzone-label{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:#555}
+.meeting-dropzone-sub{font-family:'Inter',sans-serif;font-size:11px;color:#aaa;margin-top:3px}
+.meeting-upload-err{font-family:'Inter',sans-serif;font-size:12px;color:#e55;margin:0}
+.meeting-analyzing-bar{display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:12px;color:#FF855C;font-weight:500}
+.meeting-analyzing-dot{width:8px;height:8px;background:#FF855C;border-radius:50%;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.meeting-list-hdr{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:12px}
+.meeting-list{display:flex;flex-direction:column;gap:8px}
+.meeting-card{background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:box-shadow 0.15s,border-color 0.15s}
+.meeting-card.done{cursor:pointer}.meeting-card.done:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08);border-color:rgba(255,133,92,0.3)}
+.meeting-card-left{display:flex;align-items:center;gap:12px}
+.meeting-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.meeting-status-dot.done{background:#4ade80;box-shadow:0 0 6px rgba(74,222,128,0.5)}
+.meeting-status-dot.processing{background:#FB923C;box-shadow:0 0 6px rgba(251,146,60,0.5);animation:pulse 1.2s ease-in-out infinite}
+.meeting-status-dot.failed{background:#f87171}
+.meeting-card-title{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:#1a1a1a}
+.meeting-card-meta{font-family:'Inter',sans-serif;font-size:11px;color:#aaa;margin-top:2px}
+.meeting-card-err{font-family:'Inter',sans-serif;font-size:11px;color:#e55;margin-top:2px}
+.meeting-card-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.meeting-badge{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px}
+.meeting-badge.blue{background:rgba(59,130,246,0.1);color:#3b82f6}
+.meeting-badge.orange{background:rgba(251,146,60,0.12);color:#ea8c20}
+.meeting-badge.red{background:rgba(239,68,68,0.1);color:#ef4444}
+.meeting-badge.green{background:rgba(74,222,128,0.12);color:#16a34a}
+.meeting-badge.gray{background:rgba(0,0,0,0.06);color:#888}
+.meeting-open-arrow{font-size:18px;color:#ccc;margin-left:4px}
+.meeting-back-btn{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#FF855C;background:none;border:none;cursor:pointer;padding:0;margin-bottom:10px}
+.meeting-back-btn:hover{opacity:0.75}
+.meeting-detail-meta{font-family:'Inter',sans-serif;font-size:12px;color:#aaa;margin-bottom:20px}
+.meeting-tabs{display:flex;gap:4px;border-bottom:1px solid rgba(0,0,0,0.08);margin-bottom:24px}
+.meeting-tab-btn{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#888;background:none;border:none;padding:8px 14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color 0.15s,border-color 0.15s}
+.meeting-tab-btn.active{color:#FF855C;border-bottom-color:#FF855C}
+.meeting-tab-btn:hover:not(.active){color:#555}
+.meeting-detail-body{display:flex;flex-direction:column;gap:14px}
+.meeting-summary-card{background:linear-gradient(135deg,rgba(255,133,92,0.07),rgba(246,113,141,0.05));border:1px solid rgba(255,133,92,0.15);border-radius:12px;padding:18px 20px}
+.meeting-section-label{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,133,92,0.7);margin-bottom:8px}
+.meeting-summary-text{font-family:'Inter',sans-serif;font-size:13px;color:#333;line-height:1.65}
+.meeting-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.meeting-stat-card{border-radius:10px;padding:14px 16px;border:1px solid transparent}
+.meeting-stat-card.blue{background:rgba(59,130,246,0.07);border-color:rgba(59,130,246,0.15)}
+.meeting-stat-card.orange{background:rgba(251,146,60,0.07);border-color:rgba(251,146,60,0.15)}
+.meeting-stat-card.red{background:rgba(239,68,68,0.07);border-color:rgba(239,68,68,0.15)}
+.meeting-stat-card.green{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.15)}
+.meeting-stat-num{font-family:'Inter',sans-serif;font-size:26px;font-weight:700;color:#1a1a1a}
+.meeting-stat-label{font-family:'Inter',sans-serif;font-size:11px;color:#888;margin-top:2px}
+.meeting-insights-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.meeting-insight-block{background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:10px;padding:16px 18px}
+.meeting-insight-block.urgent{background:rgba(239,68,68,0.04);border-color:rgba(239,68,68,0.15)}
+.meeting-insight-block.warn{background:rgba(251,191,36,0.05);border-color:rgba(251,191,36,0.2)}
+.meeting-insight-block.good{background:rgba(74,222,128,0.05);border-color:rgba(74,222,128,0.2)}
+.meeting-insight-row{font-family:'Inter',sans-serif;font-size:12px;color:#444;line-height:1.6;padding:2px 0}
+.meeting-action-row{display:flex;align-items:flex-start;gap:12px;background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:10px;padding:14px 16px}
+.meeting-priority-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.meeting-priority-dot.high{background:#ef4444}
+.meeting-priority-dot.medium{background:#fb923c}
+.meeting-priority-dot.low{background:#4ade80}
+.meeting-action-body{flex:1}
+.meeting-action-desc{font-family:'Inter',sans-serif;font-size:13px;color:#1a1a1a;font-weight:500;margin-bottom:6px}
+.meeting-action-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.meeting-priority-badge{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;text-transform:uppercase}
+.meeting-priority-badge.high{background:rgba(239,68,68,0.1);color:#ef4444}
+.meeting-priority-badge.medium{background:rgba(251,146,60,0.12);color:#ea8c20}
+.meeting-priority-badge.low{background:rgba(74,222,128,0.12);color:#16a34a}
+.meeting-assignee{font-family:'Inter',sans-serif;font-size:11px;color:#888}
+.meeting-mention-count{font-family:'Inter',sans-serif;font-size:11px;color:#aaa}
+.meeting-pattern-row{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid rgba(251,146,60,0.15);border-radius:10px;padding:14px 18px}
+.meeting-pattern-freq{font-family:'Inter',sans-serif;font-size:18px;font-weight:700;color:#FB923C;min-width:36px}
+.meeting-pattern-topic{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:#1a1a1a}
+.meeting-pattern-cat{font-family:'Inter',sans-serif;font-size:11px;color:#aaa;margin-top:2px}
+.meeting-stalled-row{background:#fff;border:1px solid rgba(0,0,0,0.07);border-radius:10px;padding:14px 18px}
+.meeting-stalled-row.high{border-color:rgba(239,68,68,0.25);background:rgba(239,68,68,0.03)}
+.meeting-stalled-row.medium{border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.03)}
+.meeting-stalled-desc{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:#1a1a1a;margin-bottom:6px}
+.meeting-stalled-reason{font-family:'Inter',sans-serif;font-size:12px;color:#888;margin-bottom:8px}
+.meeting-stalled-meta{display:flex;align-items:center;gap:8px}
+
 /* ─── SIDEBAR USER ─── */
 .sidebar-user{display:flex;align-items:center;gap:8px;padding:10px 16px 14px}
 .sidebar-avatar-img{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0}
