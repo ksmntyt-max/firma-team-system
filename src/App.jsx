@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 const ARCHITECTURE_DOCS = [
   { id: 1, title: 'BATAAN-FRAMEWORK', section: 'Foundation', badge: 'Framework', subtitle: 'FIT PH/SEA — MASTER CLARIFICATION & PRIORITY CHECKLIST', content: `BATAAN FRAMEWORK v2\n\nFIT PH/SEA — MASTER CLARIFICATION & PRIORITY CHECKLIST\n\nThis document outlines the priority action items and clarifications needed for the Bataan Framework implementation. Key focus areas include organizational structure, compliance requirements, and operational deployment for the FIT PH/SEA initiative.` },
@@ -10,6 +10,10 @@ const EMAIL_ACCOUNTS = [
   { id: 'outlook', label: 'Outlook', provider: 'outlook' }
 ]
 
+const FONT_FAMILIES = ['Arial', 'Georgia', 'Times New Roman', 'Courier New', 'Verdana', 'Inter', 'Fraunces']
+const FONT_SIZES = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px']
+const TEXT_STYLES = ['Normal', 'Heading 1', 'Heading 2', 'Heading 3']
+
 export default function App() {
   const [activeNav, setActiveNav] = useState('dashboard')
   const [plannerItems, setPlannerItems] = useState([{ id: 1, title: 'Ocular visit in Bataan', date: '2026-04-25', notes: 'Site inspection', status: 'todo' }, { id: 2, title: 'Review compliance documents', date: '2026-04-26', notes: 'Legal review', status: 'inprogress' }])
@@ -20,7 +24,7 @@ export default function App() {
   const [notes, setNotes] = useState([])
   const [selectedNote, setSelectedNote] = useState(null)
   const [noteTitle, setNoteTitle] = useState('')
-  const [noteContent, setNoteContent] = useState('')
+  const editorRef = useRef(null)
 
   const sendEmail = () => {
     if (!emailForm.to || !emailForm.subject) return
@@ -38,17 +42,17 @@ export default function App() {
   }
 
   const removeTask = (id) => setPlannerItems(plannerItems.filter(t => t.id !== id))
-  
+
   const updateTaskStatus = (id, newStatus) => {
     setPlannerItems(plannerItems.map(t => t.id === id ? { ...t, status: newStatus } : t))
   }
 
   const createNote = () => {
-    const newNote = { id: Date.now(), title: 'New Note', content: '', date: new Date().toISOString() }
+    const newNote = { id: Date.now(), title: 'New Note', htmlContent: '', date: new Date().toISOString() }
     setNotes([newNote, ...notes])
     setSelectedNote(newNote)
     setNoteTitle('New Note')
-    setNoteContent('')
+    if (editorRef.current) editorRef.current.innerHTML = ''
   }
 
   const updateNote = (id, updates) => {
@@ -63,20 +67,36 @@ export default function App() {
     if (selectedNote?.id === id) {
       setSelectedNote(null)
       setNoteTitle('')
-      setNoteContent('')
+      if (editorRef.current) editorRef.current.innerHTML = ''
     }
   }
 
   const selectNote = (note) => {
+    if (selectedNote) {
+      updateNote(selectedNote.id, { title: noteTitle, htmlContent: editorRef.current?.innerHTML || '' })
+    }
     setSelectedNote(note)
     setNoteTitle(note.title)
-    setNoteContent(note.content)
+    if (editorRef.current) editorRef.current.innerHTML = note.htmlContent || ''
   }
 
-  const saveCurrentNote = () => {
-    if (selectedNote) {
-      updateNote(selectedNote.id, { title: noteTitle, content: noteContent })
+  const handleEditorInput = () => {
+    if (selectedNote && editorRef.current) {
+      updateNote(selectedNote.id, { title: noteTitle, htmlContent: editorRef.current.innerHTML })
     }
+  }
+
+  const execCmd = (command, value = null) => {
+    document.execCommand(command, false, value)
+    editorRef.current?.focus()
+  }
+
+  const handleStyleChange = (e) => {
+    const style = e.target.value
+    if (style === 'Normal') execCmd('formatBlock', 'p')
+    else if (style === 'Heading 1') execCmd('formatBlock', 'h1')
+    else if (style === 'Heading 2') execCmd('formatBlock', 'h2')
+    else if (style === 'Heading 3') execCmd('formatBlock', 'h3')
   }
 
   const todoTasks = plannerItems.filter(t => t.status === 'todo')
@@ -86,7 +106,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <aside className="sidebar">
+      <div className="sidebar">
         <div className="brand">
           <div className="brand-icon">S</div>
           <div>
@@ -94,19 +114,19 @@ export default function App() {
             <div className="brand-sub">Firma Workspace</div>
           </div>
         </div>
-        <nav className="nav">
+        <div className="nav">
           {[['dashboard','Dashboard'],['planner','Planner'],['notes','Notes'],['email','Email'],['atlas','Architecture Atlas']].map(([key,label]) => (
-            <button key={key} className={`nav-btn${activeNav===key?' active':''}`} onClick={() => setActiveNav(key)}>{label}</button>
+            <button key={key} className={`nav-btn ${activeNav===key?'active':''}`} onClick={()=>setActiveNav(key)}>{label}</button>
           ))}
-        </nav>
+        </div>
         <div className="sidebar-footer">Firma Sovereign Foundation · March 2026</div>
-      </aside>
+      </div>
       <main className="main">
         {activeNav === 'dashboard' && (
           <div className="section">
             <div className="page-header">
               <div className="page-pre">Overview · 04.23.2026</div>
-              <h1 className="page-title">Today's <em>signal</em></h1>
+              <h1 className="page-title">Today’s <em>signal</em></h1>
               <p className="page-desc">Live snapshot of active work, documents in motion, and upcoming commitments across the Foundation.</p>
             </div>
             <div className="metrics-grid">
@@ -132,28 +152,33 @@ export default function App() {
               </div>
             </div>
             <div className="card-grid">
-              <div className="card" onClick={() => setActiveNav('planner')}>
+              <div className="card" onClick={()=>setActiveNav('planner')}>
                 <div className="card-icon">📋</div>
-                <div className="card-title">Planner</div>
+                <div className="card-label">Planner</div>
                 <div className="card-count">{plannerItems.length} task(s)</div>
               </div>
-              <div className="card" onClick={() => setActiveNav('notes')}>
+              <div className="card" onClick={()=>setActiveNav('notes')}>
                 <div className="card-icon">📝</div>
-                <div className="card-title">Notes</div>
+                <div className="card-label">Notes</div>
                 <div className="card-count">{notes.length} note(s)</div>
               </div>
-              <div className="card" onClick={() => setActiveNav('email')}>
+              <div className="card" onClick={()=>setActiveNav('email')}>
                 <div className="card-icon">✉️</div>
-                <div className="card-title">Email</div>
+                <div className="card-label">Email</div>
                 <div className="card-count">0 sent</div>
               </div>
             </div>
             <div className="upcoming-section">
               <div className="section-title">Upcoming</div>
-              {plannerItems.length === 0 ? <div className="empty">No upcoming tasks</div> : plannerItems.map(t => (
+              {plannerItems.length === 0 ?
+                <div className="empty">No upcoming tasks</div>
+              : plannerItems.map(t => (
                 <div key={t.id} className="task-row">
+                  <div className="task-dot"></div>
                   <div className="task-title">{t.title}</div>
-                  {t.date && <div className="task-date">{t.date}</div>}
+                  {t.date &&
+                    <div className="task-date">{t.date}</div>
+                  }
                 </div>
               ))}
             </div>
@@ -180,15 +205,19 @@ export default function App() {
               <div className="kanban-column">
                 <div className="kanban-header">To Do <span className="kanban-count">{todoTasks.length}</span></div>
                 <div className="kanban-tasks">
-                  {todoTasks.length===0?<div className="kanban-empty">No tasks</div>:todoTasks.map(t=>(
+                  {todoTasks.length===0?
+                    <div className="kanban-empty">No tasks</div>
+                  :todoTasks.map(t=>(
                     <div key={t.id} className="kanban-task">
                       <div className="kanban-task-title">{t.title}</div>
-                      {t.date&&<div className="kanban-task-meta"><span>📅 {t.date}</span></div>}
-                      {t.notes&&<div className="task-notes">{t.notes}</div>}
-                      <div style={{display:'flex',gap:'8px',marginTop:'8px'}}>
-                        <button className="doc-action-btn" onClick={()=>updateTaskStatus(t.id,'inprogress')}>Start</button>
-                        <button className="doc-action-btn" onClick={()=>removeTask(t.id)}>Remove</button>
-                      </div>
+                      {t.date&&
+                        <div className="kanban-task-meta">📅 {t.date}</div>
+                      }
+                      {t.notes&&
+                        <div className="task-notes">{t.notes}</div>
+                      }
+                      <button className="btn-primary" style={{marginTop:'8px',fontSize:'11px',padding:'6px 12px'}} onClick={()=>updateTaskStatus(t.id,'inprogress')}>Start</button>
+                      <button className="btn-remove" style={{marginTop:'4px'}} onClick={()=>removeTask(t.id)}>Remove</button>
                     </div>
                   ))}
                 </div>
@@ -196,16 +225,20 @@ export default function App() {
               <div className="kanban-column">
                 <div className="kanban-header">In Progress <span className="kanban-count">{inprogressTasks.length}</span></div>
                 <div className="kanban-tasks">
-                  {inprogressTasks.length===0?<div className="kanban-empty">No tasks</div>:inprogressTasks.map(t=>(
+                  {inprogressTasks.length===0?
+                    <div className="kanban-empty">No tasks</div>
+                  :inprogressTasks.map(t=>(
                     <div key={t.id} className="kanban-task">
                       <div className="kanban-task-title">{t.title}</div>
-                      {t.date&&<div className="kanban-task-meta"><span>📅 {t.date}</span></div>}
-                      {t.notes&&<div className="task-notes">{t.notes}</div>}
-                      <div style={{display:'flex',gap:'8px',marginTop:'8px'}}>
-                        <button className="doc-action-btn" onClick={()=>updateTaskStatus(t.id,'done')}>Complete</button>
-                        <button className="doc-action-btn" onClick={()=>updateTaskStatus(t.id,'todo')}>Move Back</button>
-                        <button className="doc-action-btn" onClick={()=>removeTask(t.id)}>Remove</button>
-                      </div>
+                      {t.date&&
+                        <div className="kanban-task-meta">📅 {t.date}</div>
+                      }
+                      {t.notes&&
+                        <div className="task-notes">{t.notes}</div>
+                      }
+                      <button className="btn-primary" style={{marginTop:'8px',fontSize:'11px',padding:'6px 12px'}} onClick={()=>updateTaskStatus(t.id,'done')}>Complete</button>
+                      <button className="btn-primary" style={{marginTop:'4px',fontSize:'11px',padding:'6px 12px',opacity:'0.7'}} onClick={()=>updateTaskStatus(t.id,'todo')}>Move Back</button>
+                      <button className="btn-remove" style={{marginTop:'4px'}} onClick={()=>removeTask(t.id)}>Remove</button>
                     </div>
                   ))}
                 </div>
@@ -213,15 +246,19 @@ export default function App() {
               <div className="kanban-column">
                 <div className="kanban-header">Done <span className="kanban-count">{doneTasks.length}</span></div>
                 <div className="kanban-tasks">
-                  {doneTasks.length===0?<div className="kanban-empty">No completed tasks</div>:doneTasks.map(t=>(
+                  {doneTasks.length===0?
+                    <div className="kanban-empty">No completed tasks</div>
+                  :doneTasks.map(t=>(
                     <div key={t.id} className="kanban-task">
                       <div className="kanban-task-title">{t.title}</div>
-                      {t.date&&<div className="kanban-task-meta"><span>📅 {t.date}</span></div>}
-                      {t.notes&&<div className="task-notes">{t.notes}</div>}
-                      <div style={{display:'flex',gap:'8px',marginTop:'8px'}}>
-                        <button className="doc-action-btn" onClick={()=>updateTaskStatus(t.id,'inprogress')}>Reopen</button>
-                        <button className="doc-action-btn" onClick={()=>removeTask(t.id)}>Remove</button>
-                      </div>
+                      {t.date&&
+                        <div className="kanban-task-meta">📅 {t.date}</div>
+                      }
+                      {t.notes&&
+                        <div className="task-notes">{t.notes}</div>
+                      }
+                      <button className="btn-primary" style={{marginTop:'8px',fontSize:'11px',padding:'6px 12px',opacity:'0.7'}} onClick={()=>updateTaskStatus(t.id,'inprogress')}>Reopen</button>
+                      <button className="btn-remove" style={{marginTop:'4px'}} onClick={()=>removeTask(t.id)}>Remove</button>
                     </div>
                   ))}
                 </div>
@@ -241,12 +278,15 @@ export default function App() {
               </div>
               <div className="notes-list">
                 {notes.length === 0 ? (
-                  <div className="notes-empty-list">No notes yet.
-Click + to create one.</div>
+                  <div className="notes-empty-list">No notes yet.\nClick + to create one.</div>
                 ) : notes.map(note => (
-                  <div key={note.id} className={`notes-list-item${selectedNote?.id===note.id?' active':''}`} onClick={() => { saveCurrentNote(); selectNote(note); }}>
+                  <div
+                    key={note.id}
+                    className={`notes-list-item ${selectedNote?.id===note.id?'active':''}`}
+                    onClick={() => selectNote(note)}
+                  >
                     <div className="notes-list-title">{note.title || 'Untitled'}</div>
-                    <div className="notes-list-preview">{note.content ? note.content.slice(0,60) + (note.content.length > 60 ? '...' : '') : 'No additional text'}</div>
+                    <div className="notes-list-preview">{note.htmlContent ? note.htmlContent.replace(/<[^>]*>/g, '').slice(0,60) + (note.htmlContent.replace(/<[^>]*>/g, '').length > 60 ? '...' : '') : 'No additional text'}</div>
                     <div className="notes-list-date">{new Date(note.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
                   </div>
                 ))}
@@ -258,7 +298,7 @@ Click + to create one.</div>
                   <div className="notes-editor-empty-icon">📝</div>
                   <div className="notes-editor-empty-text">Select a note to view</div>
                   <div className="notes-editor-empty-sub">or click + to create a new one</div>
-                  <button className="btn-primary" style={{marginTop:'24px'}} onClick={createNote}>New Note</button>
+                  <button className="btn-primary" style={{marginTop:'20px'}} onClick={createNote}>New Note</button>
                 </div>
               ) : (
                 <div className="notes-editor-inner">
@@ -266,18 +306,76 @@ Click + to create one.</div>
                     <input
                       className="notes-title-input"
                       value={noteTitle}
-                      onChange={e => { setNoteTitle(e.target.value); updateNote(selectedNote.id, { title: e.target.value, content: noteContent }) }}
+                      onChange={e => {
+                        setNoteTitle(e.target.value);
+                        updateNote(selectedNote.id, { title: e.target.value, htmlContent: editorRef.current?.innerHTML || '' })
+                      }}
                       placeholder="Title"
                     />
-                    <button className="doc-action-btn" style={{color:'#F6718D',borderColor:'rgba(246,113,141,0.3)'}} onClick={() => deleteNote(selectedNote.id)}>Delete</button>
+                    <button className="btn-remove" onClick={()=>deleteNote(selectedNote.id)}>Delete</button>
                   </div>
                   <div className="notes-editor-meta">{new Date(selectedNote.date).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div>
-                  <textarea
-                    className="notes-content-area"
-                    value={noteContent}
-                    onChange={e => { setNoteContent(e.target.value); updateNote(selectedNote.id, { title: noteTitle, content: e.target.value }) }}
-                    placeholder="Start writing..."
-                  />
+                  <div className="rich-toolbar">
+                    <div className="toolbar-group">
+                      <button className="toolbar-btn" onClick={()=>execCmd('undo')} title="Undo">↺</button>
+                      <button className="toolbar-btn" onClick={()=>execCmd('redo')} title="Redo">↻</button>
+                    </div>
+                    <div className="toolbar-divider"></div>
+                    <div className="toolbar-group">
+                      <select className="toolbar-select" onChange={handleStyleChange} title="Text Style">
+                        {TEXT_STYLES.map(s=><option key={s} value={s}>{s}</option>)}
+                      </select>
+                      <select className="toolbar-select" onChange={e=>execCmd('fontName',e.target.value)} title="Font Family">
+                        {FONT_FAMILIES.map(f=><option key={f} value={f}>{f}</option>)}
+                      </select>
+                      <select className="toolbar-select" onChange={e=>execCmd('fontSize',e.target.value)} title="Font Size">
+                        {FONT_SIZES.map(s=><option key={s} value={s.replace('px','')}>{s}</option>)}
+                      </select>
+                    </div>
+                    <div className="toolbar-divider"></div>
+                    <div className="toolbar-group">
+                      <button className="toolbar-btn" onClick={()=>execCmd('bold')} title="Bold"><b>B</b></button>
+                      <button className="toolbar-btn" onClick={()=>execCmd('italic')} title="Italic"><i>I</i></button>
+                      <button className="toolbar-btn" onClick={()=>execCmd('underline')} title="Underline"><u>U</u></button>
+                      <button className="toolbar-btn" onClick={()=>execCmd('strikeThrough')} title="Strikethrough"><s>S</s></button>
+                    </div>
+                    <div className="toolbar-divider"></div>
+                    <div className="toolbar-group">
+                      <input type="color" className="toolbar-color" onChange={e=>execCmd('foreColor',e.target.value)} title="Text Color" />
+                      <input type="color" className="toolbar-color" onChange={e=>execCmd('hiliteColor',e.target.value)} title="Highlight" />
+                    </div>
+                    <div className="toolbar-divider"></div>
+                    <div className="toolbar-group">
+                      <button className="toolbar-btn" onClick={()=>execCmd('justifyLeft')} title="Align Left">←</button>
+                      <button className="toolbar-btn" onClick={()=>execCmd('justifyCenter')} title="Align Center">↔</button>
+                      <button className="toolbar-btn" onClick={()=>execCmd('justifyRight')} title="Align Right">→</button>
+                      <button className="toolbar-btn" onClick={()=>execCmd('justifyFull')} title="Justify">≡</button>
+                    </div>
+                    <div className="toolbar-divider"></div>
+                    <div className="toolbar-group">
+                      <button className="toolbar-btn" onClick={()=>execCmd('insertUnorderedList')} title="Bullet List">•</button>
+                      <button className="toolbar-btn" onClick={()=>execCmd('insertOrderedList')} title="Numbered List">1.</button>
+                      <button className="toolbar-btn" onClick={()=>execCmd('indent')} title="Increase Indent">→|</button>
+                      <button className="toolbar-btn" onClick={()=>execCmd('outdent')} title="Decrease Indent">|←</button>
+                    </div>
+                    <div className="toolbar-divider"></div>
+                    <div className="toolbar-group">
+                      <button className="toolbar-btn" onClick={()=>{const url=prompt('Enter URL:');if(url)execCmd('createLink',url)}} title="Insert Link">🔗</button>
+                      <button className="toolbar-btn" onClick={()=>{const url=prompt('Enter image URL:');if(url)execCmd('insertImage',url)}} title="Insert Image">🖼</button>
+                      <button className="toolbar-btn" onClick={()=>execCmd('insertHorizontalRule')} title="Horizontal Line">―</button>
+                    </div>
+                    <div className="toolbar-divider"></div>
+                    <div className="toolbar-group">
+                      <button className="toolbar-btn" onClick={()=>execCmd('removeFormat')} title="Clear Formatting">✕</button>
+                    </div>
+                  </div>
+                  <div
+                    ref={editorRef}
+                    className="rich-editor-content"
+                    contentEditable
+                    onInput={handleEditorInput}
+                    suppressContentEditableWarning
+                  ></div>
                 </div>
               )}
             </div>
