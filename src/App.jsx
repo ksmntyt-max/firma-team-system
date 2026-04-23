@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Routes, Route, Link, useParams, useNavigate } from 'react-router-dom'
 
 const ARCHITECTURE_DOCS = [
   {
