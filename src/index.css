@@ -114,3 +114,38 @@ body{background:linear-gradient(135deg, #fef9f5 0%, #fef5fa 35%, #f5f6fe 100%);f
 .doc-actions{display:flex;gap:8px}
 .doc-action-btn{background:none;border:1px solid rgba(255,133,92,0.3);color:#FF855C;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;transition:all 0.2s}
 .doc-action-btn:hover{background:rgba(255,133,92,0.1);border-color:#FF855C}
+
+
+/* Apple Notes Style */
+.notes-app{display:flex;height:calc(100vh - 0px);overflow:hidden;background:transparent}
+.notes-sidebar{width:280px;min-width:280px;background:rgba(255,255,255,0.55);backdrop-filter:blur(16px);border-right:1px solid rgba(255,133,92,0.15);display:flex;flex-direction:column;overflow:hidden}
+.notes-sidebar-header{display:flex;align-items:center;justify-content:space-between;padding:20px 16px 8px;border-bottom:1px solid rgba(255,133,92,0.1)}
+.notes-header-title{font-family:'Fraunces',Georgia,serif;font-size:22px;font-weight:600;color:#2a2a2a}
+.notes-new-btn{background:linear-gradient(135deg,#FF855C,#F6718D);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:all 0.2s}
+.notes-new-btn:hover{transform:scale(1.1);box-shadow:0 4px 12px rgba(255,133,92,0.4)}
+.notes-search-wrap{padding:10px 12px;border-bottom:1px solid rgba(255,133,92,0.08)}
+.notes-search{width:100%;background:rgba(255,133,92,0.07);border:none;border-radius:8px;padding:8px 12px;font-size:13px;font-family:'Inter',sans-serif;color:#2a2a2a;outline:none;box-sizing:border-box}
+.notes-search::placeholder{color:#bbb}
+.notes-list{flex:1;overflow-y:auto;padding:8px 0}
+.notes-empty-list{padding:32px 16px;text-align:center;color:#bbb;font-size:13px;font-family:'Inter',sans-serif;white-space:pre-line;line-height:1.8}
+.notes-list-item{padding:12px 16px;cursor:pointer;border-bottom:1px solid rgba(255,133,92,0.06);transition:background 0.15s}
+.notes-list-item:hover{background:rgba(255,133,92,0.06)}
+.notes-list-item.active{background:rgba(255,133,92,0.12);border-left:3px solid #FF855C}
+.notes-list-title{font-family:'Fraunces',Georgia,serif;font-size:14px;font-weight:600;color:#2a2a2a;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notes-list-preview{font-size:12px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;font-family:'Inter',sans-serif}
+.notes-list-date{font-size:10px;color:#bbb;font-family:'Inter',sans-serif}
+.notes-editor{flex:1;display:flex;flex-direction:column;background:rgba(255,255,255,0.35);backdrop-filter:blur(8px);overflow:hidden}
+.notes-editor-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#bbb;text-align:center;padding:40px}
+.notes-editor-empty-icon{font-size:56px;margin-bottom:16px}
+.notes-editor-empty-text{font-family:'Fraunces',Georgia,serif;font-size:20px;color:#aaa;margin-bottom:8px}
+.notes-editor-empty-sub{font-size:13px;color:#ccc;font-family:'Inter',sans-serif}
+.notes-editor-inner{flex:1;display:flex;flex-direction:column;padding:28px 40px 0;overflow:hidden}
+.notes-editor-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.notes-title-input{font-family:'Fraunces',Georgia,serif;font-size:28px;font-weight:600;color:#2a2a2a;border:none;background:transparent;outline:none;flex:1;margin-right:16px}
+.notes-title-input::placeholder{color:#ddd}
+.notes-editor-meta{font-size:12px;color:#bbb;font-family:'Inter',sans-serif;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,133,92,0.1)}
+.notes-content-area{flex:1;border:none;background:transparent;outline:none;font-size:15px;line-height:1.8;color:#3a3a3a;font-family:'Inter',sans-serif;resize:none;padding-bottom:40px;min-height:0}
+.notes-content-area::placeholder{color:#ccc}
+.main:has(.notes-app){padding:0;overflow:hidden}
+.notes-app .notes-sidebar::-webkit-scrollbar{width:4px}
+.notes-app .notes-sidebar::-webkit-scrollbar-thumb{background:rgba(255,133,92,0.3);border-radius:4px}
