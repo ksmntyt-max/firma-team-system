@@ -246,3 +246,80 @@ body{background:linear-gradient(135deg,#fef9f5 0%,#fef5fa 35%,#f5f6fe 100%);font
 .atlas-card-sub{font-family:'Inter',sans-serif;font-size:11px;color:#888;line-height:1.5}
 
 .atlas-doc-content{font-family:'Inter',sans-serif;font-size:14px;line-height:1.85;color:#444;white-space:pre-wrap;background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);border:1px solid rgba(255,133,92,0.13);border-radius:12px;padding:32px}
+
+/* ─── ATLAS DOC RENDERER ─── */
+.atlas-doc-renderer{font-family:'Inter',sans-serif;max-width:860px}
+
+/* Header block */
+.adr-header{margin-bottom:32px}
+.adr-header-badge{display:inline-block;font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;background:rgba(255,133,92,0.12);color:#FF855C;padding:4px 10px;border-radius:4px;margin-bottom:14px}
+.adr-title{font-family:'Fraunces',Georgia,serif;font-size:38px;font-weight:500;color:#2a2a2a;letter-spacing:-0.02em;line-height:1.15;margin-bottom:8px}
+.adr-subtitle{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:#FF855C;letter-spacing:0.4px;margin-bottom:4px}
+.adr-description{font-family:'Inter',sans-serif;font-size:11px;color:#aaa;letter-spacing:0.5px;margin-bottom:14px}
+.adr-thesis{font-family:'Fraunces',Georgia,serif;font-size:16px;font-style:italic;color:#555;line-height:1.7;border-left:3px solid rgba(255,133,92,0.4);padding-left:16px;margin-top:12px}
+.adr-divider{height:1px;background:linear-gradient(90deg,rgba(255,133,92,0.25),rgba(246,113,141,0.15),transparent);margin:28px 0}
+
+/* Body */
+.adr-body{display:flex;flex-direction:column;gap:28px}
+
+/* Context */
+.adr-context{font-family:'Inter',sans-serif;font-size:14px;color:#444;line-height:1.8}
+
+/* Key insight */
+.adr-key-insight{background:linear-gradient(135deg,rgba(255,133,92,0.07),rgba(246,113,141,0.05));border:1px solid rgba(255,133,92,0.22);border-left:4px solid #FF855C;border-radius:10px;padding:20px 22px}
+.adr-key-insight-title{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:#FF855C;margin-bottom:8px}
+.adr-key-insight-body{font-family:'Inter',sans-serif;font-size:13px;color:#333;line-height:1.75}
+
+/* Sequence */
+.adr-sequence{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:rgba(255,255,255,0.55);border:1px solid rgba(255,133,92,0.15);border-radius:8px;padding:14px 18px}
+.adr-seq-label{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin-right:6px}
+.adr-seq-item{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#2a2a2a;background:rgba(255,133,92,0.1);padding:4px 10px;border-radius:5px}
+.adr-seq-arrow{font-size:11px;color:#ccc;margin:0 2px}
+
+/* Phase */
+.adr-phase{background:rgba(255,255,255,0.6);border:1px solid rgba(255,133,92,0.15);border-radius:12px;overflow:hidden}
+.adr-phase-title{font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:500;color:#2a2a2a;padding:16px 20px 0}
+.adr-phase-title em{font-style:italic;color:#aaa;font-size:14px}
+.adr-phase-theme{font-family:'Inter',sans-serif;font-size:11px;color:#888;padding:4px 20px 14px;border-bottom:1px solid rgba(255,133,92,0.1)}
+.adr-phase-footer{display:flex;justify-content:space-between;padding:10px 20px;background:rgba(255,133,92,0.04);font-family:'Inter',sans-serif;font-size:11px;color:#888;gap:16px}
+
+/* Table */
+.adr-table-wrap{overflow:hidden;border-radius:10px;border:1px solid rgba(255,133,92,0.15)}
+.adr-section-title+.adr-table-wrap,.adr-table-wrap .adr-section-title{margin-bottom:0}
+.adr-table{width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:12.5px}
+.adr-phase .adr-table{border-radius:0;border:none}
+.adr-table thead tr{background:rgba(255,133,92,0.07)}
+.adr-table th{text-align:left;padding:10px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#FF855C;border-bottom:1px solid rgba(255,133,92,0.15)}
+.adr-table td{padding:10px 14px;color:#333;border-bottom:1px solid rgba(255,133,92,0.08);line-height:1.5;vertical-align:top}
+.adr-table tr:last-child td{border-bottom:none}
+.adr-table tr:hover td{background:rgba(255,133,92,0.03)}
+.adr-td-step{font-weight:600;color:#2a2a2a;white-space:nowrap;width:36px}
+.adr-td-time{color:#aaa;white-space:nowrap;font-size:11px}
+
+/* Section */
+.adr-section{}
+.adr-section-title{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#FF855C;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(255,133,92,0.13)}
+.adr-section-content{font-family:'Inter',sans-serif;font-size:13px;color:#444;line-height:1.75}
+.adr-bullets{margin-top:8px;padding-left:18px;font-family:'Inter',sans-serif;font-size:13px;color:#444;line-height:1.75;display:flex;flex-direction:column;gap:5px}
+.adr-bullets li::marker{color:#FF855C}
+
+/* Layers */
+.adr-layers{display:flex;flex-direction:column;gap:12px}
+.adr-layer{background:rgba(255,255,255,0.5);border:1px solid rgba(132,167,247,0.2);border-left:3px solid #84A7F7;border-radius:8px;padding:14px 18px}
+.adr-layer-label{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#84A7F7;margin-bottom:6px}
+.adr-layer-body{font-family:'Inter',sans-serif;font-size:13px;color:#444;line-height:1.7}
+
+/* Two-col */
+.adr-two-col-wrap{}
+.adr-two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.adr-col{background:rgba(255,255,255,0.55);border:1px solid rgba(255,133,92,0.13);border-radius:10px;padding:16px 18px}
+.adr-col-title{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#2a2a2a;margin-bottom:10px}
+
+/* Outcome */
+.adr-outcome{background:linear-gradient(135deg,rgba(92,184,92,0.07),rgba(132,167,247,0.05));border:1px solid rgba(92,184,92,0.25);border-left:4px solid #5CB85C;border-radius:10px;padding:20px 22px}
+.adr-outcome-title{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:#5CB85C;margin-bottom:8px}
+.adr-outcome-body{font-family:'Inter',sans-serif;font-size:13px;color:#333;line-height:1.75}
+
+/* Back button */
+.atlas-back-btn{background:none;border:1px solid rgba(255,133,92,0.25);color:#FF855C;padding:7px 14px;border-radius:7px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:0.3px;transition:all 0.15s;margin-bottom:24px;display:inline-flex;align-items:center;gap:6px}
+.atlas-back-btn:hover{background:rgba(255,133,92,0.07)}

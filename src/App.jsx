@@ -10,6 +10,11 @@ const INITIAL_DOCUMENTS = [
   { id: 3, title: 'Weekly Team Notes — Apr 20', category: 'Ops', badge: 'NOTES', date: '2026-04-21', htmlContent: '<h2>Weekly Team Notes — Apr 20</h2><p>Team sync notes covering active deployments, blockers, and next steps.</p>' },
 ]
 
+// ── STRUCTURED ARCHITECTURE DOCS ──────────────────────────────────────────────
+// Each doc uses a `blocks` array. Block types:
+//   context | key-insight | sequence | phase | section | table | layers | two-col | outcome
+// Fallback: if no blocks, renders plain `content` text.
+
 const INITIAL_ARCH_DOCS = [
   {
     id: 'bataan-framework',
@@ -18,25 +23,208 @@ const INITIAL_ARCH_DOCS = [
     badge: 'Framework',
     subtitle: 'Firma Sovereign Foundation · Asia-Pacific Deployment Strategy',
     description: 'West Luzon Corridor · 2026–2028 · V1.0',
-    content: `CORE MISSION\nEstablish Bataan as Firma's primary Asia-Pacific operational headquarters — a sovereign-grade zone corridor that functions as a Settlemint anchor, logistics gateway, and compliance-ready base for all Southeast Asian operations. Three sites: Dinalupihan (HQ), Mariveles/AFAB (zone operations), and SBFZ (logistics and international gateway).\n\nKEY STRUCTURAL DECISION: 60/40 OWNERSHIP\nForeign corporations cannot purchase land in the Philippines. Land ownership is restricted to Filipino citizens and corporations with at least 60% Filipino equity. The corporation must be structured 60% Filipino / 40% foreign from day one.\n\nREGISTRATION SEQUENCE: SEC → SBFZ → Office Setup → FAB → Land Acquisition\n\n────────────────────────────────────\nPHASE 1 — FOUNDATION (Month 0–3)\nTheme: Legal entity formation — SEC first, SBFZ second\nRealistic Total: 2.5–3 months\n────────────────────────────────────\n\n1. SEC Registration — File Articles of Incorporation under RA 11232 with 60/40 ownership structure. Authorized capital: ₱20,000,000. Appoint Corporate Secretary (must be Filipino resident). Est. Time: 2–4 weeks\n\n2. Open Corporate Bank Account — Required for capitalization proof before SBMA application. Est. Time: 1–2 weeks\n\n3. Prepare SBMA Application Package — LOI to SBMA Chairman, business plan + financial projections, company profile, risk & safety assessment, SEC cert + Articles, bank capitalization proof. Est. Time: 2–3 weeks\n\n4. Submit SBMA Application — File via One-Stop Shop or online portal. Fee: ₱5,000. Est. Time: 1–3 months\n\n5. Obtain CRTE — Certificate of Registration and Tax Exemption. Unlocks 5% GIT, duty-free imports, VAT zero-rating. Issued upon SBMA approval.\n\n6. BIR Registration — TIN, COR, authority to print invoices via BIR Form 1903. Fee: ₱500. Est. Time: 2–4 weeks\n\n7. SSS / PhilHealth / Pag-IBIG — Register for all employees. Under 10 employees = simplified remittance. Est. Time: 1–2 weeks\n\n8. Secure SBFZ Physical Lease (HQ Office) — SBMA requires actual presence. Rate: ~₱50–200/sqm/month. Est. Time: 1–2 weeks\n\nExit Criteria: CRTE received, BIR COR issued, all agency registrations complete.\n\n────────────────────────────────────\nPHASE 2 — EXPANSION (Month 3–12)\nTheme: HQ office live, operations structured, FAB registered\nRealistic Total: 4–6 months\n────────────────────────────────────\n\n1. Office Setup (Design → Build) — Hire licensed architect, design HQ layout, fit-out the leased space, set up IT infrastructure, utilities, and signage. Est. Time: 1–2 months\n\n2. Bookkeeping & Accounting Setup — Hire or contract a CPA/bookkeeper. Set up accounting system (QuickBooks, Xero, or local alternative). Est. Time: 3–4 weeks\n\n3. Payroll System — Set up payroll aligned with SSS, PhilHealth, Pag-IBIG contribution schedules. Define pay cycle and pay slips. Est. Time: 2–3 weeks\n\n4. Begin Quarterly BIR Filings — File and pay 5% GIT quarterly. Lock in compliance calendar (due dates: Apr 30, Jul 31, Oct 31, Jan 31). Ongoing.\n\n5. FAB Registration (Freeport Area of Bataan) — Once SBFZ office is active and operations are established, register with AFAB as a locator for Bataan-side operations. Requires separate AFAB application and locator agreement. Est. Time: 1–3 months\n\n6. SBMA Annual Report Prep — Start collecting employment data and financial statements for first annual SBMA submission. Ongoing.\n\nExit Criteria: SBFZ HQ operational (occupancy permit secured), bookkeeping system live, FAB registration filed or approved.\n\n────────────────────────────────────\nPHASE 3 — LAND ACQUISITION (After FAB is Secured)\nTheme: Secure land — the hardest and longest part\nRealistic Total: 12–24 months from start of land search\n────────────────────────────────────\n\n1. Identify Target Land — Prospect lots near SBFZ/Bataan corridor. Engage licensed broker (PRC-registered). Factor in zoning, SBMA perimeter rules, flood maps, access roads. Est. Time: 2–4 months\n\n2. Due Diligence — Verify clean OCT/TCT at Registry of Deeds; no encumbrances, liens, or adverse claims. Check agricultural classification (may require DAR clearance), DENR classification, and real property tax status. Est. Time: 2–3 months\n\n3. DAR Clearance (if agricultural) — If land is classified agricultural, secure Department of Agrarian Reform clearance before any sale can proceed. This is the longest possible blocker. Est. Time: 3–6 months if required.\n\n4. Negotiate and Execute Deed of Absolute Sale — Notarized; buyer listed as Firma corporation. Lock in price, payment terms, and turn-over conditions. Est. Time: 2–4 weeks\n\n5. Pay Transfer Taxes — Capital Gains Tax: 6% (seller's obligation, often negotiated); Documentary Stamp Tax: 1.5% (buyer); Transfer Tax at LGU: 0.5–0.75%. Real Property Tax clearance required. Est. Time: 1–2 months\n\n6. Obtain CAR from BIR — Certificate Authorizing Registration. BIR issues after all taxes are paid. Required before title can transfer. Est. Time: 3–6 weeks\n\n7. Title Transfer at Registry of Deeds — New TCT issued in Firma corporation's name. Final step. Est. Time: 2–4 weeks\n\nExit Criteria: Clean TCT issued in Firma corporation's name.\n\n────────────────────────────────────\nPHASE 4 — FAB EXTENSION / OWN ECONOMIC ZONE (Long-Term)\nTheme: Firma becomes the zone — sovereign economic territory\n────────────────────────────────────\n\nOption A — FAB Extension\nPetition AFAB to formally include Firma's land within the FAB perimeter. Less control — AFAB remains authority. No revenue upside. Unlocks tax exemptions, duty-free, 100% foreign ownership for locators on Firma land. Timeline: 1–2 years after land secured.\n\nOption B — Own PEZA Zone\nApply with PEZA to establish a private economic zone on Firma-owned land. Full control — Firma is the zone operator. Revenue upside from locator fees and zone admin. Firma sub-leases space to locators; hosts other companies inside its perimeter. Timeline: 2–4 years after land secured.\n\nRECOMMENDED FIRST MOVE: Pursue FAB Extension while simultaneously scoping the PEZA zone application — they are not mutually exclusive. FAB Extension accelerates the credibility needed for a PEZA application.`
+    thesis: 'Establish Bataan as Firma\'s primary Asia-Pacific operational headquarters — a sovereign-grade zone corridor functioning as a Settlemint anchor, logistics gateway, and compliance-ready base for all Southeast Asian operations.',
+    blocks: [
+      {
+        type: 'context',
+        content: 'The corridor operates across three sites: Dinalupihan (HQ), Mariveles/AFAB (zone operations), and SBFZ (logistics and international gateway). Each site holds a distinct operational role within Firma\'s sovereign infrastructure stack. The legal and registration structure must be established in the correct sequence to unlock zone incentives and land rights.'
+      },
+      {
+        type: 'key-insight',
+        title: 'KEY STRUCTURAL DECISION: 60/40 OWNERSHIP',
+        content: 'Foreign corporations cannot purchase land in the Philippines. Land ownership is restricted to Filipino citizens and corporations with at least 60% Filipino equity. Since Phase 3 is land acquisition, the corporation must be structured 60% Filipino / 40% foreign from day one — not retrofitted later.'
+      },
+      {
+        type: 'sequence',
+        label: 'Registration Sequence',
+        steps: ['SEC', 'SBFZ', 'Office Setup', 'FAB', 'Land Acquisition']
+      },
+      {
+        type: 'phase',
+        title: 'Phase 1 — Foundation',
+        period: 'Month 0–3',
+        theme: 'Legal entity formation — SEC first, SBFZ second',
+        timeline: '2.5–3 months',
+        rows: [
+          { step: 1, action: 'SEC Registration', detail: 'File Articles of Incorporation under RA 11232 with 60/40 ownership structure. Authorized capital: ₱20,000,000. Appoint Corporate Secretary (must be Filipino resident).', time: '2–4 weeks' },
+          { step: 2, action: 'Open Corporate Bank Account', detail: 'Required for capitalization proof before SBMA application.', time: '1–2 weeks' },
+          { step: 3, action: 'Prepare SBMA Application Package', detail: 'LOI to SBMA Chairman, business plan + financial projections, company profile, risk & safety assessment, SEC cert + Articles, bank capitalization proof.', time: '2–3 weeks' },
+          { step: 4, action: 'Submit SBMA Application', detail: 'File via One-Stop Shop or online portal. Fee: ₱5,000. SBMA review period.', time: '1–3 months' },
+          { step: 5, action: 'Obtain CRTE', detail: 'Certificate of Registration and Tax Exemption. Unlocks 5% GIT, duty-free imports, VAT zero-rating.', time: 'Upon SBMA approval' },
+          { step: 6, action: 'BIR Registration', detail: 'TIN, COR, authority to print invoices via BIR Form 1903. Fee: ₱500.', time: '2–4 weeks' },
+          { step: 7, action: 'SSS / PhilHealth / Pag-IBIG', detail: 'Register for all employees. Under 10 employees = simplified remittance.', time: '1–2 weeks' },
+          { step: 8, action: 'Secure SBFZ Physical Lease (HQ Office)', detail: 'SBMA requires actual presence. Target a larger commercial unit — meeting rooms, team workspace, operations hub. Rate: ~₱50–200/sqm/month depending on district.', time: '1–2 weeks' },
+        ],
+        exit: 'CRTE received, BIR COR issued, all agency registrations complete.'
+      },
+      {
+        type: 'phase',
+        title: 'Phase 2 — Expansion',
+        period: 'Month 3–12',
+        theme: 'HQ office live, operations structured, FAB registered',
+        timeline: '4–6 months',
+        rows: [
+          { step: 1, action: 'Office Setup (Design → Build)', detail: 'Hire licensed architect, design HQ layout, fit-out the leased space, set up IT infrastructure, utilities, and signage. Corporate kit (seal, minute book, stock ledger) finalized upon completion.', time: '1–2 months' },
+          { step: 2, action: 'Bookkeeping & Accounting Setup', detail: 'Hire or contract a CPA/bookkeeper. Set up accounting system (QuickBooks, Xero, or local alternative). Establish chart of accounts, payroll processing, and BIR-compliant official receipts.', time: '3–4 weeks' },
+          { step: 3, action: 'Payroll System', detail: 'Set up payroll aligned with SSS, PhilHealth, Pag-IBIG contribution schedules. Define pay cycle and pay slips.', time: '2–3 weeks' },
+          { step: 4, action: 'Begin Quarterly BIR Filings', detail: 'File and pay 5% GIT quarterly. Compliance calendar due dates: Apr 30, Jul 31, Oct 31, Jan 31.', time: 'Ongoing' },
+          { step: 5, action: 'FAB Registration', detail: 'Once SBFZ office is active, register with AFAB as a locator for Bataan-side operations. Requires separate AFAB application and locator agreement.', time: '1–3 months' },
+          { step: 6, action: 'SBMA Annual Report Prep', detail: 'Start collecting employment data and financial statements for first annual SBMA submission.', time: 'Ongoing' },
+        ],
+        exit: 'SBFZ HQ operational (occupancy permit secured), bookkeeping system live, FAB registration filed or approved.'
+      },
+      {
+        type: 'phase',
+        title: 'Phase 3 — Land Acquisition',
+        period: 'After FAB is Secured',
+        theme: 'Secure land — the hardest and longest part of the plan',
+        timeline: '12–24 months from start of land search',
+        rows: [
+          { step: 1, action: 'Identify Target Land', detail: 'Prospect lots near SBFZ / Bataan corridor. Engage licensed broker (PRC-registered). Factor in zoning, SBMA perimeter rules, flood maps, access roads.', time: '2–4 months' },
+          { step: 2, action: 'Due Diligence', detail: 'Verify clean OCT/TCT at Registry of Deeds; no encumbrances, liens, or adverse claims. Check agricultural classification (may require DAR clearance), DENR classification, and real property tax status.', time: '2–3 months' },
+          { step: 3, action: 'DAR Clearance (if agricultural)', detail: 'If land is classified agricultural, secure Department of Agrarian Reform clearance before any sale. This is the longest possible blocker.', time: '3–6 months (if required)' },
+          { step: 4, action: 'Negotiate and Execute Deed of Absolute Sale', detail: 'Notarized; buyer listed as Firma corporation. Lock in price, payment terms, and turn-over conditions.', time: '2–4 weeks' },
+          { step: 5, action: 'Pay Transfer Taxes', detail: 'Capital Gains Tax: 6%; Documentary Stamp Tax: 1.5%; Transfer Tax at LGU: 0.5–0.75%. Real Property Tax clearance required.', time: '1–2 months' },
+          { step: 6, action: 'Obtain CAR from BIR', detail: 'Certificate Authorizing Registration. Required before title can transfer.', time: '3–6 weeks' },
+          { step: 7, action: 'Title Transfer at Registry of Deeds', detail: 'New TCT issued in Firma corporation\'s name. Final step.', time: '2–4 weeks' },
+        ],
+        exit: 'Clean TCT issued in Firma corporation\'s name.'
+      },
+      {
+        type: 'section',
+        title: 'Phase 4 — FAB Extension / Own Economic Zone',
+        content: 'This phase begins only after land is acquired and operations are proven at both SBFZ and FAB. Firma pursues one or both paths to become a recognized economic zone in its own right.'
+      },
+      {
+        type: 'table',
+        headers: ['Factor', 'Option A — FAB Extension', 'Option B — Own PEZA Zone'],
+        rows: [
+          ['What it is', 'Petition AFAB to formally include Firma\'s land within the FAB perimeter', 'Apply with PEZA to establish a private economic zone on Firma-owned land'],
+          ['Control', 'Less — AFAB remains the authority', 'Full — Firma is the zone operator'],
+          ['Setup Complexity', 'Lower — petition to existing zone', 'Higher — full PEZA application + zone development'],
+          ['Revenue Upside', 'None (incentive recipient only)', 'Yes — locator fees, zone admin'],
+          ['Sovereign Feel', 'Partial', 'Full'],
+          ['Timeline', '1–2 years after land secured', '2–4 years after land secured'],
+        ]
+      },
+      {
+        type: 'outcome',
+        title: 'RECOMMENDED FIRST MOVE',
+        content: 'Pursue FAB Extension while simultaneously scoping the PEZA zone application — they are not mutually exclusive. FAB Extension accelerates the credibility needed for a PEZA application, building the employment, investment, and economic contribution track record that PEZA will require.'
+      }
+    ]
   },
   {
     id: 'priority-hq',
-    title: 'PRIORITY: FIT HQ Setup',
+    title: 'PRIORITY: FIT HQ SETUP',
     section: 'Priority Actions',
     badge: 'Priority',
     subtitle: 'Physical HQ & Compliance Foundation',
-    description: 'MSpace Balanga + Freeport Area options — securing the base of operations',
-    content: `FIT HQ PRIORITY\n\nWe're set to look at MSpace in Balanga and a couple other options inside the Freeport Area. We would love to get a small fund as support so that when we go to visit in person, it's proper and on time — photos, feel the space, not just a price sheet. Whatever we lock down must feel like a base of operations, not just desks with a logo slapped on.\n\n────────────────────────────────────\nFOR SECURING THE PHYSICAL HQ\n────────────────────────────────────\n\n• Business lease agreement review (commercial use and events rights)\n• Barangay clearance for business operations in Balanga City\n• Mayor's Business Permit (City of Balanga) — required before we can operate FIT HQ officially\n• BIR registration (if FIRMA / FIT will be billing or transacting out of this address)\n• DOLE compliance if we're onboarding local staff working out of this location\n• Fire safety inspection certificate and occupancy clearance\n• Coordination with the Freeport Authority of Bataan (FAB) if we go the Freeport Area route — they have their own permitting layer separate from the city\n\n────────────────────────────────────\nFOR ESTABLISHING FIRMA IP IN THE PHILIPPINES\n────────────────────────────────────\n\n• Trademark registration with IPOPHL — covering FIRMA, FIT, SEEDBASE, and Nation of Heaven marks across key classes:\n  - Class 9: tech/software\n  - Class 35: business services\n  - Class 36: financial/token-related\n  - Class 41: events and education\n• Trade name registration with SEC (if setting up a local entity under the FIRMA brand)\n• Copyright filing for original creative assets — visual identity, documents, content, architectural frameworks\n• Domain and brand protection sweep (lock all key URLs, handles, and variations before going public)\n• If tokenizing anything locally — early coordination with the SEC Philippines on token/digital asset classification\n• NDA and IP assignment agreements for all local contractors, crew, and staff from day one\n\nSTRATEGY: Do this clean from the start in Bataan so when we replicate the model in other countries, we already have a working compliance template to hand off. No scrambling, no retrofitting.\n\n────────────────────────────────────\nKEY CONTACT: RECURRA\n────────────────────────────────────\n\nPrimary contact for event logistics, film crew, and agencies.\nNote: Clarky personally knows the Owner.\n\nFacebook: https://www.facebook.com/recurraph\nWebsite: https://www.recurraph.com/\n\nSub-services: Event Logistics · Film Crew · Agencies`
+    description: 'Immediate actions for securing MSpace Balanga and establishing operational presence',
+    thesis: 'Lock down the right space in Bataan — then build the legal and IP foundation clean from day one so the model is replicable across other countries without retrofitting.',
+    blocks: [
+      {
+        type: 'context',
+        content: 'We\'re set to look at MSpace in Balanga and a couple other options inside the Freeport Area. We need a small fund as support so that when we go to visit in person, it\'s proper and on time — photos, feel the space, not just a price sheet. Whatever we lock down must feel like a base of operations, not just desks with a logo slapped on.'
+      },
+      {
+        type: 'section',
+        title: 'FOR SECURING THE PHYSICAL HQ',
+        bullets: [
+          'Business lease agreement review — commercial use and events rights',
+          'Barangay clearance for business operations in Balanga City',
+          'Mayor\'s Business Permit (City of Balanga) — required before FIT HQ can operate officially',
+          'BIR registration (if FIRMA / FIT will be billing or transacting out of this address)',
+          'DOLE compliance if onboarding local staff at this location',
+          'Fire safety inspection certificate and occupancy clearance (standard for any commercial space)',
+          'Coordination with the Freeport Authority of Bataan (FAB) if going the Freeport Area route — separate permitting layer from the city',
+        ]
+      },
+      {
+        type: 'section',
+        title: 'FOR ESTABLISHING FIRMA IP IN THE PHILIPPINES',
+        bullets: [
+          'Trademark registration with IPOPHL — FIRMA, FIT, SEEDBASE, Nation of Heaven marks across key classes: Class 9 (tech/software), Class 35 (business services), Class 36 (financial/token-related), Class 41 (events and education)',
+          'Trade name registration with SEC (if setting up a local entity under the FIRMA brand)',
+          'Copyright filing for original creative assets — visual identity, documents, content, architectural frameworks',
+          'Domain and brand protection sweep — lock all key URLs, handles, and variations before going loud publicly',
+          'Early coordination with the SEC Philippines on token/digital asset classification if tokenizing anything locally',
+          'NDA and IP assignment agreements for all local contractors, crew, and staff from day one',
+        ]
+      },
+      {
+        type: 'outcome',
+        title: 'STRATEGY',
+        content: 'Do this clean from the start in Bataan so when we replicate the model in other countries, we already have a working compliance template to hand off. No scrambling, no retrofitting.'
+      },
+      {
+        type: 'section',
+        title: 'KEY CONTACT — RECURRA',
+        bullets: [
+          'Primary contact for event logistics, film crew, and agency services in Bataan region',
+          'Clarky personally knows the Owner',
+          'Facebook: facebook.com/recurraph',
+          'Website: recurraph.com',
+          'Services: Event Logistics · Film Crew · Agencies',
+        ]
+      }
+    ]
   },
   {
     id: 'events-calendar',
     title: 'FIT 2026 EVENT CALENDAR',
     section: 'Events',
     badge: 'Events',
-    subtitle: 'SEA & Asia Event Scouting — 2026',
+    subtitle: 'SEA & Asia Event Scouting Calendar — 2026',
     description: 'No PBW. Only high-impact, high-visibility events worth showing up to like a movement.',
-    content: `FIT — 2026 SEA & ASIA EVENT SCOUTING CALENDAR\nNo PBW. Only high-impact, high-visibility events worth showing up to like a movement.\n\n════════════════════════════════════\nTIER 1 — MUST BE THERE (Non-negotiables)\n════════════════════════════════════\n\n1. TOKEN2049 SINGAPORE\nDate: October 7–8, 2026 (After2049 afterparty: October 9)\nLocation: Marina Bay Sands, Singapore\nScale: World's largest crypto event — 25,000+ attendees, 7,000+ companies, 160+ countries\n\nWhy FIT needs to be here: This is THE event. OKX is a title sponsor, Base shows up heavy, every major exchange and protocol has a booth, side events, and afterparties running the whole week. The Singapore F1 Grand Prix overlaps the same week — the city is electric. FIT needs a booth, a side event, and a presence all week — not just the 2 conference days.\n\nFIT Play: Sponsor a side event during Token2049 week, run a booth on the main floor, host an afterparty that becomes a talking point.\nBudget category: Major activation — Tier 1 spend.\n\n────────────────────────────────────\n2. COINFEST ASIA — BALI\nDate: August 20–21, 2026\nLocation: Nuanu Juice Center, Bali, Indonesia\nScale: World's largest crypto festival — 10,000+ attendees in a tropical, open-air festival format\n\nWhy FIT needs to be here: Coinfest isn't a conference — it's a cultural moment. It's the most vibe-driven, community-first event in Asia. No suits, no stiff panels — just builders, creators, and degens in Bali. This aligns directly with FIT's belonging-first, movement energy.\n\nFIT Play: Activation booth with merch drops, a SEEDBASE pop-up, and a side event or community beach meetup. Hire a local Bali crew for content capture.\nBudget category: Mid-tier — high community impact per dollar.\n\n────────────────────────────────────\n3. KOREA BLOCKCHAIN WEEK (KBW) — SEOUL\nDate: September 29 – October 1, 2026\nLocation: Seoul, South Korea\nScale: 7,000+ registered attendees, 120+ speakers\n\nWhy FIT needs to be here: KBW happens the week before TOKEN2049 — meaning the crypto world is traveling from Seoul to Singapore in one continuous run. FIT can be present at both back-to-back, maximizing one travel window. Seoul's Web3 scene is massive and underserved by Western brands trying to break into Asia.\n\nFIT Play: Side event or executive dinner during KBW week. Coordinate with Hype3's local Korea team for ground support.\nBudget category: Mid-tier — strong ROI when stacked with Token2049 travel.\n\n════════════════════════════════════\nTIER 2 — HIGH PRIORITY (Go if activation is right)\n════════════════════════════════════\n\n4. SOUTHEAST ASIA BLOCKCHAIN WEEK (SEABW) — BANGKOK\nDate: May 18–24, 2026 (Main Conference: May 20–21)\nLocation: True Icon Hall, Bangkok, Thailand\nScale: 3,000+ participants\n\nWhy FIT should be here: Bangkok is the most Web3-friendly city in SEA right now. SEABW is purpose-built for the SEA circuit — the audience is exactly FIT's target: regional builders and community leaders. Test ground before the larger Token2049 activation.\n\nFIT Play: Booth presence, community panel or side event. Contract CH3 Bangkok team for local production support.\nBudget category: Mid-tier.\n\n────────────────────────────────────\n5. AIBC ASIA / SiGMA ASIA — MANILA\nDate: June 1–3, 2026\nLocation: SMX Convention Center, Manila, Philippines\nScale: Multi-day expo covering AI, blockchain, Web3, iGaming, fintech\n\nWhy FIT should be here: Home ground — it's Manila, it's at SMX, and it's an international summit coming to your doorstep. FIT's presence here signals it's the go-to local infrastructure for anyone coming into the PH market.\n\nFIT Play: Local anchor activation — booth, brand presence, host a side event or dinner for international delegates.\nBudget category: Lower cost (home ground) — high strategic value.\n\n────────────────────────────────────\n6. WebX — TOKYO, JAPAN\nDate: July 13–14, 2026\nLocation: Tokyo, Japan\n\nWhy FIT should consider it: Japan is one of the most regulated and respected crypto markets in Asia. Being visible at WebX builds credibility with institutional and serious builder audiences.\n\nFIT Play: Speaking slot or brand presence. Coordinate with Hype3's Japan team.\nBudget category: Selective — prioritize if there's a specific partnership or announcement tied to Japan.\n\n────────────────────────────────────\n7. NETWORK SCHOOL — FOREST CITY, MALAYSIA\nDate: Monthly cohorts (January 2026 cohort confirmed)\nLocation: Forest City, Johor, Malaysia\n\nWhy this is different: Network School was founded by Balaji Srinivasan (former Coinbase exec, author of The Network State) — the exact ideological overlap with FIT's Nation of Heaven vision. This is THE ideological home base for the vision FIT is building.\n\nFIT Play: Send Karl and/or Clarky to a cohort as participants — not exhibitors. Build relationships inside the room. The people here are the builders, thinkers, and founders who will understand FIT's vision at the deepest level.\nBudget category: Low cost — extremely high strategic value.\n\n════════════════════════════════════\nFIT'S 2026 EVENT RUN SUMMARY\n════════════════════════════════════\n\nJune      AIBC / SiGMA Asia          Manila, PH           PRIORITY 2\nJuly      WebX                       Tokyo, Japan         PRIORITY 2\nAugust    Coinfest Asia              Bali, Indonesia      PRIORITY 1\nSeptember Korea Blockchain Week      Seoul, South Korea   PRIORITY 1\nOctober   TOKEN2049 Singapore        Singapore            PRIORITY 1 — FLAGSHIP\nOngoing   Network School             Forest City, MY      PARTICIPATION — STRATEGIC\n\n5–6 events across 5 countries from June to October. Each event feeds the next one's hype. Every city gets content. Every activation proves the blueprint.`
+    thesis: 'Five to six events across five countries from June to October — a clean Asia circuit that builds momentum event by event, culminating at Token2049 Singapore as the year\'s biggest moment.',
+    blocks: [
+      {
+        type: 'context',
+        content: 'Each event is selected for maximum community impact, brand visibility, and strategic network building across the Southeast Asia and Asia-Pacific Web3 ecosystem. Events feed forward into each other — each city builds hype for the next. Every activation proves the blueprint.'
+      },
+      {
+        type: 'section',
+        title: 'TIER 1 — MUST BE THERE',
+        content: 'Non-negotiables. FIT needs full presence: booth, side event, and content capture.'
+      },
+      {
+        type: 'table',
+        headers: ['Event', 'Date', 'Location', 'Scale', 'FIT Play'],
+        rows: [
+          ['TOKEN2049 Singapore', 'Oct 7–8, 2026', 'Marina Bay Sands, SG', '25,000+ attendees · 7,000+ companies · 160+ countries', 'Sponsor side event · booth on main floor · host afterparty that becomes a talking point'],
+          ['Coinfest Asia', 'Aug 20–21, 2026', 'Nuanu Juice Center, Bali', '10,000+ attendees · world\'s largest crypto festival', 'Activation booth · SEEDBASE pop-up · side event or community beach meetup · hire local Bali crew for content'],
+          ['Korea Blockchain Week', 'Sep 29 – Oct 1, 2026', 'Seoul, South Korea', '7,000+ attendees · 120+ speakers', 'Side event or executive dinner · coordinate with Hype3\'s Korea team · stack with Token2049 travel'],
+        ]
+      },
+      {
+        type: 'section',
+        title: 'TIER 2 — HIGH PRIORITY',
+        content: 'Go if the activation is right. Strong ROI when paired with Tier 1 travel windows.'
+      },
+      {
+        type: 'table',
+        headers: ['Event', 'Date', 'Location', 'Why FIT', 'FIT Play'],
+        rows: [
+          ['SEABW — Bangkok', 'May 18–24, 2026', 'True Icon Hall, Bangkok', 'SEA-specific circuit, 3,000+ participants, test ground before Token2049', 'Booth + community panel or side event'],
+          ['AIBC Asia / SiGMA Asia', 'June 1–3, 2026', 'SMX Convention Center, Manila', 'Home ground — signals FIT is the go-to PH infrastructure for anyone entering the market', 'Local anchor activation — booth + dinner for international delegates'],
+          ['WebX', 'July 13–14, 2026', 'Tokyo, Japan', 'Japan is the most regulated/respected crypto market in Asia — credibility with institutional audiences', 'Speaking slot or brand presence'],
+          ['Network School', 'Monthly cohorts', 'Forest City, Johor, MY', 'Founded by Balaji Srinivasan — THE ideological home for Nation of Heaven vision', 'Send Karl and/or Clarky as participants, not exhibitors'],
+        ]
+      },
+      {
+        type: 'outcome',
+        title: 'FIT\'S 2026 EVENT RUN',
+        bullets: [
+          'June — AIBC / SiGMA Asia — Manila, PH — Priority 2',
+          'July — WebX — Tokyo, Japan — Priority 2',
+          'August — Coinfest Asia — Bali, Indonesia — Priority 1',
+          'September — Korea Blockchain Week — Seoul, South Korea — Priority 1',
+          'October — TOKEN2049 Singapore — Singapore — Priority 1 (Flagship)',
+          'Ongoing — Network School — Forest City, Malaysia — Participation (Strategic)',
+        ]
+      }
+    ]
   },
   {
     id: 'peso-partnership',
@@ -44,8 +232,74 @@ const INITIAL_ARCH_DOCS = [
     section: 'Partnerships',
     badge: 'Partnership',
     subtitle: 'Community & Government Partnership Framework',
-    description: "Leverage Clarky's relationship with PESO Bataan head for employment and community engagement",
-    content: `FIRMA × PESO BATAAN — PARTNERSHIP FRAMEWORK\nLeverage: Clarky's existing relationship with PESO Bataan head\nGoal: Build Firma's name in Bataan through social good, employment, and community service\n\nWHAT PESO IS AND WHY IT MATTERS FOR FIRMA\nPESO (Public Employment Service Office) is a government-operated employment and livelihood office under DOLE. In Bataan, PESO organizes job fairs, connects employers to workers, facilitates skills training, and is the primary channel companies use for ESR (Employee Social Responsibility) and community outreach. It has direct relationships with barangay officials, schools, and local government — exactly the network Firma needs to be trusted in.\n\n════════════════════════════════════\nHOW FIRMA ORGANIZES WITH PESO — 3 LAYERS\n════════════════════════════════════\n\nLAYER 1 — FIRMA AS AN EMPLOYER PARTNER\nThe most natural and fastest entry point.\n\n• Job Fair Participation — Firma sets up a booth at PESO Bataan job fairs. Benefit: Brand visibility to hundreds of local applicants in one day.\n• Post Job Listings — Firma submits open roles (ops, tech, community, trades) to PESO's database. Benefit: Pipeline for the 93% local hire mandate.\n• Skills Matching — PESO identifies candidates for TESDA blockchain training cohorts. Benefit: Feeds directly into Firma's Phase 2 workforce buildout.\n\nLAYER 2 — FIRMA AS A TRAINING PARTNER\nPESO regularly coordinates with TESDA and employers to run livelihood and upskilling programs.\n\n• Blockchain Literacy Bootcamp — Co-hosted by Firma + PESO + TESDA; PESO recruits participants from local barangays.\n• Freelancer Upskilling — Digital skills (remote work, crypto wallets, Web3 basics) — PESO promotes, Firma delivers at HQ.\n• Youth Tech Track — For students — intro to agentic AI, SeedBase, and FIG — co-branded with PESO.\n\nLAYER 3 — FIRMA AS AN ESR PARTNER\nWhere Firma builds its public name and government goodwill.\n\n• Livelihood Fair — SeedBase merchant onboarding, FIG wallet setup, solar energy demo. PESO provides: venue, community mobilization, LGU endorsement.\n• Job Readiness Seminar — Firma team facilitates; focus on Web3 careers and remote work.\n• Community Solar / Power Demo — EDGE solar pod showcase. PESO coordinates media coverage.\n• CIK Mission Day — Food, medical, digital literacy pack. PESO facilitates coordination with DSWD and barangay captains.\n\n════════════════════════════════════\nTHE IMMEDIATE ASK — HOW TO START\n════════════════════════════════════\n\n1. Clarky sets a coffee meeting with the PESO head — introduce Firma, share the plain-language one-pager, and ask: "What does PESO need right now that Firma can help with?"\n\n2. Propose a co-hosted Job Fair booth at the next PESO Bataan job fair as the first official collaboration — low commitment, high visibility.\n\n3. Sign a simple MOU between Firma Sovereign Foundation and PESO Bataan — formalizes the partnership, gives Firma a government-recognized relationship on record.\n\n4. Cross-promote — PESO promotes HQ open house to their network; Firma promotes PESO's job fair at the PBN event.\n\n════════════════════════════════════\nWHY THIS BUILDS FIRMA'S NAME\n════════════════════════════════════\n\n• Firma at the PESO job fair → "They create local jobs"\n• Firma running blockchain training with TESDA → "They invest in Bataan people"\n• Firma doing CIK missions endorsed by PESO → "Government trusts them"\n• Firma HQ as a PESO-endorsed community hub → "They are here to stay"\n\nBy the time Firma applies for AFAB licensing and approaches the Governor's office, PESO's endorsement is already social proof that the Foundation is a legitimate community partner — not just another foreign crypto company.`
+    description: 'Leveraging Clarky\'s relationship with PESO Bataan head for employment and ESR',
+    thesis: 'Build Firma\'s name in Bataan through social good, employment, and community service — the way a sovereign builder earns trust before it earns a permit.',
+    blocks: [
+      {
+        type: 'context',
+        content: 'PESO (Public Employment Service Office) is a government-operated employment and livelihood office under DOLE. In Bataan, PESO organizes job fairs, connects employers to workers, facilitates skills training, and is the primary channel companies use for ESR (Employee Social Responsibility) and community outreach. It has direct relationships with barangay officials, schools, and local government — exactly the network Firma needs to be trusted in.'
+      },
+      {
+        type: 'key-insight',
+        title: 'STRATEGIC LEVER',
+        content: 'Clarky has an existing personal relationship with the PESO Bataan head. This is the fastest, lowest-friction entry point into legitimate community presence. A single coffee meeting can open the door to a formal MOU, job fair presence, and TESDA training partnership — all within weeks.'
+      },
+      {
+        type: 'layers',
+        title: 'HOW FIRMA ORGANIZES WITH PESO',
+        layers: [
+          {
+            title: 'Firma as an Employer Partner',
+            content: 'The most natural and fastest entry point.',
+            bullets: [
+              'Job Fair Participation — Firma sets up a booth at PESO Bataan job fairs. Benefit: brand visibility to hundreds of local applicants in one day.',
+              'Post Job Listings — Firma submits open roles (ops, tech, community, trades) to PESO\'s database.',
+              'Skills Matching — PESO identifies candidates for TESDA blockchain training cohorts. Feeds directly into Phase 2 workforce buildout.',
+            ]
+          },
+          {
+            title: 'Firma as a Training Partner',
+            content: 'PESO coordinates with TESDA and employers to run livelihood and upskilling programs.',
+            bullets: [
+              'Blockchain Literacy Bootcamp — Co-hosted by Firma + PESO + TESDA; PESO recruits participants from local barangays.',
+              'Freelancer Upskilling — Digital skills (remote work, crypto wallets, Web3 basics). PESO promotes, Firma delivers at HQ.',
+              'Youth Tech Track — Intro to agentic AI, SeedBase, and FIG. Co-branded with PESO.',
+            ]
+          },
+          {
+            title: 'Firma as an ESR Partner',
+            content: 'Where Firma builds its public name and government goodwill.',
+            bullets: [
+              'Livelihood Fair — SeedBase merchant onboarding, FIG wallet setup, solar energy demo. PESO provides venue, community mobilization, LGU endorsement.',
+              'Job Readiness Seminar — Firma team facilitates; focus on Web3 careers and remote work.',
+              'Community Solar / Power Demo — EDGE solar pod showcase. PESO coordinates media coverage.',
+              'CIK Mission Day — Food, medical, digital literacy pack. PESO facilitates with DSWD and barangay captains.',
+            ]
+          }
+        ]
+      },
+      {
+        type: 'section',
+        title: 'THE IMMEDIATE ASK — HOW TO START',
+        bullets: [
+          '1. Clarky sets a coffee meeting with the PESO head — introduce Firma, share the plain-language one-pager, ask: "What does PESO need right now that Firma can help with?"',
+          '2. Propose a co-hosted Job Fair booth at the next PESO Bataan job fair — low commitment, high visibility.',
+          '3. Sign a simple MOU between Firma Sovereign Foundation and PESO Bataan — formalizes the partnership, gives Firma a government-recognized relationship on record.',
+          '4. Cross-promote — PESO promotes HQ open house; Firma promotes PESO\'s job fair at the PBN event.',
+        ]
+      },
+      {
+        type: 'table',
+        title: 'WHY THIS BUILDS FIRMA\'S NAME',
+        headers: ['What the Community Sees', 'What It Signals'],
+        rows: [
+          ['Firma at the PESO job fair', '"They create local jobs"'],
+          ['Firma running blockchain training with TESDA', '"They invest in Bataan people"'],
+          ['Firma doing CIK missions endorsed by PESO', '"Government trusts them"'],
+          ['Firma HQ as a PESO-endorsed community hub', '"They are here to stay"'],
+        ]
+      }
+    ]
   },
   {
     id: 'land-plan',
@@ -54,7 +308,83 @@ const INITIAL_ARCH_DOCS = [
     badge: 'Legal',
     subtitle: '60/40 Corporate Structure & TCT Transfer',
     description: 'The only legal path for Firma to hold land in the Philippines',
-    content: `WHY FIRMA CANNOT BUY LAND DIRECTLY\nForeign entities cannot own private land in the Philippines — constitutional restriction under Article XII, Section 7 of the 1987 Constitution. This applies to Firma regardless of AFAB registration status, CRTE issuance, or any freeport classification. SEC registration alone does not confer land ownership rights.\n\nThe only legal path: a Philippine domestic corporation structured 60% Filipino / 40% Firma. That corporation purchases and holds the Transfer Certificate of Title (TCT).\n\n════════════════════════════════════\nTHE TWO CORPORATIONS FIRMA NEEDS\n════════════════════════════════════\n\nCORP #1 — AFAB LOCATOR ENTITY\n• Purpose: Run Firma operations, hold AFAB Certificate, activate tax benefits\n• Ownership: Can be majority foreign-owned\n• Tax benefits: Yes — 0% ITH, then 5% GIT\n• Holds land title: No\n\nCORP #2 — LAND-HOLDING CORPORATION\n• Purpose: Hold the TCT (land title) only\n• Ownership: 60% Filipino / 40% Firma\n• Tax benefits: No — standard Philippine corporate tax\n• Holds land title: Yes\n\nThese are two separate legal entities. Corp #1 operates on the land. Corp #2 owns the land. Neither function can be combined without violating constitutional restrictions.\n\n════════════════════════════════════\nPROTECTING FIRMA'S CONTROL\n════════════════════════════════════\n\nHolding only 40% in Corp #2 does not mean losing control — if the right legal instruments are in place BEFORE any land purchase.\n\n• Shareholder Agreement — Board control, voting rights, buyout provisions, exit rights, drag-along and tag-along clauses\n• Usufruct Agreement — Firma's right to use and develop the land regardless of who holds the title\n• Management Contract — Firma manages all operations conducted on the land\n• Right of First Refusal — Firma buys out Filipino shareholders first if they exit\n\nCRITICAL: The shareholder agreement must be executed before any land purchase — not after.\n\n════════════════════════════════════\nLAND PURCHASE PROCESS\n════════════════════════════════════\n\n1. Incorporate Corp #2 — SEC registration of 60/40 domestic corp; formalize Filipino shareholders; execute shareholder agreement. Duration: 2–4 months\n\n2. Land identification — Find parcel in Dinalupihan — right size, proximity to FAB zone, willing seller. Duration: 2–6 months\n\n3. Title due diligence — Verify clean TCT; check liens, DAR clearance if agricultural land, confirm zonal classification. Duration: 1–3 months\n\n4. Negotiation + Deed of Sale — Agree price; draft and notarize Deed of Absolute Sale with Corp #2 as named buyer. Duration: 1–3 months\n\n5. BIR clearance + taxes — Pay Capital Gains Tax (6%) and Documentary Stamp Tax; secure BIR Certificate Authorizing Registration (CAR). Duration: 1–4 months\n\n6. Registry of Deeds — Submit BIR CAR + Deed of Sale; new TCT issued in Corp #2's name. Duration: 2–6 months\n\n7. LGU transfer tax — Pay municipal transfer tax; update Tax Declaration at the Assessor's Office. Duration: 1–2 months\n\n════════════════════════════════════\nREALISTIC TIMELINE\n════════════════════════════════════\n\nBest case: 10–14 months\nRealistic: 14–18 months\nSlow / complications: 20–28 months\n\nSteps 1–4 can partially overlap. Steps 5–7 are strictly sequential after the Deed of Sale is executed.\n\n════════════════════════════════════\nTRANSACTION COSTS (~9–10% on top of land price)\n════════════════════════════════════\n\nCapital Gains Tax: 6% of sale price or BIR zonal value (whichever is higher)\nDocumentary Stamp Tax: 1.5%\nRegistration fee: ~0.25%\nTransfer tax: 0.5–0.75%\nNotarial fee: ~1%\nLegal fees: Negotiated\nTotal over land price: ~9–10%`
+    thesis: 'Foreign entities cannot own private land in the Philippines. The path is a Philippine domestic corporation structured 60% Filipino / 40% Firma — with the right legal instruments executed before any land purchase.',
+    blocks: [
+      {
+        type: 'context',
+        content: 'This is a constitutional restriction under Article XII, Section 7 of the 1987 Constitution. It applies to Firma regardless of AFAB registration status, CRTE issuance, or any freeport classification. SEC registration alone does not confer land ownership rights. The only legal path: a Philippine domestic corporation structured 60% Filipino / 40% Firma holds the Transfer Certificate of Title (TCT).'
+      },
+      {
+        type: 'key-insight',
+        title: 'CRITICAL: TWO SEPARATE LEGAL ENTITIES REQUIRED',
+        content: 'Corp #1 operates on the land. Corp #2 owns the land. Neither function can be combined without violating constitutional restrictions. The shareholder agreement for Corp #2 must be executed before any land purchase — not after.'
+      },
+      {
+        type: 'two-col',
+        title: 'THE TWO CORPORATIONS FIRMA NEEDS',
+        cols: [
+          {
+            title: 'CORP #1 — AFAB LOCATOR ENTITY',
+            bullets: [
+              'Purpose: Run Firma operations, hold AFAB Certificate, activate tax benefits',
+              'Ownership: Can be majority foreign-owned',
+              'Tax benefits: Yes — 0% ITH, then 5% GIT',
+              'Holds land title: No',
+            ]
+          },
+          {
+            title: 'CORP #2 — LAND-HOLDING CORPORATION',
+            bullets: [
+              'Purpose: Hold the TCT (land title) only',
+              'Ownership: 60% Filipino / 40% Firma',
+              'Tax benefits: No — standard Philippine corporate tax',
+              'Holds land title: Yes',
+            ]
+          }
+        ]
+      },
+      {
+        type: 'section',
+        title: 'PROTECTING FIRMA\'S CONTROL',
+        content: 'Holding only 40% does not mean losing control — if the right legal instruments are in place before any land purchase.',
+        bullets: [
+          'Shareholder Agreement — Board control, voting rights, buyout provisions, exit rights, drag-along and tag-along clauses',
+          'Usufruct Agreement — Firma\'s right to use and develop the land regardless of who holds the title',
+          'Management Contract — Firma manages all operations conducted on the land',
+          'Right of First Refusal — Firma buys out Filipino shareholders first if they exit',
+        ]
+      },
+      {
+        type: 'table',
+        title: 'LAND PURCHASE PROCESS',
+        headers: ['Step', 'Action', 'Duration'],
+        rows: [
+          ['1', 'Incorporate Corp #2 — SEC registration of 60/40 domestic corp; formalize Filipino shareholders; execute shareholder agreement', '2–4 months'],
+          ['2', 'Land identification — Find parcel in Dinalupihan; right size, proximity to FAB zone, willing seller', '2–6 months'],
+          ['3', 'Title due diligence — Verify clean TCT; check liens, DAR clearance if agricultural land', '1–3 months'],
+          ['4', 'Negotiation + Deed of Sale — Agree price; draft and notarize with Corp #2 as named buyer', '1–3 months'],
+          ['5', 'BIR clearance + taxes — Pay Capital Gains Tax (6%) and Documentary Stamp Tax; secure BIR CAR', '1–4 months'],
+          ['6', 'Registry of Deeds — Submit BIR CAR + Deed of Sale; new TCT issued in Corp #2\'s name', '2–6 months'],
+          ['7', 'LGU transfer tax — Pay municipal transfer tax; update Tax Declaration at the Assessor\'s Office', '1–2 months'],
+        ]
+      },
+      {
+        type: 'table',
+        title: 'TIMELINE & TRANSACTION COSTS',
+        headers: ['Scenario / Item', 'Detail'],
+        rows: [
+          ['Best case timeline', '10–14 months'],
+          ['Realistic timeline', '14–18 months'],
+          ['Slow / complications', '20–28 months'],
+          ['Capital Gains Tax', '6% of sale price or BIR zonal value (whichever is higher)'],
+          ['Documentary Stamp Tax', '1.5%'],
+          ['Registration fee', '~0.25%'],
+          ['Transfer tax', '0.5–0.75%'],
+          ['Notarial fee', '~1%'],
+          ['Total over land price', '~9–10%'],
+        ]
+      }
+    ]
   },
   {
     id: 'afab-vs-sbfz',
@@ -63,16 +393,112 @@ const INITIAL_ARCH_DOCS = [
     badge: 'Regulatory',
     subtitle: 'Locator Comparison — Two Complementary Zones',
     description: 'Freeport Area of Bataan (RA 11453) · Subic Bay Freeport Zone (RA 7227)',
-    content: `AFAB vs. SBFZ — LOCATOR COMPARISON\nThese two zones are NOT competitors for Firma — they are complementary. AFAB is the sovereign build environment; SBFZ is the logistics and international gateway.\n\n════════════════════════════════════\nCOMPARISON TABLE\n════════════════════════════════════\n\nGoverning Law\n  AFAB: RA 11453\n  SBFZ: RA 7227\n\nZone Authority\n  AFAB: AFAB Board\n  SBFZ: SBMA\n\nLocator Certificate\n  AFAB: Certificate of Registration\n  SBFZ: CRTE (Certificate of Registration and Tax Exemption)\n\nBlockchain / AI Authorization\n  AFAB: Explicitly authorized under RA 11453\n  SBFZ: Grey area — no explicit coverage\n\nIncome Tax — Years 1–8\n  AFAB: 0% (Income Tax Holiday)\n  SBFZ: 5% GIT from day one\n\nIncome Tax — After Holiday\n  AFAB: 5% GIT\n  SBFZ: 5% GIT (no change)\n\nImport Duties: Both = 0%\nVAT: Both = Exempt\nLocal Business Tax: Both = Exempt\n\nLand Purchase\n  AFAB: Yes — via 60/40 Philippine domestic corp\n  SBFZ: No — SBMA owns all land (lease only)\n\nOwn Zone Pathway\n  AFAB: Yes — FAB Extension via Presidential Proclamation\n  SBFZ: No equivalent\n\nPort Access\n  AFAB: Mariveles port (small, Manila Bay)\n  SBFZ: Deep-water port — 13.7m draft, 600K TEU capacity\n\nAirport\n  AFAB: None nearby\n  SBFZ: International airport — 2,745m runway, FBO access\n\nDistance from Dinalupihan\n  AFAB: ~45 min south\n  SBFZ: ~35 min west via SCTEx\n\nPrimary Role for Sovereign Build\n  AFAB: ✅ Operations, own zone, Settlemint anchor\n  SBFZ: Logistics gateway, hardware imports, international arrivals\n\n════════════════════════════════════\nKEY DIFFERENTIATORS\n════════════════════════════════════\n\nAFAB'S STRUCTURAL EDGE: Income Tax Holiday — zero income tax for up to 8 years from the Certificate of Registration date, reverting to 5% GIT thereafter. For a capital-intensive early-stage build like Firma's, that ITH period is the single most significant financial advantage in the comparison.\n\nSBFZ'S STRUCTURAL EDGE: Infrastructure depth — a 600K TEU deep-water port and an international-capable runway in the same perimeter is a combination no other Philippine economic zone replicates. For duty-free import of Bitcoin mining hardware, EDGE compute nodes, and ModPod fabrication equipment at scale, the Subic port is the superior receiving point.\n\nOWN-ZONE PLAY EXISTS ONLY IN AFAB: The FAB Extension pathway — AFAB Board approval → Presidential Proclamation — has no SBFZ equivalent. SBMA owns all land and operates all zones; there is no mechanism for a locator to become a zone operator within SBFZ. This makes AFAB the only viable Settlemint territory anchor of the two.\n\n════════════════════════════════════\nDUAL-ZONE STRATEGY\n════════════════════════════════════\n\nFirma can operate a dual-zone registration:\n• AFAB virtual office for blockchain/fintech licensing (FAB)\n• SBFZ locator entity for tech-industry operations\n\nThis gives Firma a legally compliant, incentivized structure across both freeports simultaneously.`
+    thesis: 'These two zones are not competitors for Firma — they are complementary. AFAB is the sovereign build environment; SBFZ is the logistics and international gateway.',
+    blocks: [
+      {
+        type: 'context',
+        content: 'Firma\'s optimal structure is a dual-zone registration — an AFAB virtual office for blockchain/fintech licensing and a potential SBFZ locator entity for tech-industry operations. Each zone has structural advantages the other cannot replicate. Understanding these distinctions is essential before making licensing and investment decisions.'
+      },
+      {
+        type: 'table',
+        title: 'ZONE COMPARISON',
+        headers: ['Category', 'AFAB', 'SBFZ'],
+        rows: [
+          ['Governing Law', 'RA 11453', 'RA 7227'],
+          ['Zone Authority', 'AFAB Board', 'SBMA'],
+          ['Locator Certificate', 'Certificate of Registration', 'CRTE (Certificate of Registration and Tax Exemption)'],
+          ['Blockchain / AI Authorization', 'Explicitly authorized under RA 11453', 'Grey area — no explicit coverage'],
+          ['Income Tax — Years 1–8', '0% (Income Tax Holiday)', '5% GIT from day one'],
+          ['Income Tax — After Holiday', '5% GIT', '5% GIT (no change)'],
+          ['Import Duties', '0%', '0%'],
+          ['VAT', 'Exempt', 'Exempt'],
+          ['Land Purchase', 'Yes — via 60/40 Philippine domestic corp', 'No — SBMA owns all land (lease only)'],
+          ['Own Zone Pathway', 'Yes — FAB Extension via Presidential Proclamation', 'No equivalent'],
+          ['Port Access', 'Mariveles port (small, Manila Bay)', 'Deep-water port — 13.7m draft, 600K TEU capacity'],
+          ['Airport', 'None nearby', 'International airport — 2,745m runway, FBO access'],
+          ['Primary Role for Firma', 'Operations, own zone, Settlemint anchor', 'Logistics gateway, hardware imports, international arrivals'],
+        ]
+      },
+      {
+        type: 'key-insight',
+        title: 'AFAB\'S CRITICAL EDGE: INCOME TAX HOLIDAY',
+        content: 'Zero income tax for up to 8 years from the Certificate of Registration date, reverting to 5% GIT thereafter. SBFZ starts at 5% GIT from day one with no holiday period. For a capital-intensive early-stage build like Firma\'s, that ITH period is the single most significant financial advantage in the comparison.'
+      },
+      {
+        type: 'section',
+        title: 'OWN-ZONE PLAY EXISTS ONLY IN AFAB',
+        content: 'The FAB Extension pathway — AFAB Board approval → Presidential Proclamation — has no SBFZ equivalent. SBMA owns all land and operates all zones; there is no mechanism for a locator to become a zone operator within SBFZ. This makes AFAB the only viable Settlemint territory anchor of the two.'
+      },
+      {
+        type: 'outcome',
+        title: 'DUAL-ZONE STRATEGY',
+        content: 'Firma can operate a dual-zone registration: AFAB virtual office for blockchain/fintech licensing under RA 11453, and a SBFZ locator entity for tech-industry operations and hardware imports. This gives Firma a legally compliant, incentivized structure across both freeports simultaneously — maximizing the ITH at AFAB while leveraging Subic\'s deep-water port for equipment logistics.'
+      }
+    ]
   },
   {
     id: 'fab-sbfz-priorities',
-    title: 'FAB & SBFZ: PRIORITIES',
+    title: 'FAB & SBFZ: CURRENT PRIORITIES',
     section: 'Regulatory',
     badge: 'Strategy',
-    subtitle: "How Firma's Sovereign Layer Can Align",
+    subtitle: 'How Firma\'s Sovereign Layer Can Align',
     description: 'FAB/AFAB and SBFZ/SBMA strategic priorities 2025–2026 + Bataan LGU alignment',
-    content: `FAB (FREEPORT AREA OF BATAAN) — CURRENT PRIORITIES 2025–2026\nManaged by AFAB (Authority of the Freeport Area of Bataan)\n\nA. DIGITAL & BLOCKCHAIN HUB EXPANSION\n• AFAB launched the first-ever Virtual Office for Fintech, Blockchain, and Digital-Based Enterprises (Oct 2025) — allowing firms to register and operate legally without needing a physical office\n• Under RA 11453, AFAB is the only investment promotion agency in the Philippines legally empowered to license blockchain, fintech, and emerging tech enterprises\n• AFAB actively scouted investments at the Singapore FinTech Festival 2025 and joined the Global Emerging Tech Summit (GETS) 2025 in Balanga City\n\nB. INDUSTRIAL & TERRITORIAL EXPANSION\n• Expanding FAB Expansion Areas (FEAs) province-wide — 17+ FEAs across Bataan municipalities under RA 11453\n• Samal Economic Zone was newly declared (March 2025) — over 275,000 sqm of industrial expansion land\n• Named Asia-Pacific Industrial Zone of the Year by fDi Intelligence in 2025\n\nC. INVESTOR FACILITATION & TAX INCENTIVES\n• 5% gross income tax scheme for registered locators\n• Streamlined one-stop registration processes\n• Attraction of sectors: traditional industry, fintech, blockchain, AI, BPO\n\n────────────────────────────────────\nSBFZ (SUBIC BAY FREEPORT ZONE) — CURRENT PRIORITIES 2025–2026\nManaged by SBMA (Subic Bay Metropolitan Authority)\n────────────────────────────────────\n\nA. GREEN PORT CITY & CARBON NEUTRALITY\n• Vision: Become the country's first carbon-neutral port and lead in green tourism by 2030\n• 12-pronged sustainability program including carbon neutral framework, EV adoption, energy efficiency, shore power systems\n• Shore Power Connection project: Phase 1 at New Container Terminal (2025), Phase 2 at Naval Supply Depot (2026–2027)\n\nB. REGIONAL CRUISE & TRADE HUB\n• Developing a dedicated cruise terminal for regional cruise industry\n• Sister port agreements with Port of San Diego, Osaka Port\n• ₱600 billion in investments secured in 2025\n\nC. DIGITAL INFRASTRUCTURE & TECH SECTOR\n• Expansion of digital infrastructure to support growing tech sector\n• Port modernization, digitalization, sustainability\n\n════════════════════════════════════\nHOW FIRMA'S SOVEREIGN LAYER CAN ALIGN\n════════════════════════════════════\n\nALIGNMENT WITH FAB/AFAB:\n• Firma can register as an AFAB Virtual Office locator — gaining legal blockchain operating status under RA 11453 without needing a physical office in Mariveles\n• Firma's Web3 operations, token/community infrastructure, and digital asset activities can be structured under FAB's fintech license pathway\n• As FAB expands into Samal, Hermosa, and other municipalities, Firma's presence can grow with it\n• Firma's community-building and grassroots education model aligns with AFAB's inclusive innovation mandate\n\nALIGNMENT WITH SBFZ/SBMA:\n• Firma can position as a partner in SBFZ's sustainable/green industries hub\n• Firma's digital governance tools can serve as models for SBMA's digitalization push\n• Firma's international network can bring investor attention to SBFZ alongside SBMA's cruise and trade expansion\n\n════════════════════════════════════\nBATAAN LGU GAPS FIRMA CAN SOLVE\n════════════════════════════════════\n\nBataan has 1 city and 11 municipalities: Balanga City (Capital), Mariveles, Hermosa, Orani, Samal, Abucay, Orion, Limay, Morong, Dinalupihan, Bagac, Pilar.\n\nA. DIGITAL GOVERNANCE GAPS\n• Bataan is rolling out BIMS (Barangay Information Management System) province-wide but many municipalities still face digital capacity gaps\n• Firma can provide: Web3-based governance tools, digital identity systems, transparent fund tracking\n\nB. FLOODING & INFRASTRUCTURE (1st District)\n• Hermosa, Orani, Samal, Abucay urgently need disaster-resilient infrastructure planning\n• Firma can provide: GIS/mapping data layers, community reporting platforms, participatory urban planning tools\n\nC. FARMERS & FISHERFOLK EMPOWERMENT\n• Bataan designated Farmers' and Fisherfolk's Week (SP Ordinance 09, 2025)\n• Firma can provide: Supply chain transparency tools, cooperative tokenization, direct market access platforms\n\nD. SMART CITY & E-GOVERNANCE\n• Balanga City targets becoming a smart university town and global tech center by 2030\n• Firma can provide: Modular digital service infrastructure, open-source civic tools, Web3-enabled transparency dashboards\n\nE. COASTAL ZONE MANAGEMENT\n• Ordinance No. 03 S. 2025 designating Local Coastal Greenbelt Zones covers 9 municipalities\n• Firma can provide: Environmental data platforms, coastal monitoring dashboards, ESG reporting tools\n\n════════════════════════════════════\nSTRATEGIC ENTRY POINTS SUMMARY\n════════════════════════════════════\n\nAFAB/FAB: Register as Virtual Office Fintech/Blockchain Locator under RA 11453\nSBFZ/SBMA: Position in Green Tech / Digital Infrastructure sectors\nProvince of Bataan: Provide digital governance, agri-tech, mapping, civic platforms\nSovereign Narrative: Firma as Web3-native infrastructure layer bridging freeport investment zones and local community needs — a sovereign builder, not just a tenant`
+    thesis: 'Firma enters not just as a registered business entity, but as a civic infrastructure partner — which aligns with AFAB\'s inclusive innovation mandate, SBMA\'s sustainability vision, and Governor Garcia\'s digital Bataan agenda simultaneously.',
+    blocks: [
+      {
+        type: 'section',
+        title: 'FAB / AFAB — CURRENT PRIORITIES (2025–2026)',
+        bullets: [
+          'Digital & Blockchain Hub Expansion — AFAB launched Virtual Office for Fintech, Blockchain, and Digital-Based Enterprises (Oct 2025). Only investment promotion agency in the Philippines legally empowered to license blockchain and emerging tech under RA 11453.',
+          'Industrial & Territorial Expansion — 17+ FAB Expansion Areas (FEAs) across Bataan municipalities. Samal Economic Zone newly declared (March 2025) — 275,000+ sqm of industrial expansion land.',
+          'Named Asia-Pacific Industrial Zone of the Year by fDi Intelligence in 2025.',
+          'Investor Facilitation — 5% gross income tax for registered locators; streamlined one-stop registration; sectors: fintech, blockchain, AI, BPO, traditional industry.',
+        ]
+      },
+      {
+        type: 'section',
+        title: 'SBFZ / SBMA — CURRENT PRIORITIES (2025–2026)',
+        bullets: [
+          'Green Port City & Carbon Neutrality — Vision: first carbon-neutral port by 2030. Shore Power Connection project: Phase 1 at New Container Terminal (2025), Phase 2 at Naval Supply Depot (2026–2027).',
+          'Regional Cruise & Trade Hub — Dedicated cruise terminal development; sister port agreements with Port of San Diego, Osaka Port; ₱600 billion in investments secured in 2025.',
+          'Digital Infrastructure & Tech Sector — Expansion of digital infrastructure; port modernization and digitalization.',
+        ]
+      },
+      {
+        type: 'table',
+        title: 'HOW FIRMA\'S SOVEREIGN LAYER CAN ALIGN',
+        headers: ['Zone Priority', 'Firma\'s Alignment'],
+        rows: [
+          ['AFAB — Blockchain/Fintech licensing hub', 'Register as AFAB Virtual Office locator — legal blockchain operating status under RA 11453 without physical office in Mariveles'],
+          ['AFAB — Province-wide FEA expansion', 'As FAB expands into Samal, Hermosa, and other municipalities, Firma\'s presence can grow with it'],
+          ['AFAB — Inclusive innovation mandate', 'Firma\'s community-building and grassroots education model aligns with AFAB\'s i3S mandate'],
+          ['SBFZ — Green tech & sustainability', 'Position as partner in SBFZ\'s sustainable/green industries hub — especially for renewable energy, ESG tokenization'],
+          ['SBFZ — Digital infrastructure push', 'Firma\'s digital governance tools can serve as models for SBMA\'s digitalization push'],
+        ]
+      },
+      {
+        type: 'table',
+        title: 'BATAAN LGU DIGITAL GAPS FIRMA CAN SOLVE',
+        headers: ['Gap', 'Firma\'s Solution'],
+        rows: [
+          ['Digital Governance — BIMS rollout has capacity gaps across municipalities', 'Web3-based governance tools, digital identity systems, transparent fund tracking for barangay-level operations'],
+          ['Flooding & Infrastructure — 1st District municipalities need disaster-resilient planning tools', 'GIS/mapping data layers, community reporting platforms, participatory urban planning tools'],
+          ['Farmers & Fisherfolk empowerment — cooperative tokenization needed', 'Supply chain transparency tools, cooperative tokenization, direct market access platforms'],
+          ['Smart City & E-Governance — Balanga City 2030 smart city target; LGU capacity limited', 'Modular digital service infrastructure, open-source civic tools, Web3-enabled transparency dashboards'],
+          ['Coastal Zone Management — 9 municipalities under Ordinance No. 03 S. 2025', 'Environmental data platforms, coastal monitoring dashboards, ESG reporting tools'],
+        ]
+      },
+      {
+        type: 'outcome',
+        title: 'STRATEGIC ENTRY POINTS',
+        bullets: [
+          'AFAB/FAB — Register as Virtual Office Fintech/Blockchain Locator under RA 11453',
+          'SBFZ/SBMA — Position in Green Tech / Digital Infrastructure sectors',
+          'Province of Bataan + Municipalities — Provide digital governance, agri-tech, mapping, civic platforms',
+          'Sovereign Narrative — Firma as Web3-native infrastructure layer bridging freeport investment zones and local community needs — a sovereign builder, not just a tenant',
+        ]
+      }
+    ]
   }
 ]
 
@@ -88,21 +514,188 @@ const NAV_ITEMS = [
   { key: 'atlas', label: 'Architecture Index' },
 ]
 
+// ── ATLAS DOCUMENT RENDERER ───────────────────────────────────────────────────
+function AtlasDocRenderer({ doc }) {
+  if (!doc.blocks || doc.blocks.length === 0) {
+    return <div className="atlas-doc-content">{doc.content}</div>
+  }
+
+  const renderBlock = (block, i) => {
+    switch (block.type) {
+
+      case 'context':
+        return <p key={i} className="adr-context">{block.content}</p>
+
+      case 'key-insight':
+        return (
+          <div key={i} className="adr-key-insight">
+            <div className="adr-key-insight-title">{block.title}</div>
+            <div className="adr-key-insight-body">{block.content}</div>
+          </div>
+        )
+
+      case 'sequence':
+        return (
+          <div key={i} className="adr-sequence">
+            <span className="adr-seq-label">{block.label}:</span>
+            {block.steps.map((s, j) => (
+              <span key={j} className="adr-seq-item">
+                {s}{j < block.steps.length - 1 && <span className="adr-seq-arrow">→</span>}
+              </span>
+            ))}
+          </div>
+        )
+
+      case 'phase':
+        return (
+          <div key={i} className="adr-phase">
+            <h2 className="adr-phase-title">{block.title} <em>({block.period})</em></h2>
+            {block.theme && <div className="adr-phase-theme">Theme: {block.theme}</div>}
+            <table className="adr-table">
+              <thead>
+                <tr><th>Step</th><th>Action</th><th>Est. Time</th></tr>
+              </thead>
+              <tbody>
+                {block.rows.map((row, j) => (
+                  <tr key={j}>
+                    <td className="adr-td-step">{row.step}</td>
+                    <td><strong>{row.action}</strong>{row.detail ? ` — ${row.detail}` : ''}</td>
+                    <td className="adr-td-time">{row.time}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {(block.exit || block.timeline) && (
+              <div className="adr-phase-footer">
+                {block.exit && <span>Exit Criteria: {block.exit}</span>}
+                {block.timeline && <span>Realistic Total: {block.timeline}</span>}
+              </div>
+            )}
+          </div>
+        )
+
+      case 'section':
+        return (
+          <div key={i} className="adr-section">
+            <h3 className="adr-section-title">{block.title}</h3>
+            {block.content && <p className="adr-section-content">{block.content}</p>}
+            {block.bullets && (
+              <ul className="adr-bullets">
+                {block.bullets.map((b, j) => <li key={j}>{b}</li>)}
+              </ul>
+            )}
+          </div>
+        )
+
+      case 'table':
+        return (
+          <div key={i} className="adr-table-wrap">
+            {block.title && <h3 className="adr-section-title">{block.title}</h3>}
+            <table className="adr-table">
+              <thead>
+                <tr>{block.headers.map((h, j) => <th key={j}>{h}</th>)}</tr>
+              </thead>
+              <tbody>
+                {block.rows.map((row, j) => (
+                  <tr key={j}>
+                    {row.map((cell, k) => <td key={k}>{cell}</td>)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+
+      case 'layers':
+        return (
+          <div key={i} className="adr-layers">
+            {block.title && <h3 className="adr-section-title">{block.title}</h3>}
+            {block.layers.map((layer, j) => (
+              <div key={j} className="adr-layer">
+                <div className="adr-layer-label">Layer {j + 1} — {layer.title}</div>
+                {layer.content && <p className="adr-layer-body">{layer.content}</p>}
+                {layer.bullets && (
+                  <ul className="adr-bullets">
+                    {layer.bullets.map((b, k) => <li key={k}>{b}</li>)}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </div>
+        )
+
+      case 'two-col':
+        return (
+          <div key={i} className="adr-two-col-wrap">
+            {block.title && <h3 className="adr-section-title">{block.title}</h3>}
+            <div className="adr-two-col">
+              {block.cols.map((col, j) => (
+                <div key={j} className="adr-col">
+                  <div className="adr-col-title">{col.title}</div>
+                  {col.content && <p>{col.content}</p>}
+                  {col.bullets && (
+                    <ul className="adr-bullets">
+                      {col.bullets.map((b, k) => <li key={k}>{b}</li>)}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+
+      case 'outcome':
+        return (
+          <div key={i} className="adr-outcome">
+            {block.title && <div className="adr-outcome-title">{block.title}</div>}
+            {block.content && <p className="adr-outcome-body">{block.content}</p>}
+            {block.bullets && (
+              <ul className="adr-bullets">
+                {block.bullets.map((b, j) => <li key={j}>{b}</li>)}
+              </ul>
+            )}
+          </div>
+        )
+
+      default:
+        return null
+    }
+  }
+
+  return (
+    <div className="atlas-doc-renderer">
+      {/* Header */}
+      <div className="adr-header">
+        <div className="adr-header-badge">{doc.badge}</div>
+        <h1 className="adr-title">{doc.title}</h1>
+        {doc.subtitle && <div className="adr-subtitle">{doc.subtitle}</div>}
+        {doc.description && <div className="adr-description">{doc.description}</div>}
+        {doc.thesis && <div className="adr-thesis">{doc.thesis}</div>}
+      </div>
+
+      <div className="adr-divider" />
+
+      {/* Blocks */}
+      <div className="adr-body">
+        {doc.blocks.map((block, i) => renderBlock(block, i))}
+      </div>
+    </div>
+  )
+}
+
+// ── MAIN APP ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [activeNav, setActiveNav] = useState('dashboard')
 
-  // Tasks
   const [tasks, setTasks] = useState(INITIAL_TASKS)
   const [newTask, setNewTask] = useState({ title: '', category: '', priority: 'medium', assignee: '', date: '', status: 'backlog' })
 
-  // Documents
   const [documents, setDocuments] = useState(INITIAL_DOCUMENTS)
   const [selectedDocument, setSelectedDocument] = useState(null)
   const [docTitle, setDocTitle] = useState('')
   const [docSearch, setDocSearch] = useState('')
   const editorRef = useRef(null)
 
-  // Email
   const [emailForm, setEmailForm] = useState({ senderId: 'gmail-1', to: '', subject: '', body: '' })
   const [emailSent, setEmailSent] = useState(false)
   const [emailLog, setEmailLog] = useState([])
@@ -113,14 +706,12 @@ export default function App() {
   const [showAddSender, setShowAddSender] = useState(false)
   const [newSender, setNewSender] = useState({ name: '', email: '', provider: 'gmail' })
 
-  // Architecture Atlas
   const [archDocs, setArchDocs] = useState(INITIAL_ARCH_DOCS)
   const [selectedAtlasDoc, setSelectedAtlasDoc] = useState(null)
   const [atlasSearch, setAtlasSearch] = useState('')
   const [showAddAtlas, setShowAddAtlas] = useState(false)
   const [newAtlasDoc, setNewAtlasDoc] = useState({ title: '', section: '', badge: '', subtitle: '', content: '' })
 
-  // Computed
   const backlogTasks = tasks.filter(t => t.status === 'backlog')
   const inprogressTasks = tasks.filter(t => t.status === 'inprogress')
   const reviewTasks = tasks.filter(t => t.status === 'review')
@@ -128,10 +719,7 @@ export default function App() {
   const completionRate = tasks.length > 0 ? Math.round((doneTasks.length / tasks.length) * 100) : 0
   const overdueTasks = tasks.filter(t => t.date && new Date(t.date) < new Date() && t.status !== 'done')
   const upcomingTasks = [...inprogressTasks, ...reviewTasks, ...backlogTasks]
-    .filter(t => t.date)
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .slice(0, 5)
-
+    .filter(t => t.date).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5)
   const selectedSender = senderProfiles.find(s => s.id === emailForm.senderId) || senderProfiles[0]
 
   const filteredAtlas = archDocs.filter(d =>
@@ -146,7 +734,6 @@ export default function App() {
     atlasSections[d.section].push(d)
   })
 
-  // Task actions
   const addTask = () => {
     if (!newTask.title) return
     setTasks([...tasks, { ...newTask, id: Date.now() }])
@@ -155,7 +742,6 @@ export default function App() {
   const removeTask = id => setTasks(tasks.filter(t => t.id !== id))
   const moveTask = (id, status) => setTasks(tasks.map(t => t.id === id ? { ...t, status } : t))
 
-  // Document actions
   const createDocument = () => {
     const doc = { id: Date.now(), title: 'New Document', category: 'General', badge: 'NOTES', date: new Date().toISOString().split('T')[0], htmlContent: '' }
     setDocuments([doc, ...documents])
@@ -170,29 +756,18 @@ export default function App() {
   }
   const deleteDocument = id => {
     setDocuments(docs => docs.filter(d => d.id !== id))
-    if (selectedDocument?.id === id) {
-      setSelectedDocument(null)
-      setDocTitle('')
-      if (editorRef.current) editorRef.current.innerHTML = ''
-    }
+    if (selectedDocument?.id === id) { setSelectedDocument(null); setDocTitle(''); if (editorRef.current) editorRef.current.innerHTML = '' }
   }
   const selectDocument = doc => {
-    if (selectedDocument && editorRef.current) {
-      updateDocument(selectedDocument.id, { title: docTitle, htmlContent: editorRef.current.innerHTML })
-    }
+    if (selectedDocument && editorRef.current) updateDocument(selectedDocument.id, { title: docTitle, htmlContent: editorRef.current.innerHTML })
     setSelectedDocument(doc)
     setDocTitle(doc.title)
     if (editorRef.current) editorRef.current.innerHTML = doc.htmlContent || ''
   }
   const handleEditorInput = () => {
-    if (selectedDocument && editorRef.current) {
-      updateDocument(selectedDocument.id, { title: docTitle, htmlContent: editorRef.current.innerHTML })
-    }
+    if (selectedDocument && editorRef.current) updateDocument(selectedDocument.id, { title: docTitle, htmlContent: editorRef.current.innerHTML })
   }
-  const execCmd = (command, value = null) => {
-    document.execCommand(command, false, value)
-    editorRef.current?.focus()
-  }
+  const execCmd = (command, value = null) => { document.execCommand(command, false, value); editorRef.current?.focus() }
   const handleStyleChange = e => {
     const s = e.target.value
     if (s === 'Normal') execCmd('formatBlock', 'p')
@@ -201,15 +776,11 @@ export default function App() {
     else if (s === 'Heading 3') execCmd('formatBlock', 'h3')
   }
 
-  // Email actions
   const sendEmail = () => {
     if (!emailForm.to || !emailForm.subject) return
     const { to, subject, body } = emailForm
-    if (selectedSender?.provider === 'gmail') {
-      window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank')
-    } else {
-      window.open(`https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank')
-    }
+    if (selectedSender?.provider === 'gmail') window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank')
+    else window.open(`https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank')
     setEmailLog(log => [{ id: Date.now(), to, subject, provider: selectedSender?.provider || 'gmail', sentAt: new Date().toLocaleString() }, ...log])
     setEmailSent(true)
     setTimeout(() => setEmailSent(false), 2500)
@@ -220,8 +791,6 @@ export default function App() {
     setNewSender({ name: '', email: '', provider: 'gmail' })
     setShowAddSender(false)
   }
-
-  // Atlas actions
   const addAtlasDoc = () => {
     if (!newAtlasDoc.title || !newAtlasDoc.section) return
     setArchDocs(d => [...d, { ...newAtlasDoc, id: `custom-${Date.now()}` }])
@@ -239,7 +808,6 @@ export default function App() {
 
   return (
     <div className="app">
-      {/* SIDEBAR */}
       <div className="sidebar">
         <div className="sidebar-brand">
           <div className="brand-eyebrow">FIRMA · WORKSPACE</div>
@@ -257,7 +825,6 @@ export default function App() {
         <div className="sidebar-footer">FIRMA SOVEREIGN FOUNDATION</div>
       </div>
 
-      {/* MAIN */}
       <main className={`main ${activeNav === 'notes' ? 'main-docs' : ''}`}>
 
         {/* ── DASHBOARD ── */}
@@ -266,7 +833,6 @@ export default function App() {
             <div className="breadcrumb">OVERVIEW · 04.23.2026</div>
             <h1 className="page-title">Today's <em>signal</em></h1>
             <p className="page-desc">Live snapshot of active work, documents in motion, and upcoming commitments across the Foundation.</p>
-
             <div className="dash-metrics">
               {[
                 { label: 'TOTAL TASKS', value: tasks.length, sub: `${inprogressTasks.length} active` },
@@ -282,7 +848,6 @@ export default function App() {
                 </div>
               ))}
             </div>
-
             <div className="dash-mid">
               <div className="dash-pipeline-card">
                 <div className="dash-card-header">
@@ -320,7 +885,6 @@ export default function App() {
                 ))}
               </div>
             </div>
-
             <div className="dash-upcoming">
               <div className="dash-upcoming-hdr">
                 <span className="dash-upcoming-title">Upcoming — <em>this week</em></span>
@@ -347,26 +911,20 @@ export default function App() {
             <div className="breadcrumb">PLANNER · KANBAN</div>
             <h1 className="page-title">Work in <em>motion</em></h1>
             <div className="planner-sub">Drag cards between columns · {tasks.length} tasks</div>
-
             <div className="planner-add-form">
               <input className="input" placeholder="Task title" value={newTask.title} onChange={e => setNewTask({ ...newTask, title: e.target.value })} />
-              <input className="input" placeholder="Category (e.g. STRATEGY)" value={newTask.category} onChange={e => setNewTask({ ...newTask, category: e.target.value })} />
-              <input className="input" placeholder="Assignee (e.g. @Karl)" value={newTask.assignee} onChange={e => setNewTask({ ...newTask, assignee: e.target.value })} />
+              <input className="input" placeholder="Category" value={newTask.category} onChange={e => setNewTask({ ...newTask, category: e.target.value })} />
+              <input className="input" placeholder="Assignee" value={newTask.assignee} onChange={e => setNewTask({ ...newTask, assignee: e.target.value })} />
               <input className="input" type="date" value={newTask.date} onChange={e => setNewTask({ ...newTask, date: e.target.value })} />
               <select className="input" value={newTask.priority} onChange={e => setNewTask({ ...newTask, priority: e.target.value })}>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
+                <option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option>
               </select>
               <select className="input" value={newTask.status} onChange={e => setNewTask({ ...newTask, status: e.target.value })}>
-                <option value="backlog">Backlog</option>
-                <option value="inprogress">In Progress</option>
-                <option value="review">Review</option>
-                <option value="done">Done</option>
+                <option value="backlog">Backlog</option><option value="inprogress">In Progress</option>
+                <option value="review">Review</option><option value="done">Done</option>
               </select>
               <button className="btn-primary" onClick={addTask}>Add Task</button>
             </div>
-
             <div className="kanban-board-4">
               {KANBAN_COLS.map(col => (
                 <div key={col.key} className="kanban-col" style={{ '--col-color': col.color }}>
@@ -381,10 +939,7 @@ export default function App() {
                           <span className={`kanban-priority prio-dot-${t.priority}`}>◆ {t.priority}</span>
                         </div>
                         <div className="kanban-card-title">{t.title}</div>
-                        <div className="kanban-card-meta">
-                          {t.assignee && <span>{t.assignee}</span>}
-                          {t.date && <span>· {t.date}</span>}
-                        </div>
+                        <div className="kanban-card-meta">{t.assignee && <span>{t.assignee}</span>}{t.date && <span>· {t.date}</span>}</div>
                         <div className="kanban-card-actions">
                           {col.next && <button className="kaction-btn" onClick={() => moveTask(t.id, col.next)}>{col.nextLabel}</button>}
                           {col.key !== 'backlog' && <button className="kaction-btn secondary" onClick={() => moveTask(t.id, prevStatus[col.key])}>← Back</button>}
@@ -409,19 +964,16 @@ export default function App() {
                 <input className="docs-search" placeholder="Search" value={docSearch} onChange={e => setDocSearch(e.target.value)} />
               </div>
               <div className="docs-list">
-                {documents
-                  .filter(d => docSearch === '' || d.title.toLowerCase().includes(docSearch.toLowerCase()))
-                  .map(doc => (
-                    <div key={doc.id} className={`docs-list-item ${selectedDocument?.id === doc.id ? 'active' : ''}`} onClick={() => selectDocument(doc)}>
-                      <div className="docs-item-badge">{doc.badge}</div>
-                      <div className="docs-item-title">{doc.title}</div>
-                      <div className="docs-item-meta">{doc.category} · {doc.date}</div>
-                    </div>
-                  ))}
+                {documents.filter(d => docSearch === '' || d.title.toLowerCase().includes(docSearch.toLowerCase())).map(doc => (
+                  <div key={doc.id} className={`docs-list-item ${selectedDocument?.id === doc.id ? 'active' : ''}`} onClick={() => selectDocument(doc)}>
+                    <div className="docs-item-badge">{doc.badge}</div>
+                    <div className="docs-item-title">{doc.title}</div>
+                    <div className="docs-item-meta">{doc.category} · {doc.date}</div>
+                  </div>
+                ))}
                 {documents.length === 0 && <div className="empty" style={{ padding: '20px 16px' }}>No documents yet.</div>}
               </div>
             </div>
-
             <div className="docs-editor-panel">
               {!selectedDocument ? (
                 <div className="docs-editor-empty">
@@ -439,12 +991,9 @@ export default function App() {
                       <button className="docs-editor-del" onClick={() => deleteDocument(selectedDocument.id)}>🗑</button>
                     </div>
                   </div>
-                  <input
-                    className="docs-title-input"
-                    value={docTitle}
+                  <input className="docs-title-input" value={docTitle}
                     onChange={e => { setDocTitle(e.target.value); updateDocument(selectedDocument.id, { title: e.target.value, htmlContent: editorRef.current?.innerHTML || '' }) }}
-                    placeholder="Document title"
-                  />
+                    placeholder="Document title" />
                   <div className="docs-rich-toolbar">
                     <div className="toolbar-group">
                       <button className="toolbar-btn" onClick={() => execCmd('bold')}><b>B</b></button>
@@ -464,25 +1013,13 @@ export default function App() {
                     </div>
                     <div className="toolbar-divider" />
                     <div className="toolbar-group">
-                      <select className="toolbar-select" onChange={handleStyleChange}>
-                        {TEXT_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
-                      </select>
-                      <select className="toolbar-select" onChange={e => execCmd('fontName', e.target.value)}>
-                        {FONT_FAMILIES.map(f => <option key={f} value={f}>{f}</option>)}
-                      </select>
-                      <select className="toolbar-select" onChange={e => execCmd('fontSize', e.target.value.replace('px', ''))}>
-                        {FONT_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
-                      </select>
+                      <select className="toolbar-select" onChange={handleStyleChange}>{TEXT_STYLES.map(s => <option key={s} value={s}>{s}</option>)}</select>
+                      <select className="toolbar-select" onChange={e => execCmd('fontName', e.target.value)}>{FONT_FAMILIES.map(f => <option key={f} value={f}>{f}</option>)}</select>
+                      <select className="toolbar-select" onChange={e => execCmd('fontSize', e.target.value.replace('px', ''))}>{FONT_SIZES.map(s => <option key={s} value={s}>{s}</option>)}</select>
                     </div>
                     <span className="docs-toolbar-hint">SELECT TEXT, THEN FORMAT</span>
                   </div>
-                  <div
-                    ref={editorRef}
-                    className="docs-rich-content rich-editor-content"
-                    contentEditable
-                    onInput={handleEditorInput}
-                    suppressContentEditableWarning
-                  />
+                  <div ref={editorRef} className="docs-rich-content rich-editor-content" contentEditable onInput={handleEditorInput} suppressContentEditableWarning />
                 </div>
               )}
             </div>
@@ -495,15 +1032,12 @@ export default function App() {
             <div className="breadcrumb">EMAIL COMPOSER</div>
             <h1 className="page-title">Draft a <em>message</em></h1>
             <p className="page-desc">Compose here and hand off to your mail client via Gmail or Outlook.</p>
-
             <div className="email-layout">
               <div className="email-compose">
                 <div className="email-field-label">FROM</div>
                 <div className="email-sender-row">
                   <select className="input" value={emailForm.senderId} onChange={e => setEmailForm({ ...emailForm, senderId: e.target.value })}>
-                    {senderProfiles.map(s => (
-                      <option key={s.id} value={s.id}>{s.name}{s.email ? ` — ${s.email}` : ''}</option>
-                    ))}
+                    {senderProfiles.map(s => <option key={s.id} value={s.id}>{s.name}{s.email ? ` — ${s.email}` : ''}</option>)}
                   </select>
                 </div>
                 <div className="email-field-label">TO</div>
@@ -512,27 +1046,20 @@ export default function App() {
                 <input className="input" placeholder="Subject line" value={emailForm.subject} onChange={e => setEmailForm({ ...emailForm, subject: e.target.value })} />
                 <div className="email-field-label">MESSAGE</div>
                 <textarea className="textarea" placeholder="Write your message..." value={emailForm.body} onChange={e => setEmailForm({ ...emailForm, body: e.target.value })} />
-                <button className="btn-primary" onClick={sendEmail}>
-                  Send via {selectedSender?.provider === 'gmail' ? 'Gmail' : 'Outlook'}
-                </button>
+                <button className="btn-primary" onClick={sendEmail}>Send via {selectedSender?.provider === 'gmail' ? 'Gmail' : 'Outlook'}</button>
                 {emailSent && <div className="success-msg">Email client opened!</div>}
               </div>
-
               <div className="email-sidebar-panel">
                 <div className="email-accounts-card">
                   <div className="email-panel-hdr">Sender Accounts</div>
                   {senderProfiles.map(s => (
                     <div key={s.id} className={`email-account-item ${emailForm.senderId === s.id ? 'active' : ''}`} onClick={() => setEmailForm({ ...emailForm, senderId: s.id })}>
                       <div className={`email-account-icon ${s.provider}`}>{s.provider === 'gmail' ? 'G' : 'O'}</div>
-                      <div>
-                        <div className="email-account-name">{s.name}</div>
-                        <div className="email-account-addr">{s.email || 'No email set'}</div>
-                      </div>
+                      <div><div className="email-account-name">{s.name}</div><div className="email-account-addr">{s.email || 'No email set'}</div></div>
                     </div>
                   ))}
                   <button className="email-add-btn" onClick={() => setShowAddSender(true)}>+ Add Account</button>
                 </div>
-
                 {emailLog.length > 0 && (
                   <div className="email-log-card">
                     <div className="email-panel-hdr">Sent Log</div>
@@ -547,7 +1074,6 @@ export default function App() {
                 )}
               </div>
             </div>
-
             {showAddSender && (
               <div className="modal-overlay" onClick={() => setShowAddSender(false)}>
                 <div className="modal" onClick={e => e.stopPropagation()}>
@@ -555,8 +1081,7 @@ export default function App() {
                   <input className="input" placeholder="Account name (e.g. Work Gmail)" value={newSender.name} onChange={e => setNewSender({ ...newSender, name: e.target.value })} />
                   <input className="input" placeholder="Email address" value={newSender.email} onChange={e => setNewSender({ ...newSender, email: e.target.value })} />
                   <select className="input" value={newSender.provider} onChange={e => setNewSender({ ...newSender, provider: e.target.value })}>
-                    <option value="gmail">Gmail</option>
-                    <option value="outlook">Outlook</option>
+                    <option value="gmail">Gmail</option><option value="outlook">Outlook</option>
                   </select>
                   <div className="modal-actions">
                     <button className="btn-primary" onClick={addSenderProfile}>Add Account</button>
@@ -586,7 +1111,6 @@ export default function App() {
             <div className="atlas-search-wrap">
               <input className="atlas-search" placeholder="Search the index..." value={atlasSearch} onChange={e => setAtlasSearch(e.target.value)} />
             </div>
-
             {Object.entries(atlasSections).map(([section, docs]) => (
               <div key={section} className="atlas-section">
                 <div className="atlas-section-hdr">
@@ -607,7 +1131,6 @@ export default function App() {
                 </div>
               </div>
             ))}
-
             {showAddAtlas && (
               <div className="modal-overlay" onClick={() => setShowAddAtlas(false)}>
                 <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
@@ -630,12 +1153,7 @@ export default function App() {
         {activeNav === 'atlas' && selectedAtlasDoc && (
           <div className="view-scroll">
             <button className="btn-back" onClick={() => setSelectedAtlasDoc(null)}>← Back to Atlas</button>
-            <div className="atlas-badge" style={{ display: 'inline-block', marginBottom: 16 }}>{selectedAtlasDoc.badge}</div>
-            <h1 className="page-title" style={{ marginBottom: 8 }}>{selectedAtlasDoc.title}</h1>
-            {selectedAtlasDoc.subtitle && <div className="page-desc" style={{ marginBottom: 4 }}>{selectedAtlasDoc.subtitle}</div>}
-            {selectedAtlasDoc.description && <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#aaa', marginBottom: 24 }}>{selectedAtlasDoc.description}</div>}
-            <div style={{ borderTop: '1px solid rgba(255,133,92,0.15)', marginBottom: 32 }} />
-            <div className="atlas-doc-content">{selectedAtlasDoc.content}</div>
+            <AtlasDocRenderer doc={selectedAtlasDoc} />
           </div>
         )}
 
