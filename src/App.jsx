@@ -1074,7 +1074,7 @@ export default function App() {
               </div>
               {upcomingTasks.length === 0 ? <div className="empty">No upcoming tasks</div> : upcomingTasks.map(t => (
                 <div key={t.id} className="upcoming-row">
-                  <div className="upcoming-dot" />
+                  <div className={`upcoming-dot upcoming-dot--${t.status}`} />
                   <div className="upcoming-info">
                     <div className="upcoming-task-title">{t.title}</div>
                     <div className="upcoming-task-meta">{t.assignee} · {t.category}</div>
