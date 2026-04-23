@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 
 // SHA-256 of the access password — plain text never stored in source
 const ACCESS_HASH = '92f7df677126c8eb72339b6fe83c2407fca44c58c34d218eb475327de43dc51c'
@@ -704,8 +704,25 @@ export default function App() {
   const [activeNav, setActiveNav] = useState('dashboard')
   const [unlocked, setUnlocked] = useState(false)
   const [lockInput, setLockInput] = useState('')
-  const [lockError, setLockError] = useState(false)
   const [pendingNav, setPendingNav] = useState(null)
+
+  // Reset lock whenever page becomes visible again (tab switch back, browser back/forward)
+  useEffect(() => {
+    const resetLock = () => {
+      setUnlocked(false)
+      setLockInput('')
+      setPendingNav(null)
+      setActiveNav('dashboard')
+    }
+    const onVisibility = () => { if (document.visibilityState === 'visible') resetLock() }
+    const onPageShow = (e) => { if (e.persisted) resetLock() }
+    document.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('pageshow', onPageShow)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('pageshow', onPageShow)
+    }
+  }, [])
 
   const gateNav = useCallback(async (key) => {
     if (!PROTECTED.has(key) || unlocked) { setActiveNav(key); return }
@@ -716,12 +733,11 @@ export default function App() {
     const h = await sha256(lockInput)
     if (h === ACCESS_HASH) {
       setUnlocked(true)
-      setLockError(false)
       setLockInput('')
       if (pendingNav) { setActiveNav(pendingNav); setPendingNav(null) }
     } else {
-      setLockError(true)
       setLockInput('')
+      window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1'
     }
   }, [lockInput, pendingNav])
 
@@ -1242,14 +1258,13 @@ export default function App() {
               type="password"
               placeholder="Enter access code"
               value={lockInput}
-              onChange={e => { setLockInput(e.target.value); setLockError(false) }}
+              onChange={e => setLockInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && submitLock()}
               autoFocus
             />
-            {lockError && <div className="lock-error">Incorrect code. Try again.</div>}
             <div className="lock-actions">
               <button className="btn-primary" onClick={submitLock}>Unlock</button>
-              <button className="btn-remove" onClick={() => { setPendingNav(null); setLockInput(''); setLockError(false) }}>Cancel</button>
+              <button className="btn-remove" onClick={() => { setPendingNav(null); setLockInput('') }}>Cancel</button>
             </div>
           </div>
         </div>
