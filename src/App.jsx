@@ -809,7 +809,7 @@ export default function App() {
   const [lockError, setLockError] = useState(false)
   const [pendingNav, setPendingNav] = useState(null)
 
-  // Reset lock whenever page becomes visible again (tab switch back, browser back/forward)
+  // Reset lock only when page is restored via browser back/forward (not on tab switch)
   useEffect(() => {
     const resetLock = () => {
       setUnlocked(false)
@@ -819,14 +819,9 @@ export default function App() {
       setPendingNav(null)
       setActiveNav('dashboard')
     }
-    const onVisibility = () => { if (document.visibilityState === 'visible') resetLock() }
     const onPageShow = (e) => { if (e.persisted) resetLock() }
-    document.addEventListener('visibilitychange', onVisibility)
     window.addEventListener('pageshow', onPageShow)
-    return () => {
-      document.removeEventListener('visibilitychange', onVisibility)
-      window.removeEventListener('pageshow', onPageShow)
-    }
+    return () => { window.removeEventListener('pageshow', onPageShow) }
   }, [])
 
   const gateNav = useCallback(async (key) => {
