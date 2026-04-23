@@ -17,7 +17,10 @@ export default function App() {
   const [selectedDoc, setSelectedDoc] = useState(null)
   const [emailForm, setEmailForm] = useState({ account: 'gmail', to: '', subject: '', body: '' })
   const [emailSent, setEmailSent] = useState(false)
-  const [documents, setDocuments] = useState([{ id: 1, name: 'Project Proposal.pdf', size: '2.4 MB', date: '2026-04-20', type: 'PDF' }, { id: 2, name: 'Budget Estimate.xlsx', size: '1.8 MB', date: '2026-04-21', type: 'XLS' }])
+  const [notes, setNotes] = useState([])
+  const [selectedNote, setSelectedNote] = useState(null)
+  const [noteTitle, setNoteTitle] = useState('')
+  const [noteContent, setNoteContent] = useState('')
 
   const sendEmail = () => {
     if (!emailForm.to || !emailForm.subject) return
@@ -40,6 +43,42 @@ export default function App() {
     setPlannerItems(plannerItems.map(t => t.id === id ? { ...t, status: newStatus } : t))
   }
 
+  const createNote = () => {
+    const newNote = { id: Date.now(), title: 'New Note', content: '', date: new Date().toISOString() }
+    setNotes([newNote, ...notes])
+    setSelectedNote(newNote)
+    setNoteTitle('New Note')
+    setNoteContent('')
+  }
+
+  const updateNote = (id, updates) => {
+    setNotes(notes.map(n => n.id === id ? { ...n, ...updates, date: new Date().toISOString() } : n))
+    if (selectedNote?.id === id) {
+      setSelectedNote({ ...selectedNote, ...updates })
+    }
+  }
+
+  const deleteNote = (id) => {
+    setNotes(notes.filter(n => n.id !== id))
+    if (selectedNote?.id === id) {
+      setSelectedNote(null)
+      setNoteTitle('')
+      setNoteContent('')
+    }
+  }
+
+  const selectNote = (note) => {
+    setSelectedNote(note)
+    setNoteTitle(note.title)
+    setNoteContent(note.content)
+  }
+
+  const saveCurrentNote = () => {
+    if (selectedNote) {
+      updateNote(selectedNote.id, { title: noteTitle, content: noteContent })
+    }
+  }
+
   const todoTasks = plannerItems.filter(t => t.status === 'todo')
   const inprogressTasks = plannerItems.filter(t => t.status === 'inprogress')
   const doneTasks = plannerItems.filter(t => t.status === 'done')
@@ -56,7 +95,7 @@ export default function App() {
           </div>
         </div>
         <nav className="nav">
-          {[['dashboard','Dashboard'],['planner','Planner'],['documents','Documents'],['email','Email'],['atlas','Architecture Atlas']].map(([key,label]) => (
+          {[['dashboard','Dashboard'],['planner','Planner'],['notes','Notes'],['email','Email'],['atlas','Architecture Atlas']].map(([key,label]) => (
             <button key={key} className={`nav-btn${activeNav===key?' active':''}`} onClick={() => setActiveNav(key)}>{label}</button>
           ))}
         </nav>
@@ -77,9 +116,9 @@ export default function App() {
                 <div className="metric-change up">+{plannerItems.filter(t=>new Date(t.date)>new Date()).length} upcoming</div>
               </div>
               <div className="metric-card">
-                <div className="metric-value">{documents.length}</div>
-                <div className="metric-label">Documents</div>
-                <div className="metric-change up">+2 this week</div>
+                <div className="metric-value">{notes.length}</div>
+                <div className="metric-label">Notes</div>
+                <div className="metric-change up">+{notes.length} total</div>
               </div>
               <div className="metric-card">
                 <div className="metric-value">{completionRate}%</div>
@@ -98,10 +137,10 @@ export default function App() {
                 <div className="card-title">Planner</div>
                 <div className="card-count">{plannerItems.length} task(s)</div>
               </div>
-              <div className="card" onClick={() => setActiveNav('documents')}>
-                <div className="card-icon">📄</div>
-                <div className="card-title">Documents</div>
-                <div className="card-count">{documents.length} docs</div>
+              <div className="card" onClick={() => setActiveNav('notes')}>
+                <div className="card-icon">📝</div>
+                <div className="card-title">Notes</div>
+                <div className="card-count">{notes.length} note(s)</div>
               </div>
               <div className="card" onClick={() => setActiveNav('email')}>
                 <div className="card-icon">✉️</div>
@@ -190,29 +229,57 @@ export default function App() {
             </div>
           </div>
         )}
-        {activeNav === 'documents' && (
-          <div className="section">
-            <div className="page-header">
-              <div className="page-pre">Documents</div>
-              <h1 className="page-title">Your <em>library</em></h1>
+        {activeNav === 'notes' && (
+          <div className="notes-app">
+            <div className="notes-sidebar">
+              <div className="notes-sidebar-header">
+                <div className="notes-header-title">Notes</div>
+                <button className="notes-new-btn" onClick={createNote}>+</button>
+              </div>
+              <div className="notes-search-wrap">
+                <input className="notes-search" placeholder="🔍 Search" />
+              </div>
+              <div className="notes-list">
+                {notes.length === 0 ? (
+                  <div className="notes-empty-list">No notes yet.
+Click + to create one.</div>
+                ) : notes.map(note => (
+                  <div key={note.id} className={`notes-list-item${selectedNote?.id===note.id?' active':''}`} onClick={() => { saveCurrentNote(); selectNote(note); }}>
+                    <div className="notes-list-title">{note.title || 'Untitled'}</div>
+                    <div className="notes-list-preview">{note.content ? note.content.slice(0,60) + (note.content.length > 60 ? '...' : '') : 'No additional text'}</div>
+                    <div className="notes-list-date">{new Date(note.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="doc-list">
-              {documents.map(doc=>(
-                <div key={doc.id} className="doc-item">
-                  <div className="doc-icon-wrapper">{doc.type}</div>
-                  <div className="doc-info">
-                    <div className="doc-name">{doc.name}</div>
-                    <div className="doc-details">
-                      <span>{doc.size}</span>
-                      <span>{doc.date}</span>
-                    </div>
-                  </div>
-                  <div className="doc-actions">
-                    <button className="doc-action-btn">View</button>
-                    <button className="doc-action-btn">Download</button>
-                  </div>
+            <div className="notes-editor">
+              {!selectedNote ? (
+                <div className="notes-editor-empty">
+                  <div className="notes-editor-empty-icon">📝</div>
+                  <div className="notes-editor-empty-text">Select a note to view</div>
+                  <div className="notes-editor-empty-sub">or click + to create a new one</div>
+                  <button className="btn-primary" style={{marginTop:'24px'}} onClick={createNote}>New Note</button>
                 </div>
-              ))}
+              ) : (
+                <div className="notes-editor-inner">
+                  <div className="notes-editor-toolbar">
+                    <input
+                      className="notes-title-input"
+                      value={noteTitle}
+                      onChange={e => { setNoteTitle(e.target.value); updateNote(selectedNote.id, { title: e.target.value, content: noteContent }) }}
+                      placeholder="Title"
+                    />
+                    <button className="doc-action-btn" style={{color:'#F6718D',borderColor:'rgba(246,113,141,0.3)'}} onClick={() => deleteNote(selectedNote.id)}>Delete</button>
+                  </div>
+                  <div className="notes-editor-meta">{new Date(selectedNote.date).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div>
+                  <textarea
+                    className="notes-content-area"
+                    value={noteContent}
+                    onChange={e => { setNoteContent(e.target.value); updateNote(selectedNote.id, { title: noteTitle, content: e.target.value }) }}
+                    placeholder="Start writing..."
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
