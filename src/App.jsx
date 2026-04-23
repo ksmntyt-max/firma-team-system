@@ -17,6 +17,16 @@ const INITIAL_DOCUMENTS = [
 
 const INITIAL_ARCH_DOCS = [
   {
+    id: 'bless',
+    title: 'BLESS',
+    section: 'Foundation',
+    badge: 'Land System',
+    subtitle: 'Bataan Land Evaluation for Sustainable Settlements',
+    description: 'West Luzon Corridor · Land Assessment Platform',
+    externalUrl: 'https://firma-blis.vercel.app/',
+    blocks: [],
+  },
+  {
     id: 'bataan-framework',
     title: 'BATAAN FRAMEWORK',
     section: 'Foundation',
@@ -1119,7 +1129,7 @@ export default function App() {
                 </div>
                 <div className="atlas-doc-grid">
                   {docs.map(doc => (
-                    <div key={doc.id} className="atlas-card" onClick={() => setSelectedAtlasDoc(doc)}>
+                    <div key={doc.id} className="atlas-card" onClick={() => doc.externalUrl ? window.open(doc.externalUrl, '_blank', 'noopener,noreferrer') : setSelectedAtlasDoc(doc)}>
                       <div className="atlas-card-top">
                         <span className="atlas-badge">{doc.badge}</span>
                         <span className="atlas-card-arrow">↗</span>
