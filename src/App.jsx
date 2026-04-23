@@ -720,7 +720,7 @@ export default function App() {
   const [selectedAtlasDoc, setSelectedAtlasDoc] = useState(null)
   const [atlasSearch, setAtlasSearch] = useState('')
   const [showAddAtlas, setShowAddAtlas] = useState(false)
-  const [newAtlasDoc, setNewAtlasDoc] = useState({ title: '', section: '', badge: '', subtitle: '', content: '' })
+  const [newAtlasDoc, setNewAtlasDoc] = useState({ title: '', section: '', badge: '', subtitle: '', description: '', thesis: '', context: '', insightTitle: '', insightContent: '', notes: '' })
 
   const backlogTasks = tasks.filter(t => t.status === 'backlog')
   const inprogressTasks = tasks.filter(t => t.status === 'inprogress')
@@ -802,9 +802,29 @@ export default function App() {
     setShowAddSender(false)
   }
   const addAtlasDoc = () => {
-    if (!newAtlasDoc.title || !newAtlasDoc.section) return
-    setArchDocs(d => [...d, { ...newAtlasDoc, id: `custom-${Date.now()}` }])
-    setNewAtlasDoc({ title: '', section: '', badge: '', subtitle: '', content: '' })
+    if (!newAtlasDoc.title.trim()) return
+    const blocks = []
+    if (newAtlasDoc.context.trim()) {
+      blocks.push({ type: 'context', content: newAtlasDoc.context.trim() })
+    }
+    if (newAtlasDoc.insightTitle.trim() || newAtlasDoc.insightContent.trim()) {
+      blocks.push({ type: 'key-insight', title: newAtlasDoc.insightTitle.trim() || 'KEY INSIGHT', content: newAtlasDoc.insightContent.trim() })
+    }
+    if (newAtlasDoc.notes.trim()) {
+      const bullets = newAtlasDoc.notes.split('\n').map(l => l.replace(/^[-•*]\s*/, '').trim()).filter(Boolean)
+      blocks.push({ type: 'section', title: 'Notes', bullets })
+    }
+    setArchDocs(d => [...d, {
+      id: `custom-${Date.now()}`,
+      title: newAtlasDoc.title.trim().toUpperCase(),
+      section: newAtlasDoc.section.trim() || 'General',
+      badge: newAtlasDoc.badge.trim() || 'Doc',
+      subtitle: newAtlasDoc.subtitle.trim(),
+      description: newAtlasDoc.description.trim(),
+      thesis: newAtlasDoc.thesis.trim(),
+      blocks,
+    }])
+    setNewAtlasDoc({ title: '', section: '', badge: '', subtitle: '', description: '', thesis: '', context: '', insightTitle: '', insightContent: '', notes: '' })
     setShowAddAtlas(false)
   }
 
@@ -1143,14 +1163,27 @@ export default function App() {
             ))}
             {showAddAtlas && (
               <div className="modal-overlay" onClick={() => setShowAddAtlas(false)}>
-                <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
-                  <div className="modal-title">Add New Document to Atlas</div>
-                  <input className="input" placeholder="Title" value={newAtlasDoc.title} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, title: e.target.value })} />
-                  <input className="input" placeholder="Section (e.g. Foundation, Events, Legal)" value={newAtlasDoc.section} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, section: e.target.value })} />
-                  <input className="input" placeholder="Badge (e.g. Framework, Strategy)" value={newAtlasDoc.badge} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, badge: e.target.value })} />
-                  <input className="input" placeholder="Subtitle" value={newAtlasDoc.subtitle} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, subtitle: e.target.value })} />
-                  <textarea className="textarea" style={{ minHeight: 160 }} placeholder="Content..." value={newAtlasDoc.content} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, content: e.target.value })} />
-                  <div className="modal-actions">
+                <div className="modal modal-lg" onClick={e => e.stopPropagation()} style={{ gap: 0 }}>
+                  <div className="modal-title">New Atlas Document</div>
+                  <div className="add-atlas-section-label">HEADER</div>
+                  <div className="add-atlas-row">
+                    <input className="input" placeholder="Title *" value={newAtlasDoc.title} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, title: e.target.value })} style={{ flex: 2 }} />
+                    <input className="input" placeholder="Badge (e.g. Framework)" value={newAtlasDoc.badge} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, badge: e.target.value })} style={{ flex: 1 }} />
+                    <input className="input" placeholder="Section (e.g. Foundation)" value={newAtlasDoc.section} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, section: e.target.value })} style={{ flex: 1 }} />
+                  </div>
+                  <div className="add-atlas-row">
+                    <input className="input" placeholder="Subtitle (e.g. Firma Sovereign Foundation · Asia-Pacific)" value={newAtlasDoc.subtitle} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, subtitle: e.target.value })} style={{ flex: 2 }} />
+                    <input className="input" placeholder="Description (e.g. West Luzon · 2026)" value={newAtlasDoc.description} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, description: e.target.value })} style={{ flex: 1 }} />
+                  </div>
+                  <textarea className="textarea" style={{ minHeight: 60 }} placeholder="Thesis — one-sentence strategic position for this document" value={newAtlasDoc.thesis} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, thesis: e.target.value })} />
+                  <div className="add-atlas-section-label">CONTEXT BLOCK</div>
+                  <textarea className="textarea" style={{ minHeight: 80 }} placeholder="What is this? Why does it exist? How does it fit into the broader system?" value={newAtlasDoc.context} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, context: e.target.value })} />
+                  <div className="add-atlas-section-label">KEY INSIGHT <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>— optional highlighted callout</span></div>
+                  <input className="input" placeholder="Insight label (e.g. KEY STRUCTURAL DECISION: 60/40 OWNERSHIP)" value={newAtlasDoc.insightTitle} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, insightTitle: e.target.value })} />
+                  <textarea className="textarea" style={{ minHeight: 70 }} placeholder="Insight body — the single most important thing to know" value={newAtlasDoc.insightContent} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, insightContent: e.target.value })} />
+                  <div className="add-atlas-section-label">NOTES <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>— one item per line, becomes bullet list</span></div>
+                  <textarea className="textarea" style={{ minHeight: 90 }} placeholder={"- First point\n- Second point\n- Third point"} value={newAtlasDoc.notes} onChange={e => setNewAtlasDoc({ ...newAtlasDoc, notes: e.target.value })} />
+                  <div className="modal-actions" style={{ marginTop: 8 }}>
                     <button className="btn-primary" onClick={addAtlasDoc}>Add Document</button>
                     <button className="btn-remove" onClick={() => setShowAddAtlas(false)}>Cancel</button>
                   </div>

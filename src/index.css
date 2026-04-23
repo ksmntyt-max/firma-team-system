@@ -57,9 +57,11 @@ body{background:linear-gradient(135deg,#fef9f5 0%,#fef5fa 35%,#f5f6fe 100%);font
 /* ─── MODALS ─── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:1000}
 .modal{background:#fff;border-radius:14px;padding:28px;width:460px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 60px rgba(0,0,0,0.15)}
-.modal-lg{width:640px}
+.modal-lg{width:720px;max-height:88vh;overflow-y:auto;gap:10px}
 .modal-title{font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:500;color:#2a2a2a;margin-bottom:4px}
 .modal-actions{display:flex;gap:12px;margin-top:4px}
+.add-atlas-section-label{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#FF855C;margin-top:10px;margin-bottom:2px}
+.add-atlas-row{display:flex;gap:10px}
 
 /* ─── DASHBOARD ─── */
 .dash-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(255,133,92,0.12);border:1px solid rgba(255,133,92,0.12);border-radius:12px;overflow:hidden;margin-bottom:28px}
