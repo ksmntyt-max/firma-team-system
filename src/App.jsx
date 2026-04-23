@@ -1,13 +1,7 @@
 import { useState, useRef } from 'react'
 
 const INITIAL_TASKS = [
-  { id: 1, title: 'Draft Q2 partnership outline for SRI', category: 'STRATEGY', priority: 'high', assignee: '@Adrian', date: '2026-05-02', status: 'backlog' },
-  { id: 2, title: 'Review Testamint Layer whitepaper v3', category: 'DOCS', priority: 'medium', assignee: '@Mia', date: '2026-05-04', status: 'backlog' },
-  { id: 3, title: 'Finalize EDGE Haven module specs', category: 'ENGINEERING', priority: 'high', assignee: '@Ken', date: '2026-04-28', status: 'inprogress' },
-  { id: 4, title: 'Bataan Freeport site visit prep', category: 'DEPLOYMENT', priority: 'medium', assignee: '@Joy', date: '2026-04-30', status: 'inprogress' },
-  { id: 5, title: 'FIG Cash bearer mechanics edit', category: 'DOCS', priority: 'low', assignee: '@Sam', date: '2026-04-26', status: 'review' },
-  { id: 6, title: 'Publish Canon 0101 v2', category: 'FOUNDATION', priority: 'high', assignee: '@Adrian', date: '2026-04-18', status: 'done' },
-  { id: 7, title: 'Onboard 3 new FIT country leads', category: 'OPS', priority: 'medium', assignee: '@Joy', date: '2026-04-15', status: 'done' },
+  { id: 1, title: 'Bataan HQ Visit', category: 'DEPLOYMENT', priority: 'high', assignee: '@Karl', date: '2026-04-30', status: 'inprogress' },
 ]
 
 const INITIAL_DOCUMENTS = [
