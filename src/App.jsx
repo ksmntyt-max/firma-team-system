@@ -1067,13 +1067,23 @@ export default function App() {
         setEmailSendStatus({ ok: true, msg: `Email sent to ${to}` })
         setEmailForm(f => ({ ...f, to: '', cc: '', subject: '', body: '' }))
       } else {
-        setEmailSendStatus({ ok: false, msg: data.error || 'Send failed' })
+        // Resend domain not verified — fall back to Gmail compose automatically
+        const isDomainError = data.error && (data.error.includes('validation_error') || data.error.includes('verify a domain') || data.error.includes('own email'))
+        if (isDomainError) {
+          window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank')
+          setEmailLog(log => [{ id: Date.now(), to, subject, sentAt: new Date().toLocaleString() }, ...log])
+          setEmailSendStatus({ ok: true, msg: `Opened in Gmail — compose a custom domain in Resend to send directly` })
+        } else {
+          setEmailSendStatus({ ok: false, msg: data.error || 'Send failed' })
+        }
       }
     } catch {
-      setEmailSendStatus({ ok: false, msg: 'Network error — check connection' })
+      // Network error — fall back to Gmail compose
+      window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank')
+      setEmailSendStatus({ ok: true, msg: 'Opened in Gmail compose' })
     } finally {
       setEmailSending(false)
-      setTimeout(() => setEmailSendStatus(null), 4000)
+      setTimeout(() => setEmailSendStatus(null), 5000)
     }
   }
   const openInMail = () => {
