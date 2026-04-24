@@ -964,6 +964,8 @@ export default function App() {
   const [showAddEvent, setShowAddEvent] = useState(false)
   const [newEvent, setNewEvent] = useState({ title: '', date: '', startTime: '', endTime: '', gmeetLink: '', attendees: '', description: '' })
   const [meetingsView, setMeetingsView] = useState('schedule')
+  const [inviteSending, setInviteSending] = useState(false)
+  const [inviteStatus, setInviteStatus] = useState(null) // { ok, sent, errors? }
 
   const [archDocs, setArchDocs] = useLocalStorage('firma_arch_docs', INITIAL_ARCH_DOCS)
   const [selectedAtlasDoc, setSelectedAtlasDoc] = useState(null)
@@ -1883,7 +1885,7 @@ export default function App() {
 
       {/* ── ADD EVENT MODAL ── */}
       {showAddEvent && (
-        <div className="modal-overlay" onClick={() => setShowAddEvent(false)}>
+        <div className="modal-overlay" onClick={() => { if (!inviteSending) setShowAddEvent(false) }}>
           <div className="modal sched-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-title">Add Event</div>
             <input className="input" placeholder="Event title *" value={newEvent.title} onChange={e => setNewEvent(ev => ({ ...ev, title: e.target.value }))} autoFocus />
@@ -1894,16 +1896,59 @@ export default function App() {
               <input className="input" type="time" value={newEvent.endTime} onChange={e => setNewEvent(ev => ({ ...ev, endTime: e.target.value }))} placeholder="End time" />
             </div>
             <input className="input" placeholder="Google Meet link (optional)" value={newEvent.gmeetLink} onChange={e => setNewEvent(ev => ({ ...ev, gmeetLink: e.target.value }))} />
-            <input className="input" placeholder="Attendee emails, comma separated (optional)" value={newEvent.attendees} onChange={e => setNewEvent(ev => ({ ...ev, attendees: e.target.value }))} />
+            <div className="sched-attendees-wrap">
+              <input className="input" placeholder="Attendee emails, comma separated (optional)" value={newEvent.attendees} onChange={e => setNewEvent(ev => ({ ...ev, attendees: e.target.value }))} />
+              {newEvent.attendees.trim() && (
+                <p className="sched-invite-hint">📧 Invite emails will be sent to each attendee when you save.</p>
+              )}
+            </div>
             <textarea className="textarea" placeholder="Description (optional)" value={newEvent.description} onChange={e => setNewEvent(ev => ({ ...ev, description: e.target.value }))} style={{ minHeight: 72 }} />
+            {inviteStatus && (
+              <div className={`sched-invite-status ${inviteStatus.ok ? 'ok' : 'err'}`}>
+                {inviteStatus.ok
+                  ? `✓ Invite${inviteStatus.sent > 1 ? 's' : ''} sent to ${inviteStatus.sent} attendee${inviteStatus.sent > 1 ? 's' : ''}`
+                  : `Could not send invites — event saved locally`}
+              </div>
+            )}
             <div className="modal-actions">
-              <button className="btn-primary" onClick={() => {
+              <button className="btn-primary" disabled={inviteSending} onClick={async () => {
                 if (!newEvent.title.trim() || !newEvent.date) return
-                setScheduleEvents(es => [...es, { ...newEvent, id: Date.now() }])
-                setNewEvent({ title: '', date: '', startTime: '', endTime: '', gmeetLink: '', attendees: '', description: '' })
-                setShowAddEvent(false)
-              }}>Save Event</button>
-              <button className="btn-remove" onClick={() => setShowAddEvent(false)}>Cancel</button>
+                const saved = { ...newEvent, id: Date.now() }
+                setScheduleEvents(es => [...es, saved])
+                // Send email invites if attendees are specified
+                const emails = newEvent.attendees.split(',').map(e => e.trim()).filter(Boolean)
+                if (emails.length) {
+                  setInviteSending(true)
+                  setInviteStatus(null)
+                  try {
+                    const r = await fetch('/api/send-invite', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ event: saved, attendees: emails }),
+                    })
+                    const data = await r.json()
+                    setInviteStatus({ ok: data.ok, sent: data.sent })
+                    setTimeout(() => {
+                      setInviteStatus(null)
+                      setNewEvent({ title: '', date: '', startTime: '', endTime: '', gmeetLink: '', attendees: '', description: '' })
+                      setShowAddEvent(false)
+                    }, 2000)
+                  } catch {
+                    setInviteStatus({ ok: false })
+                    setTimeout(() => {
+                      setInviteStatus(null)
+                      setNewEvent({ title: '', date: '', startTime: '', endTime: '', gmeetLink: '', attendees: '', description: '' })
+                      setShowAddEvent(false)
+                    }, 2000)
+                  } finally {
+                    setInviteSending(false)
+                  }
+                } else {
+                  setNewEvent({ title: '', date: '', startTime: '', endTime: '', gmeetLink: '', attendees: '', description: '' })
+                  setShowAddEvent(false)
+                }
+              }}>{inviteSending ? 'Sending invites…' : 'Save Event'}</button>
+              <button className="btn-remove" disabled={inviteSending} onClick={() => { setInviteStatus(null); setShowAddEvent(false) }}>Cancel</button>
             </div>
           </div>
         </div>
