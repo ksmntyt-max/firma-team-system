@@ -637,6 +637,37 @@ const FONT_FAMILIES = ['Arial', 'Georgia', 'Times New Roman', 'Courier New', 'Ve
 const FONT_SIZES = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px']
 const TEXT_STYLES = ['Normal', 'Heading 1', 'Heading 2', 'Heading 3']
 
+// ── SCHEDULE HELPERS ─────────────────────────────────────────────────────────
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
+const WDAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT']
+function calDays(y, m) {
+  const first = new Date(y, m, 1).getDay()
+  const count = new Date(y, m + 1, 0).getDate()
+  return [...Array(first).fill(null), ...Array.from({ length: count }, (_, i) => i + 1)]
+}
+function toDateKey(y, m, d) {
+  return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+}
+function fmtTime(t) {
+  if (!t) return ''
+  const [h, mi] = t.split(':').map(Number)
+  return `${h % 12 || 12}:${String(mi).padStart(2, '0')}${h >= 12 ? 'pm' : 'am'}`
+}
+function fmtEvDate(ds) {
+  return new Date(ds + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+}
+function buildGCalURL(ev) {
+  const d = ev.date.replace(/-/g, '')
+  const s = ev.startTime ? `${d}T${ev.startTime.replace(':', '')}00` : d
+  const e = ev.endTime ? `${d}T${ev.endTime.replace(':', '')}00` : s
+  const p = new URLSearchParams({ action: 'TEMPLATE', text: ev.title, dates: `${s}/${e}` })
+  const det = [ev.description, ev.gmeetLink ? `Google Meet: ${ev.gmeetLink}` : ''].filter(Boolean).join('\n\n')
+  if (det) p.set('details', det)
+  if (ev.attendees) p.set('add', ev.attendees)
+  if (ev.gmeetLink) p.set('location', ev.gmeetLink)
+  return `https://calendar.google.com/calendar/render?${p}`
+}
+
 const NAV_ITEMS = [
   { key: 'dashboard', label: 'Dashboard' },
   { key: 'planner', label: 'Planner' },
@@ -926,6 +957,13 @@ export default function App() {
   const [meetingAnalyzing, setMeetingAnalyzing] = useState(false)
   const [meetingUploadError, setMeetingUploadError] = useState('')
   const meetingFileRef = useRef(null)
+
+  const [scheduleEvents, setScheduleEvents] = useLocalStorage('firma_schedule_events', [])
+  const [calMonth, setCalMonth] = useState(() => { const n = new Date(); return { y: n.getFullYear(), m: n.getMonth() } })
+  const [selectedDay, setSelectedDay] = useState(null)
+  const [showAddEvent, setShowAddEvent] = useState(false)
+  const [newEvent, setNewEvent] = useState({ title: '', date: '', startTime: '', endTime: '', gmeetLink: '', attendees: '', description: '' })
+  const [meetingsView, setMeetingsView] = useState('schedule')
 
   const [archDocs, setArchDocs] = useLocalStorage('firma_arch_docs', INITIAL_ARCH_DOCS)
   const [selectedAtlasDoc, setSelectedAtlasDoc] = useState(null)
@@ -1462,85 +1500,142 @@ export default function App() {
         )}
 
         {/* ── MEETINGS ── */}
-        {activeNav === 'meetings' && !selectedMeeting && (
-          <div className="view-scroll">
-            <div className="breadcrumb">MEETINGS · AI ANALYSIS</div>
-            <h1 className="page-title">Meeting <em>Intelligence</em></h1>
-            <p className="page-desc">Upload a meeting transcript and Claude will extract action items, recurring topics, and blockers.</p>
+        {activeNav === 'meetings' && !selectedMeeting && (() => {
+          const today = new Date(); const todayKey = toDateKey(today.getFullYear(), today.getMonth(), today.getDate())
+          const days = calDays(calMonth.y, calMonth.m)
+          const eventsByDay = scheduleEvents.reduce((acc, ev) => { (acc[ev.date] = acc[ev.date] || []).push(ev); return acc }, {})
+          const upcomingDates = [...new Set(scheduleEvents.map(e => e.date).filter(d => d >= todayKey))].sort()
+          const prevMonth = () => setCalMonth(c => c.m === 0 ? { y: c.y - 1, m: 11 } : { y: c.y, m: c.m - 1 })
+          const nextMonth = () => setCalMonth(c => c.m === 11 ? { y: c.y + 1, m: 0 } : { y: c.y, m: c.m + 1 })
+          return (
+            <div className="view-scroll">
+              <div className="breadcrumb">MEETINGS · {meetingsView === 'schedule' ? 'SCHEDULE' : 'AI ANALYSIS'}</div>
 
-            {/* Upload card */}
-            <div className="meeting-upload-card">
-              <div className="meeting-upload-title-row">
-                <input
-                  className="input"
-                  placeholder="Meeting title (optional)"
-                  value={meetingUploadTitle}
-                  onChange={e => setMeetingUploadTitle(e.target.value)}
-                />
+              {/* Sub-tabs */}
+              <div className="meetings-subtabs">
+                <button className={`meetings-subtab${meetingsView === 'schedule' ? ' active' : ''}`} onClick={() => setMeetingsView('schedule')}>Schedule</button>
+                <button className={`meetings-subtab${meetingsView === 'analysis' ? ' active' : ''}`} onClick={() => setMeetingsView('analysis')}>AI Analysis</button>
               </div>
-              <div
-                className="meeting-dropzone"
-                onClick={() => meetingFileRef.current?.click()}
-                onDragOver={e => e.preventDefault()}
-                onDrop={e => { e.preventDefault(); analyzeMeeting(e.dataTransfer.files[0]) }}
-              >
-                <input
-                  ref={meetingFileRef}
-                  type="file"
-                  accept=".txt,.md"
-                  style={{ display: 'none' }}
-                  onChange={e => analyzeMeeting(e.target.files[0])}
-                />
-                <div className="meeting-dropzone-icon">⊡</div>
-                <div className="meeting-dropzone-label">Click or drag & drop a transcript</div>
-                <div className="meeting-dropzone-sub">.txt or .md files · up to 10MB</div>
-              </div>
-              {meetingUploadError && <p className="meeting-upload-err">{meetingUploadError}</p>}
-              {meetingAnalyzing && <div className="meeting-analyzing-bar"><span className="meeting-analyzing-dot" />Analyzing with Claude…</div>}
-            </div>
 
-            {/* Meetings list */}
-            {meetings.length > 0 && (
-              <div className="meeting-list">
-                <div className="meeting-list-hdr">Past Meetings</div>
-                {meetings.map(m => (
-                  <div
-                    key={m.id}
-                    className={`meeting-card ${m.status}`}
-                    onClick={() => { if (m.status === 'done') { setSelectedMeeting(m); setMeetingTab('overview') } }}
-                  >
-                    <div className="meeting-card-left">
-                      <div className={`meeting-status-dot ${m.status}`} />
-                      <div>
-                        <div className="meeting-card-title">{m.title}</div>
-                        <div className="meeting-card-meta">{m.fileName} · {new Date(m.uploadedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
-                        {m.status === 'failed' && <div className="meeting-card-err">{m.error}</div>}
-                      </div>
+              {/* ── SCHEDULE VIEW ── */}
+              {meetingsView === 'schedule' && (
+                <>
+                  <div className="sched-top-row">
+                    <h1 className="page-title" style={{ margin: 0 }}>Team <em>Schedule</em></h1>
+                    <button className="btn-primary" onClick={() => { setNewEvent(e => ({ ...e, date: selectedDay || todayKey })); setShowAddEvent(true) }}>+ Add Event</button>
+                  </div>
+                  <p className="page-desc" style={{ marginTop: 10 }}>Schedule meetings, set Google Meet links, and send Gmail calendar invites to your team.</p>
+
+                  {/* Calendar */}
+                  <div className="sched-cal-card">
+                    <div className="sched-cal-header">
+                      <button className="sched-nav-btn" onClick={prevMonth}>‹</button>
+                      <div className="sched-cal-month">{MONTHS[calMonth.m]} {calMonth.y}</div>
+                      <button className="sched-nav-btn" onClick={nextMonth}>›</button>
                     </div>
-                    <div className="meeting-card-right">
-                      {m.status === 'done' && (
-                        <>
-                          <span className="meeting-badge blue">{m.analysis?.actionItems?.length || 0} actions</span>
-                          <span className="meeting-badge orange">{m.analysis?.recurringTopics?.length || 0} patterns</span>
-                          {(m.analysis?.stalledItems?.length || 0) > 0 && (
-                            <span className="meeting-badge red">{m.analysis.stalledItems.length} stalled</span>
-                          )}
-                          <span className="meeting-open-arrow">›</span>
-                        </>
-                      )}
-                      {m.status === 'processing' && <span className="meeting-badge gray">Analyzing…</span>}
-                      {m.status === 'failed' && <span className="meeting-badge red">Failed</span>}
+                    <div className="sched-cal-grid">
+                      {WDAYS.map(d => <div key={d} className="sched-cal-dayname">{d}</div>)}
+                      {days.map((d, i) => {
+                        if (!d) return <div key={`e-${i}`} />
+                        const key = toDateKey(calMonth.y, calMonth.m, d)
+                        const isToday = key === todayKey
+                        const isSelected = key === selectedDay
+                        const hasEvents = !!eventsByDay[key]?.length
+                        return (
+                          <div key={key} className={`sched-cal-day${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}${hasEvents ? ' has-events' : ''}`}
+                            onClick={() => { setSelectedDay(key === selectedDay ? null : key) }}>
+                            <span className="sched-cal-day-num">{d}</span>
+                            {hasEvents && <div className="sched-cal-dots">{eventsByDay[key].slice(0,3).map((_, di) => <span key={di} className="sched-cal-dot" />)}</div>}
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
 
-            {meetings.length === 0 && !meetingAnalyzing && (
-              <div className="empty" style={{ marginTop: 32 }}>No meetings yet. Upload your first transcript above.</div>
-            )}
-          </div>
-        )}
+                  {/* Event list */}
+                  <div className="sched-event-list">
+                    {(selectedDay ? [selectedDay] : upcomingDates).length === 0
+                      ? <div className="empty" style={{ marginTop: 24 }}>No upcoming events. Click + Add Event to schedule one.</div>
+                      : (selectedDay ? [selectedDay] : upcomingDates).map(dateStr => {
+                          const evs = (eventsByDay[dateStr] || []).sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
+                          return (
+                            <div key={dateStr} className={`sched-date-group${dateStr === selectedDay ? ' highlighted' : ''}`}>
+                              <div className="sched-date-label">{fmtEvDate(dateStr)}</div>
+                              <div className="sched-date-events">
+                                {evs.map(ev => (
+                                  <div key={ev.id} className="sched-event-row">
+                                    <div className="sched-event-main">
+                                      <div className="sched-event-title">{ev.title}</div>
+                                      {(ev.startTime || ev.endTime) && (
+                                        <div className="sched-event-time">{fmtTime(ev.startTime)}{ev.endTime ? ` – ${fmtTime(ev.endTime)}` : ''}</div>
+                                      )}
+                                      {ev.description && <div className="sched-event-desc">{ev.description}</div>}
+                                    </div>
+                                    <div className="sched-event-actions">
+                                      {ev.gmeetLink && (
+                                        <a href={ev.gmeetLink} target="_blank" rel="noreferrer" className="sched-meet-btn">📹 Join Meet</a>
+                                      )}
+                                      <a href={buildGCalURL(ev)} target="_blank" rel="noreferrer" className="sched-gcal-btn">📅 Gmail Invite</a>
+                                      <button className="sched-del-btn" onClick={() => setScheduleEvents(es => es.filter(e => e.id !== ev.id))} title="Delete">×</button>
+                                    </div>
+                                  </div>
+                                ))}
+                                <button className="sched-add-inline-btn" onClick={() => { setNewEvent(e => ({ ...e, date: dateStr })); setShowAddEvent(true) }}>+ Add an event</button>
+                              </div>
+                            </div>
+                          )
+                        })
+                    }
+                  </div>
+                </>
+              )}
+
+              {/* ── AI ANALYSIS VIEW ── */}
+              {meetingsView === 'analysis' && (
+                <>
+                  <h1 className="page-title">Meeting <em>Intelligence</em></h1>
+                  <p className="page-desc">Upload a meeting transcript and Claude will extract action items, recurring topics, and blockers.</p>
+                  <div className="meeting-upload-card">
+                    <div className="meeting-upload-title-row">
+                      <input className="input" placeholder="Meeting title (optional)" value={meetingUploadTitle} onChange={e => setMeetingUploadTitle(e.target.value)} />
+                    </div>
+                    <div className="meeting-dropzone" onClick={() => meetingFileRef.current?.click()} onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); analyzeMeeting(e.dataTransfer.files[0]) }}>
+                      <input ref={meetingFileRef} type="file" accept=".txt,.md" style={{ display: 'none' }} onChange={e => analyzeMeeting(e.target.files[0])} />
+                      <div className="meeting-dropzone-icon">⊡</div>
+                      <div className="meeting-dropzone-label">Click or drag & drop a transcript</div>
+                      <div className="meeting-dropzone-sub">.txt or .md files · up to 10MB</div>
+                    </div>
+                    {meetingUploadError && <p className="meeting-upload-err">{meetingUploadError}</p>}
+                    {meetingAnalyzing && <div className="meeting-analyzing-bar"><span className="meeting-analyzing-dot" />Analyzing with Claude…</div>}
+                  </div>
+                  {meetings.length > 0 && (
+                    <div className="meeting-list">
+                      <div className="meeting-list-hdr">Past Meetings</div>
+                      {meetings.map(m => (
+                        <div key={m.id} className={`meeting-card ${m.status}`} onClick={() => { if (m.status === 'done') { setSelectedMeeting(m); setMeetingTab('overview') } }}>
+                          <div className="meeting-card-left">
+                            <div className={`meeting-status-dot ${m.status}`} />
+                            <div>
+                              <div className="meeting-card-title">{m.title}</div>
+                              <div className="meeting-card-meta">{m.fileName} · {new Date(m.uploadedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                              {m.status === 'failed' && <div className="meeting-card-err">{m.error}</div>}
+                            </div>
+                          </div>
+                          <div className="meeting-card-right">
+                            {m.status === 'done' && (<><span className="meeting-badge blue">{m.analysis?.actionItems?.length || 0} actions</span><span className="meeting-badge orange">{m.analysis?.recurringTopics?.length || 0} patterns</span>{(m.analysis?.stalledItems?.length || 0) > 0 && <span className="meeting-badge red">{m.analysis.stalledItems.length} stalled</span>}<span className="meeting-open-arrow">›</span></>)}
+                            {m.status === 'processing' && <span className="meeting-badge gray">Analyzing…</span>}
+                            {m.status === 'failed' && <span className="meeting-badge red">Failed</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {meetings.length === 0 && !meetingAnalyzing && <div className="empty" style={{ marginTop: 32 }}>No meetings yet. Upload your first transcript above.</div>}
+                </>
+              )}
+            </div>
+          )
+        })()}
 
         {/* ── MEETING DETAIL ── */}
         {activeNav === 'meetings' && selectedMeeting && (
@@ -1785,6 +1880,34 @@ export default function App() {
         )}
 
       </main>
+
+      {/* ── ADD EVENT MODAL ── */}
+      {showAddEvent && (
+        <div className="modal-overlay" onClick={() => setShowAddEvent(false)}>
+          <div className="modal sched-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-title">Add Event</div>
+            <input className="input" placeholder="Event title *" value={newEvent.title} onChange={e => setNewEvent(ev => ({ ...ev, title: e.target.value }))} autoFocus />
+            <input className="input" type="date" value={newEvent.date} onChange={e => setNewEvent(ev => ({ ...ev, date: e.target.value }))} />
+            <div className="sched-time-row">
+              <input className="input" type="time" value={newEvent.startTime} onChange={e => setNewEvent(ev => ({ ...ev, startTime: e.target.value }))} placeholder="Start time" />
+              <span className="sched-time-sep">→</span>
+              <input className="input" type="time" value={newEvent.endTime} onChange={e => setNewEvent(ev => ({ ...ev, endTime: e.target.value }))} placeholder="End time" />
+            </div>
+            <input className="input" placeholder="Google Meet link (optional)" value={newEvent.gmeetLink} onChange={e => setNewEvent(ev => ({ ...ev, gmeetLink: e.target.value }))} />
+            <input className="input" placeholder="Attendee emails, comma separated (optional)" value={newEvent.attendees} onChange={e => setNewEvent(ev => ({ ...ev, attendees: e.target.value }))} />
+            <textarea className="textarea" placeholder="Description (optional)" value={newEvent.description} onChange={e => setNewEvent(ev => ({ ...ev, description: e.target.value }))} style={{ minHeight: 72 }} />
+            <div className="modal-actions">
+              <button className="btn-primary" onClick={() => {
+                if (!newEvent.title.trim() || !newEvent.date) return
+                setScheduleEvents(es => [...es, { ...newEvent, id: Date.now() }])
+                setNewEvent({ title: '', date: '', startTime: '', endTime: '', gmeetLink: '', attendees: '', description: '' })
+                setShowAddEvent(false)
+              }}>Save Event</button>
+              <button className="btn-remove" onClick={() => setShowAddEvent(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── LOCK GATE ── */}
       {pendingNav && !unlocked && (
