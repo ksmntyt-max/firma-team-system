@@ -1509,12 +1509,12 @@ export default function App() {
           const nextMonth = () => setCalMonth(c => c.m === 11 ? { y: c.y + 1, m: 0 } : { y: c.y, m: c.m + 1 })
           return (
             <div className="view-scroll">
-              <div className="breadcrumb">MEETINGS · {meetingsView === 'schedule' ? 'SCHEDULE' : 'AI ANALYSIS'}</div>
+              <div className="breadcrumb">MEETINGS · {meetingsView === 'schedule' ? 'SCHEDULE' : 'INTELLIGENCE'}</div>
 
               {/* Sub-tabs */}
               <div className="meetings-subtabs">
                 <button className={`meetings-subtab${meetingsView === 'schedule' ? ' active' : ''}`} onClick={() => setMeetingsView('schedule')}>Schedule</button>
-                <button className={`meetings-subtab${meetingsView === 'analysis' ? ' active' : ''}`} onClick={() => setMeetingsView('analysis')}>AI Analysis</button>
+                <button className={`meetings-subtab${meetingsView === 'analysis' ? ' active' : ''}`} onClick={() => setMeetingsView('analysis')}>Intelligence</button>
               </div>
 
               {/* ── SCHEDULE VIEW ── */}
