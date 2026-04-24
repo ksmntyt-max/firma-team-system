@@ -668,6 +668,13 @@ function buildGCalURL(ev) {
   return `https://calendar.google.com/calendar/render?${p}`
 }
 
+const EMAIL_TEMPLATES = [
+  { id: 'partner', name: 'Partner Outreach', sub: 'Partnership Inquiry — Firma Sovereign Foundation', subject: 'Partnership Inquiry — Firma Sovereign Foundation', body: 'Dear [Name],\n\nI hope this message finds you well. I\'m reaching out on behalf of Firma — a sovereign network state building agentic infrastructure on Optimism L2.\n\nWe believe there\'s a strong alignment between our work and yours, and we\'d love to explore a partnership.\n\nWould you be open to a 30-minute call this week?\n\nBest regards,\n[Your Name]\nFirma Team' },
+  { id: 'team-update', name: 'Team Update', sub: 'Weekly Update — Firma Operations', subject: 'Weekly Team Update — Firma Operations', body: 'Team,\n\nHere\'s this week\'s update from Firma Operations:\n\n▸ Progress: [Key wins this week]\n▸ In Progress: [What\'s currently being worked on]\n▸ Blockers: [Any issues that need attention]\n▸ Next Week: [Priorities ahead]\n\nLet me know if you have questions or updates to add.\n\nBest,\n[Your Name]' },
+  { id: 'fit-onboard', name: 'FIT Onboarding', sub: 'Welcome to the Firma Impact Team', subject: 'Welcome to the Firma Impact Team (FIT)', body: 'Welcome to FIT!\n\nWe\'re thrilled to have you join the Firma Impact Team. Here\'s what to expect in your first week:\n\n1. Onboarding call with your team lead\n2. Access to the Firma Workspace\n3. Review of the FIT mission brief\n4. Introduction to your first project\n\nIf you have any questions, don\'t hesitate to reach out.\n\nLooking forward to building with you,\nThe FIT Team' },
+  { id: 'followup', name: 'Follow-up', sub: 'Following up — [topic]', subject: 'Following up on [topic]', body: 'Hi [Name],\n\nJust following up on our recent conversation regarding [topic].\n\nI wanted to check in and see if you\'ve had a chance to review what we discussed. Happy to answer any questions or provide additional information.\n\nLooking forward to hearing from you.\n\nBest regards,\n[Your Name]\nFirma Team' },
+]
+
 const NAV_ITEMS = [
   { key: 'dashboard', label: 'Dashboard' },
   { key: 'planner', label: 'Planner' },
@@ -940,15 +947,18 @@ export default function App() {
   const [docSearch, setDocSearch] = useState('')
   const editorRef = useRef(null)
 
-  const [emailForm, setEmailForm] = useState({ senderId: 'gmail-1', to: '', subject: '', body: '' })
+  const [emailForm, setEmailForm] = useState({ to: '', cc: '', subject: '', body: '' })
   const [emailSent, setEmailSent] = useState(false)
+  const [emailSending, setEmailSending] = useState(false)
+  const [emailSendStatus, setEmailSendStatus] = useState(null)
   const [emailLog, setEmailLog] = useLocalStorage('firma_email_log', [])
-  const [senderProfiles, setSenderProfiles] = useLocalStorage('firma_sender_profiles', [
-    { id: 'gmail-1', name: 'Gmail', email: '', provider: 'gmail' },
-    { id: 'outlook-1', name: 'Outlook', email: '', provider: 'outlook' },
-  ])
+  const [emailDrafts, setEmailDrafts] = useLocalStorage('firma_email_drafts', [])
+  const [emailTab, setEmailTab] = useState('compose') // 'compose' | 'drafts'
   const [showAddSender, setShowAddSender] = useState(false)
   const [newSender, setNewSender] = useState({ name: '', email: '', provider: 'gmail' })
+  const [senderProfiles, setSenderProfiles] = useLocalStorage('firma_sender_profiles', [
+    { id: 'gmail-1', name: 'Gmail', email: '', provider: 'gmail' },
+  ])
 
   const [meetings, setMeetings] = useLocalStorage('firma_meetings', [])
   const [selectedMeeting, setSelectedMeeting] = useState(null)
@@ -1040,14 +1050,35 @@ export default function App() {
     else if (s === 'Heading 3') execCmd('formatBlock', 'h3')
   }
 
-  const sendEmail = () => {
+  const sendEmail = async () => {
     if (!emailForm.to || !emailForm.subject) return
+    const { to, cc, subject, body } = emailForm
+    setEmailSending(true)
+    setEmailSendStatus(null)
+    try {
+      const r = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to, cc, subject, body }),
+      })
+      const data = await r.json()
+      if (data.ok) {
+        setEmailLog(log => [{ id: Date.now(), to, subject, sentAt: new Date().toLocaleString() }, ...log])
+        setEmailSendStatus({ ok: true, msg: `Email sent to ${to}` })
+        setEmailForm(f => ({ ...f, to: '', cc: '', subject: '', body: '' }))
+      } else {
+        setEmailSendStatus({ ok: false, msg: data.error || 'Send failed' })
+      }
+    } catch {
+      setEmailSendStatus({ ok: false, msg: 'Network error — check connection' })
+    } finally {
+      setEmailSending(false)
+      setTimeout(() => setEmailSendStatus(null), 4000)
+    }
+  }
+  const openInMail = () => {
     const { to, subject, body } = emailForm
-    if (selectedSender?.provider === 'gmail') window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank')
-    else window.open(`https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank')
-    setEmailLog(log => [{ id: Date.now(), to, subject, provider: selectedSender?.provider || 'gmail', sentAt: new Date().toLocaleString() }, ...log])
-    setEmailSent(true)
-    setTimeout(() => setEmailSent(false), 2500)
+    window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank')
   }
   const addSenderProfile = () => {
     if (!newSender.name || !newSender.email) return
@@ -1436,68 +1467,96 @@ export default function App() {
 
         {/* ── EMAIL ── */}
         {activeNav === 'email' && (
-          <div className="view-scroll">
-            <div className="breadcrumb">EMAIL COMPOSER</div>
-            <h1 className="page-title">Draft a <em>message</em></h1>
-            <p className="page-desc">Compose here and hand off to your mail client via Gmail or Outlook.</p>
-            <div className="email-layout">
-              <div className="email-compose">
-                <div className="email-field-label">FROM</div>
-                <div className="email-sender-row">
-                  <select className="input" value={emailForm.senderId} onChange={e => setEmailForm({ ...emailForm, senderId: e.target.value })}>
-                    {senderProfiles.map(s => <option key={s.id} value={s.id}>{s.name}{s.email ? ` — ${s.email}` : ''}</option>)}
-                  </select>
-                </div>
-                <div className="email-field-label">TO</div>
-                <input className="input" placeholder="recipient@example.com" value={emailForm.to} onChange={e => setEmailForm({ ...emailForm, to: e.target.value })} />
-                <div className="email-field-label">SUBJECT</div>
-                <input className="input" placeholder="Subject line" value={emailForm.subject} onChange={e => setEmailForm({ ...emailForm, subject: e.target.value })} />
-                <div className="email-field-label">MESSAGE</div>
-                <textarea className="textarea" placeholder="Write your message..." value={emailForm.body} onChange={e => setEmailForm({ ...emailForm, body: e.target.value })} />
-                <button className="btn-primary" onClick={sendEmail}>Send via {selectedSender?.provider === 'gmail' ? 'Gmail' : 'Outlook'}</button>
-                {emailSent && <div className="success-msg">Email client opened!</div>}
+          <div className="email-dark-shell">
+            {/* ── LEFT PANEL ── */}
+            <div className="email-dark-left">
+              <div className="email-dark-tabs">
+                <button className={`email-dark-tab-btn${emailTab === 'compose' ? ' active' : ''}`} onClick={() => setEmailTab('compose')}>COMPOSE</button>
+                <button className={`email-dark-tab-btn ghost${emailTab === 'drafts' ? ' active' : ''}`} onClick={() => setEmailTab('drafts')}>DRAFTS ({emailDrafts.length})</button>
               </div>
-              <div className="email-sidebar-panel">
-                <div className="email-accounts-card">
-                  <div className="email-panel-hdr">Sender Accounts</div>
-                  {senderProfiles.map(s => (
-                    <div key={s.id} className={`email-account-item ${emailForm.senderId === s.id ? 'active' : ''}`} onClick={() => setEmailForm({ ...emailForm, senderId: s.id })}>
-                      <div className={`email-account-icon ${s.provider}`}>{s.provider === 'gmail' ? 'G' : 'O'}</div>
-                      <div><div className="email-account-name">{s.name}</div><div className="email-account-addr">{s.email || 'No email set'}</div></div>
+
+              {emailTab === 'compose' && (
+                <>
+                  <div className="email-dark-section-label">TEMPLATES</div>
+                  {EMAIL_TEMPLATES.map(t => (
+                    <div key={t.id} className="email-dark-template-card" onClick={() => setEmailForm(f => ({ ...f, subject: t.subject, body: t.body }))}>
+                      <div className="email-dark-template-name">{t.name}</div>
+                      <div className="email-dark-template-sub">{t.sub}</div>
                     </div>
                   ))}
-                  <button className="email-add-btn" onClick={() => setShowAddSender(true)}>+ Add Account</button>
-                </div>
-                {emailLog.length > 0 && (
-                  <div className="email-log-card">
-                    <div className="email-panel-hdr">Sent Log</div>
-                    {emailLog.slice(0, 5).map(log => (
-                      <div key={log.id} className="email-log-item">
-                        <div className="email-log-to">To: {log.to}</div>
-                        <div className="email-log-subj">{log.subject}</div>
-                        <div className="email-log-meta">{log.provider} · {log.sentAt}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                  {emailLog.length > 0 && (
+                    <>
+                      <div className="email-dark-section-label" style={{ marginTop: 24 }}>SENT LOG</div>
+                      {emailLog.slice(0, 5).map(log => (
+                        <div key={log.id} className="email-dark-log-item">
+                          <div className="email-dark-log-to">{log.to}</div>
+                          <div className="email-dark-log-subj">{log.subject}</div>
+                          <div className="email-dark-log-meta">{log.sentAt}</div>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </>
+              )}
+
+              {emailTab === 'drafts' && (
+                emailDrafts.length === 0
+                  ? <div className="email-dark-empty">No drafts saved yet.</div>
+                  : emailDrafts.map(d => (
+                    <div key={d.id} className="email-dark-template-card" onClick={() => { setEmailForm({ to: d.to, cc: d.cc || '', subject: d.subject, body: d.body }); setEmailTab('compose') }}>
+                      <div className="email-dark-template-name">{d.subject || '(No subject)'}</div>
+                      <div className="email-dark-template-sub">To: {d.to || '—'} · {d.savedAt}</div>
+                      <button className="email-dark-del-btn" onClick={e => { e.stopPropagation(); setEmailDrafts(ds => ds.filter(x => x.id !== d.id)) }}>×</button>
+                    </div>
+                  ))
+              )}
             </div>
-            {showAddSender && (
-              <div className="modal-overlay" onClick={() => setShowAddSender(false)}>
-                <div className="modal" onClick={e => e.stopPropagation()}>
-                  <div className="modal-title">Add Sender Account</div>
-                  <input className="input" placeholder="Account name (e.g. Work Gmail)" value={newSender.name} onChange={e => setNewSender({ ...newSender, name: e.target.value })} />
-                  <input className="input" placeholder="Email address" value={newSender.email} onChange={e => setNewSender({ ...newSender, email: e.target.value })} />
-                  <select className="input" value={newSender.provider} onChange={e => setNewSender({ ...newSender, provider: e.target.value })}>
-                    <option value="gmail">Gmail</option><option value="outlook">Outlook</option>
-                  </select>
-                  <div className="modal-actions">
-                    <button className="btn-primary" onClick={addSenderProfile}>Add Account</button>
-                    <button className="btn-remove" onClick={() => setShowAddSender(false)}>Cancel</button>
-                  </div>
+
+            {/* ── RIGHT COMPOSE PANEL ── */}
+            <div className="email-dark-right">
+              <div className="email-dark-breadcrumb">EMAIL · COMPOSE</div>
+              <h1 className="email-dark-title">Draft a <em>message</em></h1>
+              <p className="email-dark-desc">Compose here, save as a draft, or send directly to any Gmail. Powered by Resend.</p>
+
+              <div className="email-dark-fields">
+                <div className="email-dark-field-row">
+                  <span className="email-dark-field-label">TO</span>
+                  <input className="email-dark-field-input" placeholder="name@example.com" value={emailForm.to} onChange={e => setEmailForm(f => ({ ...f, to: e.target.value }))} />
+                </div>
+                <div className="email-dark-field-row">
+                  <span className="email-dark-field-label">CC</span>
+                  <input className="email-dark-field-input" placeholder="optional" value={emailForm.cc} onChange={e => setEmailForm(f => ({ ...f, cc: e.target.value }))} />
+                </div>
+                <div className="email-dark-field-row">
+                  <span className="email-dark-field-label">SUBJ</span>
+                  <input className="email-dark-subj-input" placeholder="Subject line" value={emailForm.subject} onChange={e => setEmailForm(f => ({ ...f, subject: e.target.value }))} />
                 </div>
               </div>
-            )}
+
+              <textarea className="email-dark-body" placeholder="Write your message..." value={emailForm.body} onChange={e => setEmailForm(f => ({ ...f, body: e.target.value }))} />
+
+              {emailSendStatus && (
+                <div className={`email-dark-status ${emailSendStatus.ok ? 'ok' : 'err'}`}>
+                  {emailSendStatus.ok ? '✓ ' : '✕ '}{emailSendStatus.msg}
+                </div>
+              )}
+
+              <div className="email-dark-actions">
+                <div className="email-dark-actions-left">
+                  <button className="email-dark-btn-send" disabled={emailSending || !emailForm.to || !emailForm.subject} onClick={sendEmail}>
+                    {emailSending ? 'Sending…' : '↑ SEND'}
+                  </button>
+                  <button className="email-dark-btn-ghost" onClick={openInMail} title="Open in Gmail compose">⎋ OPEN IN MAIL</button>
+                  <button className="email-dark-btn-ghost" onClick={() => {
+                    const draft = { ...emailForm, id: Date.now(), savedAt: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) }
+                    setEmailDrafts(ds => [draft, ...ds])
+                  }}>⊞ SAVE DRAFT</button>
+                  <button className="email-dark-btn-ghost" onClick={() => navigator.clipboard?.writeText(`To: ${emailForm.to}\nSubject: ${emailForm.subject}\n\n${emailForm.body}`)}>⎘ COPY</button>
+                </div>
+                <button className="email-dark-btn-clear" onClick={() => setEmailForm({ to: '', cc: '', subject: '', body: '' })}>CLEAR</button>
+              </div>
+              <p className="email-dark-note">SEND delivers directly via Resend. "Open in Mail" launches your default Gmail compose. Requires RESEND_API_KEY in Vercel.</p>
+            </div>
           </div>
         )}
 
